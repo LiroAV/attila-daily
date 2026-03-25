@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Attila's Daily</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Daily">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg: #000; --bg2: #1c1c1e; --bg3: #2c2c2e;
+      --text: #fff; --text2: rgba(235,235,245,0.6); --text3: rgba(235,235,245,0.3);
+      --accent: #0A84FF; --green: #30d158; --red: #ff453a; --orange: #ff9f0a; --purple: #bf5af2;
+      --border: rgba(84,84,88,0.65); --card: #1c1c1e;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
+    .safe-top { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
+
+    /* Header */
+    .header { padding: 8px 20px 14px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: space-between; }
+    .greeting { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
+    .date-line { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
+    .header-right { display: flex; gap: 8px; align-items: center; padding-bottom: 2px; }
+    .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .icon-btn:active { opacity: 0.6; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#0A84FF,#BF5AF2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
+
+    /* Tab bar */
+    .tab-bar { display: flex; background: rgba(28,28,30,0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); padding: 8px 0 calc(8px + env(safe-area-inset-bottom,16px)); flex-shrink: 0; }
+    .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 2px 0; }
+    .tab-item:active { opacity: 0.6; }
+    .tab-icon { font-size: 22px; }
+    .tab-label { font-size: 10px; font-weight: 500; color: var(--text3); }
+    .tab-item.active .tab-label { color: var(--accent); }
+    .tab-item:not(.active) .tab-icon { opacity: 0.4; }
+
+    /* Scroll area */
+    .content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    .tab-pane { display: none; padding-bottom: 20px; }
+    .tab-pane.active { display: block; }
+
+    /* ── BRIEF TAB ── */
+    /* Stats bar */
+    .brief-bar { margin: 0 16px 14px; background: var(--bg2); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border: 0.5px solid var(--border); }
+    .brief-bar-icon { font-size: 28px; }
+    .brief-bar-text { flex: 1; }
+    .brief-bar-text strong { display: block; font-size: 15px; font-weight: 600; }
+    .brief-bar-text span { font-size: 12px; color: var(--text2); }
+    .brief-time { text-align: right; }
+    .brief-time .mins { font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .brief-time .mins-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Topic filter pills */
+    .pills { padding: 0 16px 10px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    .pills::-webkit-scrollbar { display: none; }
+    .pill { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; border: none; }
+    .pill:active { opacity: 0.7; }
+    .pill-all { background: var(--bg3); color: var(--text); }
+    .pill-AI { background: rgba(10,132,255,0.18); color: #0A84FF; }
+    .pill-Technology { background: rgba(48,209,88,0.18); color: #30d158; }
+    .pill-Research { background: rgba(191,90,242,0.18); color: #bf5af2; }
+    .pill-Stocks { background: rgba(255,159,10,0.18); color: #ff9f0a; }
+
+    /* Topic section */
+    .topic-section { margin-bottom: 6px; }
+    .topic-label { margin: 10px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+    .topic-label-left { display: flex; align-items: center; gap: 7px; }
+    .topic-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .topic-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--text2); }
+    .topic-readtime { font-size: 11px; color: var(--text3); }
+
+    /* Lead story */
+    .lead-card { margin: 0 16px 8px; background: var(--card); border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border); text-decoration: none; display: block; color: inherit; }
+    .lead-card:active { opacity: 0.75; }
+    .lead-thumb { width: 100%; height: 160px; object-fit: cover; background: var(--bg3); display: block; }
+    .lead-thumb-placeholder { width: 100%; height: 120px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .lead-body { padding: 12px 14px 14px; }
+    .lead-source { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .lead-title { font-size: 17px; font-weight: 700; line-height: 1.3; letter-spacing: -0.2px; margin-bottom: 6px; }
+    .lead-desc { font-size: 14px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .lead-footer { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .lead-tag { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+    .lead-ago { font-size: 11px; color: var(--text3); }
+    .lead-read { font-size: 11px; color: var(--text3); }
+    .lead-read::before { content: '· '; }
+
+    /* Supporting stories */
+    .support-list { margin: 0 16px; display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; border: 0.5px solid var(--border); }
+    .support-card { background: var(--card); padding: 11px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+    .support-card:active { opacity: 0.7; }
+    .support-emoji { font-size: 20px; flex-shrink: 0; }
+    .support-body { flex: 1; min-width: 0; }
+    .support-title { font-size: 14px; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .support-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .support-arrow { color: var(--text3); font-size: 13px; flex-shrink: 0; }
+
+    /* Skeleton */
+    .skel { background: linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%); background-size: 200% 100%; animation: shim 1.4s infinite; border-radius: 8px; }
+    @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skel-section { margin: 16px 16px 8px; }
+    .skel-lead { height: 120px; border-radius: 16px; margin: 0 16px 8px; }
+
+    /* Error */
+    .err-note { margin: 0 16px 10px; background: rgba(255,69,58,.1); border: 0.5px solid rgba(255,69,58,.3); border-radius: 10px; padding: 9px 13px; font-size: 13px; color: var(--red); display: none; }
+
+    /* ── TASKS TAB ── */
+    .tasks-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .tasks-title { font-size: 22px; font-weight: 700; }
+    .tasks-badge { font-size: 12px; font-weight: 600; color: var(--text2); background: var(--bg3); padding: 3px 9px; border-radius: 10px; }
+    .task-input-row { padding: 0 16px 14px; display: flex; gap: 8px; }
+    .task-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 15px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; }
+    .task-inp:focus { border-color: var(--accent); }
+    .task-inp::placeholder { color: var(--text3); }
+    .task-add { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .task-add:active { opacity: 0.7; }
+    .task-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+    .task-row { background: var(--card); border-radius: 12px; padding: 13px 14px; display: flex; align-items: center; gap: 11px; border: 0.5px solid var(--border); }
+    .task-row.done { opacity: 0.4; }
+    .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .task-check.on { background: var(--green); border-color: var(--green); }
+    .task-check.on::after { content: '✓'; font-size: 12px; color: #fff; font-weight: 700; }
+    .task-txt { flex: 1; font-size: 15px; }
+    .task-row.done .task-txt { text-decoration: line-through; color: var(--text2); }
+    .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+    .empty-state .e-icon { font-size: 44px; margin-bottom: 10px; }
+    .empty-state p { font-size: 15px; }
+
+    /* ── CALENDAR TAB ── */
+    .cal-wrap { margin: 0 16px 16px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+    .cal-month { font-size: 17px; font-weight: 600; }
+    .cal-btn { background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer; padding: 2px 8px; }
+    .cal-grid-wrap { padding: 0 12px 12px; }
+    .cal-dow { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 4px; }
+    .cal-dow span { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); padding: 3px 0; }
+    .cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+    .cal-d { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 50%; cursor: pointer; color: var(--text); }
+    .cal-d.dim { color: var(--text3); }
+    .cal-d.today { background: var(--accent); font-weight: 700; color: #fff; }
+    .gcal-card { margin: 0 16px; background: linear-gradient(135deg,rgba(10,132,255,.12),rgba(191,90,242,.12)); border: 0.5px solid rgba(10,132,255,.25); border-radius: 16px; padding: 20px; text-align: center; }
+    .gcal-card .gi { font-size: 38px; margin-bottom: 8px; }
+    .gcal-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+    .gcal-card p { font-size: 13px; color: var(--text2); margin-bottom: 14px; line-height: 1.4; }
+    .gcal-open { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 15px; font-weight: 600; text-decoration: none; }
+    .gcal-open:active { opacity: 0.7; }
+
+    .spin { animation: rot 1s linear infinite; display: inline-block; }
+    @keyframes rot { to { transform: rotate(360deg); } }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+<div class="safe-top"></div>
+
+<div class="header">
+  <div>
+    <div class="greeting" id="greeting">Good morning, Attila</div>
+    <div class="date-line" id="dateLine">Wednesday</div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="refreshBtn" onclick="refreshNews()">↻</button>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<div class="content" id="content">
+
+  <!-- BRIEF -->
+  <div class="tab-pane active" id="pane-brief">
+    <div class="brief-bar">
+      <div class="brief-bar-icon">☀️</div>
+      <div class="brief-bar-text">
+        <strong>Daily Brief</strong>
+        <span id="briefSub">AI · Tech · Research · Stocks</span>
+      </div>
+      <div class="brief-time">
+        <div class="mins" id="totalMins">...</div>
+        <div class="mins-label">min read</div>
+      </div>
+    </div>
+    <div class="pills">
+      <button class="pill pill-all active" onclick="filter('all',this)">All</button>
+      <button class="pill pill-AI" onclick="filter('AI',this)">🤖 AI</button>
+      <button class="pill pill-Technology" onclick="filter('Technology',this)">💻 Tech</button>
+      <button class="pill pill-Research" onclick="filter('Research',this)">🔬 Research</button>
+      <button class="pill pill-Stocks" onclick="filter('Stocks',this)">📈 Stocks</button>
+    </div>
+    <div class="err-note" id="errNote">Some feeds couldn't load — showing available content.</div>
+    <div id="briefContent"></div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="tab-pane" id="pane-tasks">
+    <div class="tasks-head">
+      <span class="tasks-title">Tasks</span>
+      <span class="tasks-badge" id="taskBadge">0 left</span>
+    </div>
+    <div class="task-input-row">
+      <input class="task-inp" id="taskInp" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()">
+      <button class="task-add" onclick="addTask()">+</button>
+    </div>
+    <div class="task-list" id="taskList"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="tab-pane" id="pane-calendar">
+    <div style="padding:4px 16px 14px"><span style="font-size:22px;font-weight:700">Calendar</span></div>
+    <div class="cal-wrap">
+      <div class="cal-nav">
+        <button class="cal-btn" onclick="calShift(-1)">‹</button>
+        <div class="cal-month" id="calMonth"></div>
+        <button class="cal-btn" onclick="calShift(1)">›</button>
+      </div>
+      <div class="cal-grid-wrap">
+        <div class="cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+        <div class="cal-days" id="calDays"></div>
+      </div>
+    </div>
+    <div class="gcal-card">
+      <div class="gi">📅</div>
+      <h3>Open Google Calendar</h3>
+      <p>Your full schedule for<br>attilahuba.vizhanyo@gmail.com</p>
+      <a href="https://calendar.google.com/calendar/r" target="_blank" class="gcal-open">Open Calendar →</a>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<nav class="tab-bar">
+  <div class="tab-item active" onclick="goTab('brief',this)"><div class="tab-icon">📰</div><div class="tab-label">Brief</div></div>
+  <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-icon">✅</div><div class="tab-label">Tasks</div></div>
+  <div class="tab-item" onclick="goTab('calendar',this)"><div class="tab-icon">📅</div><div class="tab-label">Calendar</div></div>
+</nav>
+
+<script>
+// ── CONFIG ──────────────────────────────────────
+const TOPICS = {
+  AI:         { emoji:'🤖', color:'#0A84FF', pill:'pill-AI',
+    feeds:['https://venturebeat.com/category/ai/feed/',
+           'https://www.artificialintelligence-news.com/feed/'] },
+  Technology: { emoji:'💻', color:'#30d158', pill:'pill-Technology',
+    feeds:['https://techcrunch.com/feed/',
+           'https://feeds.feedburner.com/TheVerge'] },
+  Research:   { emoji:'🔬', color:'#bf5af2', pill:'pill-Research',
+    feeds:['https://arxiv.org/rss/cs.AI',
+           'https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml'] },
+  Stocks:     { emoji:'📈', color:'#ff9f0a', pill:'pill-Stocks',
+    feeds:['https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^NDX,AAPL,NVDA',
+           'https://www.marketwatch.com/rss/topstories'] }
+};
+const R2J = 'https://api.rss2json.com/v1/api.json?count=6&rss_url=';
+const WPM = 220;
+
+// ── STATE ────────────────────────────────────────
+let data = {};        // topic -> articles
+let activeFilter = 'all';
+let calDate = new Date();
+
+// ── BOOT ────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setHeader();
+  loadAll();
+  renderTasks();
+  renderCal();
+});
+
+function setHeader() {
+  const now = new Date(), h = now.getHours();
+  document.getElementById('greeting').textContent =
+    h < 12 ? 'Good morning, Attila' : h < 17 ? 'Good afternoon, Attila' : 'Good evening, Attila';
+  document.getElementById('dateLine').textContent =
+    now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+}
+
+// ── NEWS ────────────────────────────────────────
+function strip(h) { const d=document.createElement('div'); d.innerHTML=h; return d.textContent||''; }
+function wpm(t) { return Math.max(1, Math.ceil(strip(t).split(/\s+/).filter(Boolean).length / WPM)); }
+function ago(s) {
+  const m=Math.floor((Date.now()-new Date(s))/60000), hh=Math.floor(m/60);
+  return m<1?'just now':m<60?m+'m ago':hh<24?hh+'h ago':Math.floor(hh/24)+'d ago';
+}
+function src(a) {
+  try { return (a.author || new URL(a.link||'http://x').hostname.replace('www.','')).slice(0,22); }
+  catch { return 'News'; }
+}
+
+async function fetchFeed(url) {
+  try {
+    const r = await fetch(R2J + encodeURIComponent(url), { signal: AbortSignal.timeout(9000) });
+    if (!r.ok) return [];
+    const d = await r.json();
+    return d.status === 'ok' ? d.items : [];
+  } catch { return []; }
+}
+
+function showSkeleton() {
+  document.getElementById('briefContent').innerHTML = [1,2,3,4].map(() => `
+    <div class="skel-section"><div class="skel" style="height:14px;width:40%;"></div></div>
+    <div class="skel-lead skel"></div>
+    <div style="margin:0 16px 16px;display:flex;flex-direction:column;gap:1px">
+      ${[1,2].map(()=>`<div class="skel" style="height:52px;border-radius:0;margin-bottom:1px"></div>`).join('')}
+    </div>`).join('');
+}
+
+async function loadAll() {
+  showSkeleton();
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spin');
+  let anyErr = false;
+
+  await Promise.all(Object.entries(TOPICS).map(async ([topic, cfg]) => {
+    const fetches = await Promise.allSettled(cfg.feeds.map(u => fetchFeed(u)));
+    let items = [];
+    fetches.forEach(r => { if (r.status === 'fulfilled') items.push(...r.value); });
+    if (!items.length) { anyErr = true; }
+    // deduplicate
+    const seen = new Set();
+    items = items.filter(a => { if (seen.has(a.title)) return false; seen.add(a.title); return true; });
+    data[topic] = items.slice(0, 5);
+  }));
+
+  btn.classList.remove('spin');
+  document.getElementById('errNote').style.display = anyErr ? 'block' : 'none';
+  updateReadTime();
+  renderBrief();
+}
+
+function updateReadTime() {
+  let total = 0;
+  Object.values(data).forEach(arts => arts.forEach(a => { total += wpm(a.description || a.title); }));
+  document.getElementById('totalMins').textContent = '~' + total;
+  const count = Object.values(data).reduce((s,a) => s + a.length, 0);
+  document.getElementById('briefSub').textContent = count + ' stories · ' + Object.keys(TOPICS).join(' · ');
+}
+
+function refreshNews() { data = {}; loadAll(); }
+
+function filter(t, btn) {
+  activeFilter = t;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderBrief();
+}
+
+function renderBrief() {
+  const topics = activeFilter === 'all' ? Object.keys(TOPICS) : [activeFilter];
+  let html = '';
+
+  topics.forEach(topic => {
+    const cfg = TOPICS[topic];
+    const arts = data[topic] || [];
+    if (!arts.length) return;
+
+    const [lead, ...rest] = arts;
+    const topicMins = arts.reduce((s, a) => s + wpm(a.description || a.title), 0);
+
+    // topic label
+    html += `<div class="topic-section">
+      <div class="topic-label">
+        <div class="topic-label-left">
+          <div class="topic-dot" style="background:${cfg.color}"></div>
+          <span class="topic-name">${topic}</span>
+        </div>
+        <span class="topic-readtime">~${topicMins} min</span>
+      </div>`;
+
+    // lead card
+    const leadDesc = strip(lead.description || '').slice(0, 220);
+    const leadThumb = lead.thumbnail && lead.thumbnail.startsWith('http')
+      ? `<img class="lead-thumb" src="${lead.thumbnail}" onerror="this.parentElement.querySelector('.lead-ph').style.display='flex';this.style.display='none'" loading="lazy"><div class="lead-ph lead-thumb-placeholder" style="display:none">${cfg.emoji}</div>`
+      : `<div class="lead-thumb-placeholder">${cfg.emoji}</div>`;
+
+    html += `<a class="lead-card" href="${lead.link||'#'}" target="_blank" rel="noopener">
+      ${leadThumb}
+      <div class="lead-body">
+        <div class="lead-source">${src(lead)}</div>
+        <div class="lead-title">${esc(lead.title||'')}</div>
+        ${leadDesc ? `<div class="lead-desc">${esc(leadDesc)}</div>` : ''}
+        <div class="lead-footer">
+          <span class="lead-tag" style="background:${cfg.color}22;color:${cfg.color}">${cfg.emoji} ${topic}</span>
+          <span class="lead-ago">${ago(lead.pubDate)}</span>
+          <span class="lead-read">${wpm(lead.description||lead.title)} min</span>
+        </div>
+      </div>
+    </a>`;
+
+    // supporting stories
+    if (rest.length) {
+      html += `<div class="support-list">`;
+      rest.slice(0, 3).forEach(a => {
+        html += `<a class="support-card" href="${a.link||'#'}" target="_blank" rel="noopener">
+          <div class="support-emoji">${cfg.emoji}</div>
+          <div class="support-body">
+            <div class="support-title">${esc(a.title||'')}</div>
+            <div class="support-meta">${src(a)} · ${ago(a.pubDate)} · ${wpm(a.description||a.title)} min</div>
+          </div>
+          <div class="support-arrow">›</div>
+        </a>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div>`; // end topic-section
+  });
+
+  if (!html) {
+    html = `<div class="empty-state"><div class="e-icon">📡</div><p>Couldn't load news.<br>Check your connection and try refreshing.</p></div>`;
+  }
+
+  document.getElementById('briefContent').innerHTML = html;
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── TASKS ────────────────────────────────────────
+const LS = 'atd2_tasks';
+function getTasks() { try { return JSON.parse(localStorage.getItem(LS)||'[]'); } catch { return []; } }
+function putTasks(t) { localStorage.setItem(LS, JSON.stringify(t)); }
+
+function addTask() {
+  const inp = document.getElementById('taskInp'), txt = inp.value.trim();
+  if (!txt) return;
+  const tasks = getTasks();
+  tasks.unshift({ id: Date.now(), text: txt, done: false });
+  putTasks(tasks); inp.value = ''; renderTasks();
+}
+function toggleTask(id) {
+  const tasks = getTasks(), t = tasks.find(x => x.id === id);
+  if (t) t.done = !t.done; putTasks(tasks); renderTasks();
+}
+function delTask(id) { putTasks(getTasks().filter(t => t.id !== id)); renderTasks(); }
+
+function renderTasks() {
+  const tasks = getTasks(), rem = tasks.filter(t => !t.done).length;
+  document.getElementById('taskBadge').textContent = rem === 0 ? 'All done 🎉' : rem + ' left';
+  const el = document.getElementById('taskList');
+  if (!tasks.length) {
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">🎯</div><p>No tasks yet.<br>Add something above.</p></div>`; return;
+  }
+  el.innerHTML = [...tasks].sort((a,b) => a.done - b.done).map(t =>
+    `<div class="task-row ${t.done?'done':''}">
+      <div class="task-check ${t.done?'on':''}" onclick="toggleTask(${t.id})"></div>
+      <div class="task-txt">${esc(t.text)}</div>
+      <button class="task-del" onclick="delTask(${t.id})">✕</button>
+    </div>`
+  ).join('');
+}
+
+// ── CALENDAR ─────────────────────────────────────
+function renderCal() {
+  const now = new Date(), y = calDate.getFullYear(), m = calDate.getMonth();
+  document.getElementById('calMonth').textContent =
+    calDate.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+  const first = new Date(y,m,1).getDay(), total = new Date(y,m+1,0).getDate(), prevDays = new Date(y,m,0).getDate();
+  let html = '';
+  const cells = Math.ceil((first+total)/7)*7;
+  for (let i=0; i<cells; i++) {
+    const d = i-first+1;
+    if (d<1) html += `<div class="cal-d dim">${prevDays+d}</div>`;
+    else if (d>total) html += `<div class="cal-d dim">${d-total}</div>`;
+    else {
+      const today = y===now.getFullYear()&&m===now.getMonth()&&d===now.getDate();
+      html += `<div class="cal-d ${today?'today':''}">${d}</div>`;
+    }
+  }
+  document.getElementById('calDays').innerHTML = html;
+}
+function calShift(n) { calDate.setMonth(calDate.getMonth()+n); renderCal(); }
+
+// ── NAV ──────────────────────────────────────────
+function goTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+}
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
