@@ -29,7 +29,7 @@
     .header-right { display: flex; gap: 8px; align-items: center; padding-bottom: 2px; }
     .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .icon-btn:active { opacity: 0.6; }
-    .x-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 13px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; letter-spacing: -0.5px; transition: background 0.15s, color 0.15s; }
+    .x-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; letter-spacing: -0.3px; transition: background 0.15s, color 0.15s; }
     .x-btn.active { background: var(--text); color: var(--bg); }
     .x-btn:active { opacity: 0.6; }
     .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#0A84FF,#BF5AF2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
@@ -178,7 +178,7 @@
   </div>
   <div class="header-right">
     <button class="icon-btn" id="refreshBtn" onclick="refreshAll()">↻</button>
-    <button class="x-btn" id="xModeBtn" onclick="toggleXMode()">X</button>
+    <button class="x-btn" id="xModeBtn" onclick="toggleXMode()">HN</button>
     <div class="avatar">A</div>
   </div>
 </div>
@@ -296,12 +296,12 @@ const WPM = 220;
 const TARGET_MIN = 10;
 const TARGET_MAX = 15;
 
-// ── REDDIT MODE CONFIG ───────────────────────
-const REDDIT_FEEDS = {
-  AI:         'https://www.reddit.com/r/artificial+MachineLearning+ChatGPT+OpenAI/.rss',
-  Technology: 'https://www.reddit.com/r/technology+gadgets+programming/.rss',
-  Research:   'https://www.reddit.com/r/science+Physics+biology/.rss',
-  Stocks:     'https://www.reddit.com/r/investing+stocks+finance+wallstreetbets/.rss'
+// ── HN MODE CONFIG ───────────────────────────
+const HN_FEEDS = {
+  AI:         'https://hnrss.org/newest?q=AI+OpenAI+ChatGPT+LLM&points=3',
+  Technology: 'https://hnrss.org/newest?q=technology+software+Apple+Google+Microsoft&points=5',
+  Research:   'https://hnrss.org/newest?q=research+science+paper+study&points=3',
+  Stocks:     'https://hnrss.org/newest?q=market+finance+investing+stocks+economy&points=3'
 };
 
 // ── STATE ────────────────────────────────────
@@ -444,12 +444,7 @@ function refreshAll() {
 }
 
 
-// ── REDDIT MODE ───────────────────────────────
-function subreddit(link) {
-  const m = (link || '').match(/reddit\.com\/r\/([^/]+)/);
-  return m ? 'r/' + m[1] : 'reddit';
-}
-
+// ── HN MODE ───────────────────────────────────
 async function loadXMode() {
   document.getElementById('briefContent').innerHTML = [1,2,3].map(() =>
     `<div class="skel skel-card" style="height:100px;margin-bottom:10px"></div>`
@@ -457,9 +452,9 @@ async function loadXMode() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spin');
 
-  const topics = activeFilter === 'all' ? Object.keys(REDDIT_FEEDS) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(HN_FEEDS) : [activeFilter];
   await Promise.all(topics.map(async topic => {
-    const items = await fetchFeed(REDDIT_FEEDS[topic]);
+    const items = await fetchFeed(HN_FEEDS[topic]);
     const seen = new Set();
     xData[topic] = items
       .filter(t => { if (seen.has(t.title)) return false; seen.add(t.title); return true; })
@@ -471,11 +466,11 @@ async function loadXMode() {
 }
 
 function renderXMode() {
-  const topics = activeFilter === 'all' ? Object.keys(REDDIT_FEEDS) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(HN_FEEDS) : [activeFilter];
   let html = `<div class="x-banner">
     <div>
-      <div class="x-banner-label">Reddit — community pulse</div>
-      <div class="x-banner-sub">What people are discussing right now</div>
+      <div class="x-banner-label">HackerNews — community pulse</div>
+      <div class="x-banner-sub">What the tech community is discussing</div>
     </div>
   </div>`;
 
@@ -496,25 +491,22 @@ function renderXMode() {
     </div>`;
 
     posts.forEach(p => {
-      const sub = subreddit(p.link);
-      const author = (p.author || 'unknown').replace(/^u\//, '');
-      const summary = getSummary(p.description || '');
+      const author = p.author || 'unknown';
       html += `<div class="x-card">
         <div class="x-card-header">
-          <span class="x-handle">${esc(sub)} · u/${esc(author)}</span>
+          <span class="x-handle">by ${esc(author)}</span>
           <span class="x-time">${ago(p.pubDate)}</span>
         </div>
         <div class="x-text">${esc(p.title || '')}</div>
-        ${summary ? `<div class="article-summary" style="margin-top:8px;margin-bottom:0">${esc(summary)}</div>` : ''}
         <div style="margin-top:10px">
-          <a class="x-link" href="${esc(p.link || '#')}" target="_blank" rel="noopener">View on Reddit →</a>
+          <a class="x-link" href="${esc(p.link || '#')}" target="_blank" rel="noopener">Read &amp; discuss on HN →</a>
         </div>
       </div>`;
     });
   });
 
   if (!anyPosts) {
-    html += `<div class="empty"><p>Could not load Reddit posts.<br>Check your connection and tap refresh.</p></div>`;
+    html += `<div class="empty"><p>Could not load HackerNews posts.<br>Check your connection and tap refresh.</p></div>`;
   }
 
   document.getElementById('briefContent').innerHTML = html;
