@@ -77,20 +77,23 @@
     /* ── Article card ── */
     .article-card { margin: 0 16px 10px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); padding: 16px; }
     .article-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .importance-badge { font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .imp-crucial { background: rgba(255,69,58,0.15); color: #ff453a; }
-    .imp-notable { background: rgba(255,159,10,0.15); color: #ff9f0a; }
-    .imp-goodtoknow { background: rgba(48,209,88,0.15); color: #30d158; }
+    /* ── Score badge ── */
+    .score-badge { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; }
     .article-source { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
     .article-title { font-size: 18px; font-weight: 800; line-height: 1.25; letter-spacing: -0.3px; margin-bottom: 10px; }
-    .article-summary { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
-    .article-bullets { list-style: none; margin-bottom: 12px; display: flex; flex-direction: column; gap: 7px; }
-    .article-bullets li { font-size: 14px; color: var(--text2); line-height: 1.45; padding-left: 14px; position: relative; }
-    .article-bullets li::before { content: '–'; position: absolute; left: 0; color: var(--text3); }
+    .article-summary { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; }
     .article-footer { display: flex; align-items: center; justify-content: space-between; }
     .article-ago { font-size: 12px; color: var(--text3); }
     .article-read-link { font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
     .article-read-link:active { opacity: 0.6; }
+
+    /* ── Category overview ── */
+    .cat-overview { margin: 0 16px 14px; border-radius: 14px; border: 0.5px solid var(--border); padding: 14px 16px; background: var(--bg2); }
+    .cat-overview-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 10px; }
+    .cat-overview-item { display: flex; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); align-items: flex-start; }
+    .cat-overview-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .cat-overview-score { font-size: 12px; font-weight: 800; width: 22px; flex-shrink: 0; padding-top: 1px; }
+    .cat-overview-text { font-size: 13px; color: var(--text2); line-height: 1.45; }
 
     /* ── Skeleton ── */
     .skel { background: linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%); background-size: 200% 100%; animation: shim 1.5s infinite; border-radius: 8px; }
@@ -309,29 +312,31 @@ function src(a) {
 }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function getImportance(title) {
-  const t = title.toLowerCase();
-  if (/break|crisi|collaps|crash|attack|hack|breach|ban|war|recall|urgent|emerg|critical|major|historic|record-break|milestone|shutdown|scam|fraud|lawsuit|dead|kill/i.test(t))
-    return { label: 'Crucial', cls: 'imp-crucial' };
-  if (/launch|new |announc|introduc|reveal|report|study|research|update|acqui|partner|raises|cuts|drops|rises|beats|unveil|open.source/i.test(t))
-    return { label: 'Notable', cls: 'imp-notable' };
-  return { label: 'Good to know', cls: 'imp-goodtoknow' };
+function getScore(title, desc) {
+  const t = (title + ' ' + (desc || '')).toLowerCase();
+  if (/breaking|crash|collaps|attack|hack|breach|war|recall|fraud|lawsuit|shutdown|crisis|threat|ban|emergency|dead|kill/i.test(t)) return 9;
+  if (/major|historic|milestone|record.break|critical|significant|massive|urgent/i.test(t)) return 8;
+  if (/launch|acqui|ipo|breakthrough|open.source|raises.*billion|new.*model/i.test(t)) return 7;
+  if (/announc|introduc|reveal|partner|study|research|report|unveil/i.test(t)) return 6;
+  if (/update|new |beats|expands|cuts|rises|drops|shows|finds/i.test(t)) return 5;
+  if (/plan|consider|might|could|expect|explore/i.test(t)) return 4;
+  return 3;
 }
 
-function extractBullets(desc) {
+function scoreColor(n) {
+  if (n >= 8) return { color: '#ff453a', bg: 'rgba(255,69,58,0.15)' };
+  if (n >= 6) return { color: '#ff9f0a', bg: 'rgba(255,159,10,0.15)' };
+  return { color: '#30d158', bg: 'rgba(48,209,88,0.15)' };
+}
+
+function getSummary(desc) {
   const text = strip(desc);
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
   return sentences
     .map(s => s.trim())
-    .filter(s => s.split(/\s+/).length > 5)
-    .slice(0, 3);
-}
-
-function trimToWords(text, maxWords) {
-  const cleaned = strip(text);
-  const words = cleaned.split(/\s+/).filter(Boolean);
-  if (words.length <= maxWords) return cleaned;
-  return words.slice(0, maxWords).join(' ') + '…';
+    .filter(s => s.split(/\s+/).length > 4)
+    .slice(0, 3)
+    .join(' ');
 }
 
 // ── NEWS ──────────────────────────────────────
@@ -433,20 +438,34 @@ function renderBrief() {
       <span class="topic-meta">${arts.length} stories · ~${topicMins} min</span>
     </div>`;
 
+    // Category overview block
+    const overviewItems = arts.map(a => {
+      const score = getScore(a.title || '', a.description || '');
+      const sc = scoreColor(score);
+      const firstSentence = (strip(a.description || '').match(/[^.!?]+[.!?]+/) || [''])[0].trim();
+      const line = firstSentence.split(/\s+/).length > 4 ? firstSentence : strip(a.title || '');
+      return `<div class="cat-overview-item">
+        <span class="cat-overview-score" style="color:${sc.color}">${score}</span>
+        <span class="cat-overview-text">${esc(line)}</span>
+      </div>`;
+    }).join('');
+    html += `<div class="cat-overview">
+      <div class="cat-overview-title">Today at a glance</div>
+      ${overviewItems}
+    </div>`;
+
     arts.forEach(a => {
-      const imp = getImportance(a.title || '');
-      const descText = strip(a.description || '');
-      const bullets = extractBullets(a.description || '');
-      const summary = trimToWords(descText, 35);
+      const score = getScore(a.title || '', a.description || '');
+      const sc = scoreColor(score);
+      const summary = getSummary(a.description || '');
 
       html += `<div class="article-card">
         <div class="article-card-top">
-          <span class="importance-badge ${imp.cls}">${imp.label}</span>
+          <div class="score-badge" style="background:${sc.bg};color:${sc.color}">${score}</div>
           <span class="article-source">${esc(src(a))}</span>
         </div>
         <div class="article-title">${esc(a.title || '')}</div>
         ${summary ? `<div class="article-summary">${esc(summary)}</div>` : ''}
-        ${bullets.length ? `<ul class="article-bullets">${bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
         <div class="article-footer">
           <span class="article-ago">${ago(a.pubDate)}</span>
           <a class="article-read-link" href="${esc(a.link || '#')}" target="_blank" rel="noopener">Read full article →</a>
