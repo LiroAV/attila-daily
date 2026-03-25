@@ -296,17 +296,12 @@ const WPM = 220;
 const TARGET_MIN = 10;
 const TARGET_MAX = 15;
 
-// ── X MODE CONFIG ────────────────────────────
-const NITTER_INSTANCES = [
-  'https://nitter.privacydev.net',
-  'https://nitter.poast.org',
-  'https://nitter.1d4.us'
-];
-const X_QUERIES = {
-  AI:         'AI OR OpenAI OR ChatGPT OR "artificial intelligence"',
-  Technology: 'technology OR "big tech" OR software',
-  Research:   'research OR science OR breakthrough',
-  Stocks:     'stocks OR market OR investing OR finance'
+// ── REDDIT MODE CONFIG ───────────────────────
+const REDDIT_FEEDS = {
+  AI:         'https://www.reddit.com/r/artificial+MachineLearning+ChatGPT+OpenAI/.rss',
+  Technology: 'https://www.reddit.com/r/technology+gadgets+programming/.rss',
+  Research:   'https://www.reddit.com/r/science+Physics+biology/.rss',
+  Stocks:     'https://www.reddit.com/r/investing+stocks+finance+wallstreetbets/.rss'
 };
 
 // ── STATE ────────────────────────────────────
@@ -448,18 +443,11 @@ function refreshAll() {
   if (xMode) { xData = {}; loadXMode(); } else { data = {}; loadAll(); }
 }
 
-// ── X MODE ────────────────────────────────────
-async function fetchNitter(query) {
-  for (const base of NITTER_INSTANCES) {
-    try {
-      const url = base + '/search/rss?q=' + encodeURIComponent(query) + '&f=tweets';
-      const r = await fetch(R2J + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) });
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (d.status === 'ok' && d.items && d.items.length) return d.items;
-    } catch { continue; }
-  }
-  return [];
+
+// ── REDDIT MODE ───────────────────────────────
+function subreddit(link) {
+  const m = (link || '').match(/reddit\.com\/r\/([^/]+)/);
+  return m ? 'r/' + m[1] : 'reddit';
 }
 
 async function loadXMode() {
@@ -469,9 +457,9 @@ async function loadXMode() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spin');
 
-  const topics = activeFilter === 'all' ? Object.keys(X_QUERIES) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(REDDIT_FEEDS) : [activeFilter];
   await Promise.all(topics.map(async topic => {
-    const items = await fetchNitter(X_QUERIES[topic]);
+    const items = await fetchFeed(REDDIT_FEEDS[topic]);
     const seen = new Set();
     xData[topic] = items
       .filter(t => { if (seen.has(t.title)) return false; seen.add(t.title); return true; })
@@ -483,11 +471,11 @@ async function loadXMode() {
 }
 
 function renderXMode() {
-  const topics = activeFilter === 'all' ? Object.keys(X_QUERIES) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(REDDIT_FEEDS) : [activeFilter];
   let html = `<div class="x-banner">
     <div>
-      <div class="x-banner-label">X Mode — live pulse</div>
-      <div class="x-banner-sub">What people are posting right now</div>
+      <div class="x-banner-label">Reddit — community pulse</div>
+      <div class="x-banner-sub">What people are discussing right now</div>
     </div>
   </div>`;
 
@@ -508,21 +496,25 @@ function renderXMode() {
     </div>`;
 
     posts.forEach(p => {
-      const handle = (p.author || 'unknown').replace(/^@/, '');
-      const text = strip(p.title || p.description || '');
+      const sub = subreddit(p.link);
+      const author = (p.author || 'unknown').replace(/^u\//, '');
+      const summary = getSummary(p.description || '');
       html += `<div class="x-card">
         <div class="x-card-header">
-          <span class="x-handle">@${esc(handle)}</span>
+          <span class="x-handle">${esc(sub)} · u/${esc(author)}</span>
           <span class="x-time">${ago(p.pubDate)}</span>
         </div>
-        <div class="x-text">${esc(text)}</div>
-        <a class="x-link" href="${esc(p.link || '#')}" target="_blank" rel="noopener">View on X →</a>
+        <div class="x-text">${esc(p.title || '')}</div>
+        ${summary ? `<div class="article-summary" style="margin-top:8px;margin-bottom:0">${esc(summary)}</div>` : ''}
+        <div style="margin-top:10px">
+          <a class="x-link" href="${esc(p.link || '#')}" target="_blank" rel="noopener">View on Reddit →</a>
+        </div>
       </div>`;
     });
   });
 
   if (!anyPosts) {
-    html += `<div class="empty"><p>Could not load X posts.<br>Nitter may be temporarily unavailable.</p></div>`;
+    html += `<div class="empty"><p>Could not load Reddit posts.<br>Check your connection and tap refresh.</p></div>`;
   }
 
   document.getElementById('briefContent').innerHTML = html;
@@ -544,6 +536,7 @@ function filter(t, btn) {
   btn.classList.add('active');
   if (xMode) { xData = {}; loadXMode(); } else renderBrief();
 }
+
 
 function renderBrief() {
   const topics = activeFilter === 'all' ? Object.keys(TOPICS) : [activeFilter];
