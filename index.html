@@ -693,38 +693,49 @@ function renderTasks() {
 }
 
 // ── VOICE INPUT ───────────────────────────────
+let voiceAccumulated = '';
+
 function toggleVoice() {
   if (isRecording) {
-    if (recognition) recognition.stop();
+    isRecording = false;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
     return;
   }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { alert('Voice input is not supported in this browser. Try Safari or Chrome.'); return; }
 
+  voiceAccumulated = '';
+  isRecording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('taskInp').placeholder = 'Listening… tap mic to stop';
+  document.getElementById('taskInp').value = '';
+  startRecognition();
+}
+
+function startRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SR();
   recognition.lang = 'en-US';
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
 
-  recognition.onstart = () => {
-    isRecording = true;
-    document.getElementById('micBtn').classList.add('recording');
-    document.getElementById('taskInp').placeholder = 'Listening… tap mic to stop';
-    document.getElementById('taskInp').value = '';
-  };
-
   recognition.onresult = (e) => {
-    let transcript = '';
-    for (let i = 0; i < e.results.length; i++) {
-      transcript += e.results[i][0].transcript;
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) voiceAccumulated += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
     }
-    document.getElementById('taskInp').value = transcript;
+    document.getElementById('taskInp').value = (voiceAccumulated + interim).trim();
   };
 
   recognition.onend = () => {
-    const transcript = document.getElementById('taskInp').value.trim();
-    isRecording = false;
+    if (isRecording) {
+      // iOS killed it mid-session — restart automatically
+      try { startRecognition(); return; } catch(e) {}
+    }
+    // User tapped stop
+    const transcript = (voiceAccumulated).trim() || document.getElementById('taskInp').value.trim();
     document.getElementById('micBtn').classList.remove('recording');
     document.getElementById('taskInp').placeholder = 'Add a task…';
     recognition = null;
@@ -739,7 +750,7 @@ function toggleVoice() {
     recognition = null;
   };
 
-  recognition.start();
+  try { recognition.start(); } catch(e) { isRecording = false; }
 }
 
 function processVoiceResult(raw) {
@@ -826,6 +837,23 @@ function cleanTaskText(text) {
 // ── WATCH ─────────────────────────────────────
 const WLS = 'atd_watch_v1';
 let watchCache = {};
+let watchPool = null;
+let watchPoolLoading = false;
+
+const WATCH_POOL_FEEDS = [
+  'http://feeds.bbci.co.uk/news/world/rss.xml',
+  'http://feeds.bbci.co.uk/news/rss.xml',
+  'https://www.theguardian.com/world/rss',
+  'https://www.aljazeera.com/xml/rss/all.xml',
+  'https://feeds.npr.org/1001/rss.xml',
+  'https://techcrunch.com/feed/',
+  'https://venturebeat.com/feed/',
+  'https://www.wired.com/feed/rss',
+  'https://www.theverge.com/rss/index.xml',
+  'https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^NDX,AAPL,NVDA,MSFT',
+  'https://www.marketwatch.com/rss/topstories',
+  'https://feeds.a.dj.com/rss/RSSMarketsMain.xml'
+];
 
 function getWatchTopics() { try { return JSON.parse(localStorage.getItem(WLS) || '[]'); } catch { return []; } }
 function putWatchTopics(t) { localStorage.setItem(WLS, JSON.stringify(t)); }
@@ -850,21 +878,38 @@ function delWatchTopic(id) {
   renderWatchTopics();
 }
 
+async function loadWatchPool() {
+  if (watchPool) return;
+  watchPoolLoading = true;
+  const results = await Promise.allSettled(WATCH_POOL_FEEDS.map(u => fetchFeed(u)));
+  watchPool = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+  watchPoolLoading = false;
+}
+
+function topicKeywords(topic) {
+  return topic.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 3);
+}
+
+function articleMatchesTopic(keywords, article) {
+  const text = (article.title + ' ' + strip(article.description || '')).toLowerCase();
+  if (keywords.length === 1) return text.includes(keywords[0]);
+  const hits = keywords.filter(k => text.includes(k)).length;
+  return hits >= Math.ceil(keywords.length * 0.6);
+}
+
 async function fetchWatchTopic(entry) {
-  const q = encodeURIComponent(entry.topic);
-  const sources = [
-    'https://news.google.com/rss/search?q=' + q + '&hl=en-US&gl=US&ceid=US:en',
-    'https://www.bing.com/news/search?q=' + q + '&format=RSS'
-  ];
-  let items = [];
-  for (const url of sources) {
-    items = await fetchFeed(url);
-    if (items.length) break;
-  }
+  if (!watchPool) await loadWatchPool();
+  const keywords = topicKeywords(entry.topic);
+  const matches = watchPool
+    .filter(a => articleMatchesTopic(keywords, a))
+    .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   const seen = new Set();
-  watchCache[entry.id] = items
+  watchCache[entry.id] = matches
     .filter(a => { if (seen.has(a.title)) return false; seen.add(a.title); return true; })
-    .slice(0, 6);
+    .slice(0, 8);
   renderWatchCard(entry);
 }
 
@@ -947,6 +992,11 @@ function goTab(name, el) {
   document.getElementById('pane-' + name).classList.add('active');
   el.classList.add('active');
   document.getElementById('content').scrollTop = 0;
+  if (name === 'watch' && !watchPool && !watchPoolLoading) {
+    loadWatchPool().then(() => {
+      getWatchTopics().forEach(t => { if (!watchCache[t.id]) fetchWatchTopic(t); });
+    });
+  }
 }
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
