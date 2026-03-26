@@ -297,11 +297,12 @@ const TARGET_MIN = 10;
 const TARGET_MAX = 15;
 
 // ── HN MODE CONFIG ───────────────────────────
-const HN_FEEDS = {
-  AI:         'https://hnrss.org/newest?q=AI+OpenAI+ChatGPT+LLM&points=3',
-  Technology: 'https://hnrss.org/newest?q=technology+software+Apple+Google+Microsoft&points=5',
-  Research:   'https://hnrss.org/newest?q=research+science+paper+study&points=3',
-  Stocks:     'https://hnrss.org/newest?q=market+finance+investing+stocks+economy&points=3'
+const HN_API = 'https://hacker-news.firebaseio.com/v0';
+const HN_KEYWORDS = {
+  AI:         ['ai', 'openai', 'chatgpt', 'llm', 'gpt', 'claude', 'gemini', 'anthropic', 'deepmind', 'artificial intelligence', 'machine learning', 'neural'],
+  Technology: ['google', 'apple', 'microsoft', 'amazon', 'meta', 'software', 'hardware', 'github', 'startup', 'developer', 'open source', 'android', 'iphone'],
+  Research:   ['research', 'paper', 'study', 'science', 'university', 'physics', 'biology', 'journal', 'discovery', 'experiment', 'arxiv'],
+  Stocks:     ['market', 'stock', 'finance', 'economy', 'fed', 'inflation', 'ipo', 'investing', 'funding', 'revenue', 'recession', 'crypto', 'bitcoin']
 };
 
 // ── STATE ────────────────────────────────────
@@ -445,6 +446,19 @@ function refreshAll() {
 
 
 // ── HN MODE ───────────────────────────────────
+async function fetchHNStories() {
+  const r = await fetch(HN_API + '/topstories.json', { signal: AbortSignal.timeout(8000) });
+  const ids = await r.json();
+  const top = ids.slice(0, 60);
+  const stories = await Promise.all(
+    top.map(id =>
+      fetch(HN_API + '/item/' + id + '.json', { signal: AbortSignal.timeout(6000) })
+        .then(r => r.json()).catch(() => null)
+    )
+  );
+  return stories.filter(s => s && s.title && s.type === 'story');
+}
+
 async function loadXMode() {
   document.getElementById('briefContent').innerHTML = [1,2,3].map(() =>
     `<div class="skel skel-card" style="height:100px;margin-bottom:10px"></div>`
@@ -452,25 +466,29 @@ async function loadXMode() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spin');
 
-  const topics = activeFilter === 'all' ? Object.keys(HN_FEEDS) : [activeFilter];
-  await Promise.all(topics.map(async topic => {
-    const items = await fetchFeed(HN_FEEDS[topic]);
-    const seen = new Set();
-    xData[topic] = items
-      .filter(t => { if (seen.has(t.title)) return false; seen.add(t.title); return true; })
-      .slice(0, 8);
-  }));
+  try {
+    const stories = await fetchHNStories();
+    const topics = activeFilter === 'all' ? Object.keys(HN_KEYWORDS) : [activeFilter];
+    topics.forEach(topic => {
+      const kw = HN_KEYWORDS[topic];
+      xData[topic] = stories
+        .filter(s => kw.some(k => s.title.toLowerCase().includes(k)))
+        .slice(0, 8);
+    });
+  } catch(e) {
+    xData = {};
+  }
 
   btn.classList.remove('spin');
   renderXMode();
 }
 
 function renderXMode() {
-  const topics = activeFilter === 'all' ? Object.keys(HN_FEEDS) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(HN_KEYWORDS) : [activeFilter];
   let html = `<div class="x-banner">
     <div>
       <div class="x-banner-label">HackerNews — community pulse</div>
-      <div class="x-banner-sub">What the tech community is discussing</div>
+      <div class="x-banner-sub">What the tech community is discussing today</div>
     </div>
   </div>`;
 
@@ -491,22 +509,23 @@ function renderXMode() {
     </div>`;
 
     posts.forEach(p => {
-      const author = p.author || 'unknown';
+      const hnUrl = 'https://news.ycombinator.com/item?id=' + p.id;
       html += `<div class="x-card">
         <div class="x-card-header">
-          <span class="x-handle">by ${esc(author)}</span>
-          <span class="x-time">${ago(p.pubDate)}</span>
+          <span class="x-handle">by ${esc(p.by || 'unknown')}</span>
+          <span class="x-time">${ago(new Date(p.time * 1000))} · ${p.score} pts · ${p.descendants || 0} comments</span>
         </div>
-        <div class="x-text">${esc(p.title || '')}</div>
-        <div style="margin-top:10px">
-          <a class="x-link" href="${esc(p.link || '#')}" target="_blank" rel="noopener">Read &amp; discuss on HN →</a>
+        <div class="x-text">${esc(p.title)}</div>
+        <div style="margin-top:10px;display:flex;gap:16px">
+          ${p.url ? `<a class="x-link" href="${esc(p.url)}" target="_blank" rel="noopener">Read article →</a>` : ''}
+          <a class="x-link" href="${hnUrl}" target="_blank" rel="noopener">Discuss on HN →</a>
         </div>
       </div>`;
     });
   });
 
   if (!anyPosts) {
-    html += `<div class="empty"><p>Could not load HackerNews posts.<br>Check your connection and tap refresh.</p></div>`;
+    html += `<div class="empty"><p>No matching stories on HackerNews right now.<br>Try refreshing or switch to a different category.</p></div>`;
   }
 
   document.getElementById('briefContent').innerHTML = html;
