@@ -163,6 +163,33 @@
     .tbadge-low { background: rgba(235,235,245,0.1); color: var(--text3); }
     .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
+    /* ── WATCH ── */
+    .watch-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .watch-title { font-size: 22px; font-weight: 700; }
+    .watch-row-input { padding: 0 16px 20px; display: flex; gap: 8px; }
+    .watch-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 15px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; }
+    .watch-inp:focus { border-color: var(--accent); }
+    .watch-inp::placeholder { color: var(--text3); }
+    .watch-add-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .watch-add-btn:active { opacity: 0.7; }
+    .watch-topics { padding: 0 16px; display: flex; flex-direction: column; gap: 14px; }
+    .watch-card { background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
+    .watch-card-header { padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
+    .watch-topic-name { font-size: 15px; font-weight: 700; }
+    .watch-topic-right { display: flex; align-items: center; gap: 10px; }
+    .watch-count { font-size: 12px; color: var(--text3); }
+    .watch-del { background: none; border: none; color: var(--text3); font-size: 16px; cursor: pointer; padding: 0 2px; }
+    .watch-del:active { color: var(--red); }
+    .watch-article { padding: 11px 14px; display: flex; gap: 10px; align-items: flex-start; border-bottom: 0.5px solid var(--border); text-decoration: none; color: inherit; }
+    .watch-article:last-child { border-bottom: none; }
+    .watch-article:active { opacity: 0.7; }
+    .watch-article-score { font-size: 12px; font-weight: 800; width: 18px; flex-shrink: 0; padding-top: 2px; }
+    .watch-article-body { flex: 1; min-width: 0; }
+    .watch-article-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 3px; }
+    .watch-article-meta { font-size: 11px; color: var(--text3); }
+    .watch-loading { padding: 16px 14px; font-size: 13px; color: var(--text3); }
+    .watch-empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; line-height: 1.5; }
+
     /* ── CALENDAR ── */
     .cal-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
     .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
@@ -249,6 +276,18 @@
     <div class="task-list" id="taskList"></div>
   </div>
 
+  <!-- ── WATCH ── -->
+  <div class="tab-pane" id="pane-watch">
+    <div class="watch-head">
+      <span class="watch-title">Watch</span>
+    </div>
+    <div class="watch-row-input">
+      <input class="watch-inp" id="watchInp" placeholder="Add a topic to track…" onkeydown="if(event.key==='Enter')addWatchTopic()">
+      <button class="watch-add-btn" onclick="addWatchTopic()">+</button>
+    </div>
+    <div class="watch-topics" id="watchTopics"></div>
+  </div>
+
   <!-- ── CALENDAR ── -->
   <div class="tab-pane" id="pane-calendar">
     <div style="padding:4px 16px 14px"><span style="font-size:22px;font-weight:700">Calendar</span></div>
@@ -275,6 +314,7 @@
 <nav class="tab-bar">
   <div class="tab-item active" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
   <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-label">Tasks</div></div>
+  <div class="tab-item" onclick="goTab('watch',this)"><div class="tab-label">Watch</div></div>
   <div class="tab-item" onclick="goTab('calendar',this)"><div class="tab-label">Calendar</div></div>
 </nav>
 
@@ -345,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAll();
   renderTasks();
   renderCal();
+  renderWatchTopics();
 });
 
 function setHeader() {
@@ -766,6 +807,95 @@ function cleanTaskText(text) {
     .trim()
     .replace(/^,\s*/, '')
     .replace(/,\s*$/, '');
+}
+
+// ── WATCH ─────────────────────────────────────
+const WLS = 'atd_watch_v1';
+let watchCache = {};
+
+function getWatchTopics() { try { return JSON.parse(localStorage.getItem(WLS) || '[]'); } catch { return []; } }
+function putWatchTopics(t) { localStorage.setItem(WLS, JSON.stringify(t)); }
+
+function addWatchTopic() {
+  const inp = document.getElementById('watchInp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const topics = getWatchTopics();
+  if (topics.find(t => t.topic.toLowerCase() === txt.toLowerCase())) { inp.value = ''; return; }
+  const entry = { id: Date.now(), topic: txt };
+  topics.unshift(entry);
+  putWatchTopics(topics);
+  inp.value = '';
+  renderWatchTopics();
+  fetchWatchTopic(entry);
+}
+
+function delWatchTopic(id) {
+  putWatchTopics(getWatchTopics().filter(t => t.id !== id));
+  delete watchCache[id];
+  renderWatchTopics();
+}
+
+async function fetchWatchTopic(entry) {
+  const url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(entry.topic) + '&hl=en-US&gl=US&ceid=US:en';
+  const items = await fetchFeed(url);
+  const seen = new Set();
+  watchCache[entry.id] = items
+    .filter(a => { if (seen.has(a.title)) return false; seen.add(a.title); return true; })
+    .slice(0, 6);
+  renderWatchCard(entry);
+}
+
+function renderWatchTopics() {
+  const topics = getWatchTopics();
+  const el = document.getElementById('watchTopics');
+  if (!topics.length) {
+    el.innerHTML = `<div class="watch-empty">No topics yet.<br>Add something above — e.g. "Anthropic IPO" or "Iran-Israel war".</div>`;
+    return;
+  }
+  el.innerHTML = topics.map(t => `<div class="watch-card" id="wcard-${t.id}"></div>`).join('');
+  topics.forEach(t => {
+    if (watchCache[t.id]) renderWatchCard(t);
+    else {
+      document.getElementById('wcard-' + t.id).innerHTML =
+        watchCardShell(t, `<div class="watch-loading">Loading…</div>`);
+      fetchWatchTopic(t);
+    }
+  });
+}
+
+function renderWatchCard(entry) {
+  const el = document.getElementById('wcard-' + entry.id);
+  if (!el) return;
+  const articles = watchCache[entry.id] || [];
+  let inner = '';
+  if (!articles.length) {
+    inner = `<div class="watch-loading">No recent news found for this topic.</div>`;
+  } else {
+    inner = articles.map(a => {
+      const score = getScore(a.title || '', a.description || '');
+      const sc = scoreColor(score);
+      const source = src(a);
+      return `<a class="watch-article" href="${esc(a.link || '#')}" target="_blank" rel="noopener">
+        <span class="watch-article-score" style="color:${sc.color}">${score}</span>
+        <div class="watch-article-body">
+          <div class="watch-article-title">${esc(a.title || '')}</div>
+          <div class="watch-article-meta">${esc(source)} · ${ago(a.pubDate)}</div>
+        </div>
+      </a>`;
+    }).join('');
+  }
+  el.innerHTML = watchCardShell(entry, inner, articles.length);
+}
+
+function watchCardShell(entry, inner, count) {
+  return `<div class="watch-card-header">
+    <span class="watch-topic-name">${esc(entry.topic)}</span>
+    <div class="watch-topic-right">
+      ${count != null ? `<span class="watch-count">${count} articles</span>` : ''}
+      <button class="watch-del" onclick="delWatchTopic(${entry.id})">✕</button>
+    </div>
+  </div>${inner}`;
 }
 
 // ── CALENDAR ──────────────────────────────────
