@@ -308,12 +308,6 @@
         <div class="home-card-title">Quote of the day</div>
         <div style="font-size:13px;color:var(--text3)">Loading…</div>
       </div>
-    </div>
-  </div>
-
-  <!-- ── DAILY ── -->
-  <div class="tab-pane" id="pane-daily">
-    <div class="daily-section">
       <div class="daily-card" id="holidayCard"><div class="daily-card-title">Today's Days</div><div class="no-holidays">Loading…</div></div>
       <div class="daily-card">
         <div class="daily-card-title">Grateful for today</div>
@@ -409,7 +403,6 @@
 
 <nav class="tab-bar">
   <div class="tab-item active" onclick="goTab('home',this)"><div class="tab-label">Home</div></div>
-  <div class="tab-item" onclick="goTab('daily',this)"><div class="tab-label">Daily</div></div>
   <div class="tab-item" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
   <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-label">Tasks</div></div>
   <div class="tab-item" onclick="goTab('watch',this)"><div class="tab-label">Watch</div></div>
@@ -485,7 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCal();
   renderWatchTopics();
   loadHome();
-  loadDaily();
 });
 
 function setHeader() {
@@ -912,19 +904,33 @@ async function loadDaily() {
 
 async function renderHolidays() {
   const now = new Date();
-  const mmdd = String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const todayStr = now.toISOString().slice(0,10);
+  const mmdd = todayStr.slice(5);
   const fun = FUN_HOLIDAYS[mmdd] || [];
+
   let official = [];
   try {
-    const cc = localStorage.getItem('atd_country') || 'US';
-    const d = await fetch(`https://date.nager.at/api/v3/PublicHoliday/${now.getFullYear()}/${cc}`).then(r=>r.json());
-    official = d.filter(h => h.date === now.toISOString().slice(0,10)).map(h => h.localName || h.name);
+    const cc = localStorage.getItem('atd_country') || 'HU';
+    const countries = [...new Set([cc, 'US', 'HU'])];
+    const results = await Promise.all(
+      countries.map(c =>
+        fetch(`https://date.nager.at/api/v3/PublicHoliday/${now.getFullYear()}/${c}`)
+          .then(r => r.json()).catch(() => [])
+      )
+    );
+    const seen = new Set();
+    results.flat()
+      .filter(h => h.date === todayStr)
+      .forEach(h => {
+        const name = h.name;
+        if (!seen.has(name)) { seen.add(name); official.push(name); }
+      });
   } catch {}
 
   const all = [
     ...official.map(n => ({ name: n, type: 'Public holiday', fun: false })),
     ...fun.map(n => ({ name: n, type: 'Fun day', fun: true }))
-  ];
+  ].slice(0, 4);
 
   const el = document.getElementById('holidayCard');
   if (!all.length) {
@@ -972,10 +978,10 @@ function toggleWord(key) {
 
 function renderFacts() {
   const idx = dayOfYear();
-  const f1 = FACTS[idx % FACTS.length];
-  const f2 = FACTS[(idx + Math.floor(FACTS.length / 2)) % FACTS.length];
+  const q = Math.floor(FACTS.length / 4);
+  const facts = [0, 1, 2, 3].map(i => FACTS[(idx + i * q) % FACTS.length]);
   document.getElementById('factsCard').innerHTML = `<div class="daily-card-title">Did you know?</div>` +
-    [f1, f2].map((f, i) => `<div class="fact-item">
+    facts.map((f, i) => `<div class="fact-item">
       <div class="fact-num">${i+1}</div>
       <div class="fact-text">${esc(f)}</div>
     </div>`).join('');
@@ -1025,6 +1031,7 @@ async function loadHome() {
   renderHomeStats();
   fetchCrypto();
   fetchQuote();
+  loadDaily();
   navigator.geolocation.getCurrentPosition(
     p => fetchWeather(p.coords.latitude, p.coords.longitude),
     () => { document.getElementById('weatherCard').innerHTML = `<div class="weather-error">Enable location access to see weather.</div>`; }
