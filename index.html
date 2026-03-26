@@ -287,33 +287,35 @@
     /* ── FINANCE ── */
     .fin-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
     .fin-title { font-size: 22px; font-weight: 700; }
-    .fin-market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 14px; }
-    .fin-mcard { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; }
-    .fin-mcard.up-card { border-color: rgba(48,209,88,0.3); background: rgba(48,209,88,0.05); }
-    .fin-mcard.down-card { border-color: rgba(255,69,58,0.3); background: rgba(255,69,58,0.05); }
+    .fin-section-label { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 0 16px 10px; }
+    /* Market overview 2×2 grid */
+    .fin-market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 18px; }
+    .fin-mcard { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 13px 14px; }
+    .fin-mcard.up-card { border-color: rgba(48,209,88,0.3); background: rgba(48,209,88,0.04); }
+    .fin-mcard.down-card { border-color: rgba(255,69,58,0.3); background: rgba(255,69,58,0.04); }
     .fin-mcard-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-    .fin-mcard-price { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 3px; }
-    .fin-mcard-chg { font-size: 13px; font-weight: 600; }
-    .fin-summary { margin: 0 16px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
-    .fin-summary-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 14px; }
-    .fin-summary-row { display: flex; justify-content: space-between; gap: 8px; }
-    .fin-summary-item { flex: 1; }
-    .fin-summary-val { font-size: 16px; font-weight: 800; letter-spacing: -0.4px; }
-    .fin-summary-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .fin-holdings-head { padding: 0 16px 10px; display: flex; align-items: center; justify-content: space-between; }
-    .fin-holdings-label { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
-    .fin-holdings-count { font-size: 12px; color: var(--text3); }
-    .fin-list { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 8px; }
-    .fin-row { background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-    .fin-row-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
-    .fin-ticker { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
-    .fin-company { font-size: 11px; color: var(--text3); margin-top: 2px; }
-    .fin-price { font-size: 15px; font-weight: 700; text-align: right; }
-    .fin-daychg { font-size: 12px; font-weight: 600; text-align: right; margin-top: 2px; }
-    .fin-row-bot { display: flex; align-items: flex-end; justify-content: space-between; }
-    .fin-val { font-size: 13px; font-weight: 600; color: var(--text2); }
-    .fin-shares { font-size: 11px; color: var(--text3); margin-top: 3px; }
-    .fin-pl { font-size: 12px; font-weight: 700; }
+    .fin-mcard-price { font-size: 19px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 3px; }
+    .fin-mcard-chg { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .fin-mcard-open { font-size: 11px; color: var(--text3); }
+    /* Stock cards */
+    .fin-list { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 10px; }
+    .fin-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .fin-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .fin-ticker { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+    .fin-company { font-size: 11px; color: var(--text3); margin-top: 3px; }
+    .fin-price-block { text-align: right; }
+    .fin-price { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .fin-chg-abs { font-size: 13px; font-weight: 700; margin-top: 2px; }
+    .fin-chg-pct { font-size: 12px; font-weight: 600; margin-top: 1px; }
+    .fin-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px 0; border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); margin-bottom: 10px; }
+    .fin-stat-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .fin-stat-val { font-size: 13px; font-weight: 600; }
+    .fin-52w-row { margin-bottom: 10px; }
+    .fin-52w-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+    .fin-52w-bar { height: 4px; background: var(--bg3); border-radius: 2px; position: relative; }
+    .fin-52w-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--purple)); border-radius: 2px; }
+    .fin-52w-dot { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--text); border: 2px solid var(--bg); transform: translateX(-50%); }
+    .fin-note { font-size: 12px; color: var(--text2); font-style: italic; }
     .fin-loading { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; }
     .fin-update-time { text-align: center; font-size: 11px; color: var(--text3); padding: 4px 16px 12px; }
   </style>
@@ -1521,42 +1523,48 @@ const MARKET_OVERVIEW = [
   { symbol: 'ETH-USD', label: 'Ethereum' }
 ];
 
-const MY_HOLDINGS = [
-  { ticker: 'META',  name: 'Meta Platforms',            shares: 3.0175,  avgCost: 630.62 },
-  { ticker: 'COIN',  name: 'Coinbase Global',           shares: 1.3323,  avgCost: 225.92 },
-  { ticker: 'MSFT',  name: 'Microsoft',                 shares: 1.2753,  avgCost: 392.84 },
-  { ticker: 'ELF',   name: 'e.l.f. Beauty',             shares: 3.0674,  avgCost: 65.53  },
-  { ticker: 'CAKE',  name: 'Cheesecake Factory',        shares: 2.0145,  avgCost: 50.14  },
-  { ticker: 'AMZN',  name: 'Amazon',                    shares: 4.856,   avgCost: 206.54 },
-  { ticker: 'IONQ',  name: 'IonQ Inc',                  shares: 3.9737,  avgCost: 25.42  },
-  { ticker: 'SCHG',  name: 'Schwab US Large-Cap Growth', shares: 18.8904, avgCost: 26.52 },
-  { ticker: 'VT',    name: 'Vanguard Total World Stock', shares: 4.1574,  avgCost: 120.51 },
-  { ticker: 'QQQM',  name: 'Invesco Nasdaq 100 ETF',    shares: 2.4479,  avgCost: 204.66 },
-  { ticker: 'SOFI',  name: 'SoFi Technologies',         shares: 30.2596, avgCost: 13.29  },
-  { ticker: 'TSM',   name: 'Taiwan Semiconductor ADR',  shares: 1.1024,  avgCost: 182.77 },
-  { ticker: 'GOOGL', name: 'Alphabet Class A',          shares: 1.7553,  avgCost: 171.48 },
-  { ticker: 'VGT',   name: 'Vanguard IT ETF',           shares: 1.7049,  avgCost: 587.12 },
-  { ticker: 'NVDA',  name: 'NVIDIA',                    shares: 5.1918,  avgCost: 115.95 },
-  { ticker: 'PLTR',  name: 'Palantir Technologies',     shares: 5.702,   avgCost: 88.21  },
-  { ticker: 'VOO',   name: 'Vanguard S&P 500 ETF',      shares: 5.3188,  avgCost: 527.17 },
-  { ticker: 'AMD',   name: 'AMD',                       shares: 5.6079,  avgCost: 107.35 },
+const TRACKED_STOCKS = [
+  { ticker: 'META',  name: 'Meta Platforms'           },
+  { ticker: 'COIN',  name: 'Coinbase Global'          },
+  { ticker: 'MSFT',  name: 'Microsoft'                },
+  { ticker: 'ELF',   name: 'e.l.f. Beauty'            },
+  { ticker: 'CAKE',  name: 'Cheesecake Factory'       },
+  { ticker: 'AMZN',  name: 'Amazon'                   },
+  { ticker: 'IONQ',  name: 'IonQ Inc'                 },
+  { ticker: 'SCHG',  name: 'Schwab US Large-Cap Growth'},
+  { ticker: 'VT',    name: 'Vanguard Total World'     },
+  { ticker: 'QQQM',  name: 'Invesco Nasdaq 100 ETF'   },
+  { ticker: 'SOFI',  name: 'SoFi Technologies'        },
+  { ticker: 'TSM',   name: 'Taiwan Semiconductor ADR' },
+  { ticker: 'GOOGL', name: 'Alphabet Class A'         },
+  { ticker: 'VGT',   name: 'Vanguard IT ETF'          },
+  { ticker: 'NVDA',  name: 'NVIDIA'                   },
+  { ticker: 'PLTR',  name: 'Palantir Technologies'    },
+  { ticker: 'VOO',   name: 'Vanguard S&P 500 ETF'     },
+  { ticker: 'AMD',   name: 'AMD'                      },
 ];
 
-const FIN_LS = 'atd_finance_v1';
+const FIN_LS = 'atd_finance_v2';
 
 function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
-function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), prices: d })); }
+function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), quotes: d })); }
 
-async function fetchYFBatch(stockSymbols) {
-  const yfUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' +
-    stockSymbols.join(',') + '&formatted=false&lang=en-US&region=US';
+// Encode symbols so ^ and = don't break query strings
+function encodeSymbolList(syms) {
+  return syms.map(s => s.replace(/\^/g, '%5E').replace(/=/g, '%3D')).join(',');
+}
+
+async function fetchYFBatch(symbols) {
+  const symStr = encodeSymbolList(symbols);
+  const yfUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symStr +
+    '&formatted=false&lang=en-US&region=US';
   const proxies = [
     'https://corsproxy.io/?url=' + encodeURIComponent(yfUrl),
     'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
   ];
   for (const url of proxies) {
     try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
+      const r = await fetch(url, { signal: AbortSignal.timeout(14000) });
       const d = await r.json();
       if (d?.quoteResponse?.result?.length) return d.quoteResponse.result;
     } catch {}
@@ -1565,40 +1573,54 @@ async function fetchYFBatch(stockSymbols) {
 }
 
 async function fetchAllFinancePrices() {
-  const stockSymbols = ['^GSPC', 'GC=F', ...MY_HOLDINGS.map(h => h.ticker)];
+  const stockSymbols = ['^GSPC', 'GC=F', ...TRACKED_STOCKS.map(s => s.ticker)];
 
   const [yfResult, cgRes] = await Promise.allSettled([
     fetchYFBatch(stockSymbols),
-    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true', { signal: AbortSignal.timeout(10000) }).then(r => r.json())
+    fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&order=market_cap_desc&per_page=2&page=1&sparkline=false', { signal: AbortSignal.timeout(10000) }).then(r => r.json())
   ]);
 
-  const prices = {};
+  const quotes = {};
 
   if (yfResult.status === 'fulfilled') {
     yfResult.value.forEach(q => {
-      prices[q.symbol] = {
-        price: q.regularMarketPrice,
+      quotes[q.symbol] = {
+        price:     q.regularMarketPrice,
+        changeAbs: q.regularMarketChange,
         changePct: q.regularMarketChangePercent,
-        changeAbs: q.regularMarketChange
+        open:      q.regularMarketOpen,
+        high:      q.regularMarketDayHigh,
+        low:       q.regularMarketDayLow,
+        prevClose: q.regularMarketPreviousClose,
+        wkHigh:    q.fiftyTwoWeekHigh,
+        wkLow:     q.fiftyTwoWeekLow,
+        name:      q.shortName || q.longName || ''
       };
     });
   }
 
-  if (cgRes.status === 'fulfilled') {
-    const cg = cgRes.value;
-    if (cg.bitcoin) prices['BTC-USD'] = {
-      price: cg.bitcoin.usd,
-      changePct: cg.bitcoin.usd_24h_change,
-      changeAbs: cg.bitcoin.usd * cg.bitcoin.usd_24h_change / 100
-    };
-    if (cg.ethereum) prices['ETH-USD'] = {
-      price: cg.ethereum.usd,
-      changePct: cg.ethereum.usd_24h_change,
-      changeAbs: cg.ethereum.usd * cg.ethereum.usd_24h_change / 100
-    };
+  if (cgRes.status === 'fulfilled' && Array.isArray(cgRes.value)) {
+    cgRes.value.forEach(c => {
+      const sym = c.id === 'bitcoin' ? 'BTC-USD' : 'ETH-USD';
+      const price = c.current_price;
+      const chgAbs = c.price_change_24h;
+      const open = price - chgAbs;
+      quotes[sym] = {
+        price,
+        changeAbs: chgAbs,
+        changePct: c.price_change_percentage_24h,
+        open,
+        high:      c.high_24h,
+        low:       c.low_24h,
+        prevClose: open,
+        wkHigh:    c.ath,
+        wkLow:     c.atl,
+        name:      c.name
+      };
+    });
   }
 
-  return prices;
+  return quotes;
 }
 
 async function loadFinance(force) {
@@ -1607,133 +1629,117 @@ async function loadFinance(force) {
 
   const cache = getFinCache();
   if (cache && !force) {
-    renderFinance(cache.prices);
+    renderFinance(cache.quotes);
     if ((Date.now() - cache.ts) / 60000 < 15) return;
   } else {
     el.innerHTML = '<div class="fin-loading">Loading market data…</div>';
   }
 
   try {
-    const prices = await fetchAllFinancePrices();
-    if (Object.keys(prices).length > 0) {
-      setFinCache(prices);
-      renderFinance(prices);
+    const quotes = await fetchAllFinancePrices();
+    if (Object.keys(quotes).length > 0) {
+      setFinCache(quotes);
+      renderFinance(quotes);
     } else {
-      el.innerHTML = '<div class="fin-loading">Could not load prices. Tap ↻ to retry.</div>';
+      el.innerHTML = '<div class="fin-loading">Could not load prices — tap ↻ to retry.</div>';
     }
   } catch {
-    el.innerHTML = '<div class="fin-loading">Could not load prices. Tap ↻ to retry.</div>';
+    el.innerHTML = '<div class="fin-loading">Could not load prices — tap ↻ to retry.</div>';
   }
 }
 
-function fmtFinPrice(price, symbol) {
+function fmtP(price, symbol) {
   if (price == null) return '–';
   if (symbol === '^GSPC') return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (symbol === 'BTC-USD' || symbol === 'ETH-USD') return '$' + price.toLocaleString('en-US', { maximumFractionDigits: 0 });
   return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function renderFinance(prices) {
+function stockNote(q) {
+  if (!q || q.changePct == null) return '';
+  const pct = Math.abs(q.changePct);
+  const up = q.changePct >= 0;
+  const aboveOpen = q.open != null && q.price > q.open;
+  if (q.wkHigh && q.price >= q.wkHigh * 0.97) return 'Trading near its 52-week high';
+  if (q.wkLow && q.price <= q.wkLow * 1.05) return 'Trading near its 52-week low';
+  if (pct >= 5) return up ? `Surging ${pct.toFixed(1)}% — strong buying today` : `Dropping ${pct.toFixed(1)}% — heavy selling today`;
+  if (pct >= 2) return up ? `Up ${pct.toFixed(1)}% — solid gain today` : `Down ${pct.toFixed(1)}% — notable decline today`;
+  if (pct >= 0.5) return up ? `Modest gain, trading above open` : `Slight decline, trading below open`;
+  return aboveOpen ? 'Edging higher from the open' : 'Slightly off the open';
+}
+
+function renderFinance(quotes) {
   const el = document.getElementById('financeContent');
   if (!el) return;
 
-  // Market overview grid
-  let html = '<div class="fin-market-grid">';
+  // ── Market overview ──
+  let html = '<div class="fin-section-label">Markets</div><div class="fin-market-grid">';
   MARKET_OVERVIEW.forEach(m => {
-    const p = prices[m.symbol];
-    const priceStr = p ? fmtFinPrice(p.price, m.symbol) : '–';
-    const chgPct = p ? p.changePct : null;
-    const up = chgPct != null ? chgPct >= 0 : null;
-    const chgStr = chgPct != null ? `${up ? '+' : ''}${chgPct.toFixed(2)}%` : '–';
+    const q = quotes[m.symbol];
+    const up = q ? q.changePct >= 0 : null;
     const cls = up === null ? '' : up ? 'up-card' : 'down-card';
+    const priceStr = q ? fmtP(q.price, m.symbol) : '–';
+    const chgAbsStr = q ? `${up ? '+' : ''}${m.symbol === '^GSPC' || m.symbol === 'GC=F' ? (up?'+':'')+q.changeAbs.toFixed(2) : (up?'+':'')+'$'+Math.abs(q.changeAbs).toFixed(m.symbol==='BTC-USD'?0:2)}` : '';
+    const chgPctStr = q ? `(${up ? '+' : ''}${q.changePct.toFixed(2)}%)` : '–';
+    const openStr  = q && q.open ? `Open ${fmtP(q.open, m.symbol)}` : '';
     html += `<div class="fin-mcard ${cls}">
       <div class="fin-mcard-label">${esc(m.label)}</div>
       <div class="fin-mcard-price">${esc(priceStr)}</div>
-      <div class="fin-mcard-chg ${up === null ? '' : up ? 'up' : 'down'}">${chgStr}</div>
+      <div class="fin-mcard-chg ${up === null ? '' : up ? 'up' : 'down'}">${chgAbsStr} ${chgPctStr}</div>
+      <div class="fin-mcard-open">${esc(openStr)}</div>
     </div>`;
   });
   html += '</div>';
 
-  // Portfolio summary totals
-  let totalValue = 0, totalCost = 0, coveredCost = 0;
-  MY_HOLDINGS.forEach(h => {
-    const cost = h.shares * h.avgCost;
-    totalCost += cost;
-    const p = prices[h.ticker];
-    if (p) { totalValue += h.shares * p.price; coveredCost += cost; }
-  });
-  // Scale cost to only covered positions for accurate P&L
-  const totalPL = totalValue - coveredCost;
-  const totalPLPct = coveredCost > 0 ? (totalPL / coveredCost) * 100 : 0;
-  const plUp = totalPL >= 0;
+  // ── Stock list ──
+  html += '<div class="fin-section-label">Watchlist</div><div class="fin-list">';
+  TRACKED_STOCKS.forEach(s => {
+    const q = quotes[s.ticker];
+    const up = q ? q.changePct >= 0 : null;
+    const priceStr = q ? '$' + q.price.toFixed(2) : '–';
+    const chgAbsStr = q ? `${up ? '+' : ''}$${Math.abs(q.changeAbs).toFixed(2)}` : '–';
+    const chgPctStr = q ? `${up ? '+' : ''}${q.changePct.toFixed(2)}%` : '';
+    const openStr   = q && q.open   ? '$' + q.open.toFixed(2) : '–';
+    const highStr   = q && q.high   ? '$' + q.high.toFixed(2) : '–';
+    const lowStr    = q && q.low    ? '$' + q.low.toFixed(2)  : '–';
+    const wkHighStr = q && q.wkHigh ? '$' + q.wkHigh.toFixed(2) : '–';
+    const wkLowStr  = q && q.wkLow  ? '$' + q.wkLow.toFixed(2)  : '–';
+    const note = stockNote(q);
 
-  html += `<div class="fin-summary">
-    <div class="fin-summary-title">Portfolio Summary</div>
-    <div class="fin-summary-row">
-      <div class="fin-summary-item">
-        <div class="fin-summary-val">$${totalValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-        <div class="fin-summary-lbl">Current Value</div>
-      </div>
-      <div class="fin-summary-item">
-        <div class="fin-summary-val ${plUp ? 'up' : 'down'}">${plUp ? '+' : ''}$${Math.abs(totalPL).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-        <div class="fin-summary-lbl">P&amp;L (${plUp?'+':''}${totalPLPct.toFixed(1)}%)</div>
-      </div>
-      <div class="fin-summary-item">
-        <div class="fin-summary-val">$${totalCost.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-        <div class="fin-summary-lbl">Invested</div>
-      </div>
-    </div>
-  </div>`;
+    // 52-week bar position (0–100%)
+    let barPct = 50, dotPct = 50;
+    if (q && q.wkHigh && q.wkLow && q.wkHigh > q.wkLow) {
+      dotPct = Math.min(100, Math.max(0, ((q.price - q.wkLow) / (q.wkHigh - q.wkLow)) * 100));
+    }
 
-  // Holdings sorted by current value desc
-  const enriched = MY_HOLDINGS.map(h => {
-    const p = prices[h.ticker];
-    const price = p ? p.price : null;
-    const value = price != null ? h.shares * price : h.shares * h.avgCost;
-    const cost = h.shares * h.avgCost;
-    const pl = price != null ? value - cost : 0;
-    const plPct = cost > 0 ? (pl / cost) * 100 : 0;
-    return { ...h, price, value, pl, plPct, changePct: p ? p.changePct : null };
-  }).sort((a, b) => b.value - a.value);
-
-  html += `<div class="fin-holdings-head">
-    <span class="fin-holdings-label">My Holdings</span>
-    <span class="fin-holdings-count">${MY_HOLDINGS.length} positions</span>
-  </div><div class="fin-list">`;
-
-  enriched.forEach(h => {
-    const priceStr = h.price != null ? '$' + h.price.toFixed(2) : '–';
-    const dayUp = h.changePct != null ? h.changePct >= 0 : null;
-    const dayStr = h.changePct != null ? `${h.changePct >= 0 ? '+' : ''}${h.changePct.toFixed(2)}%` : '–';
-    const plUp = h.pl >= 0;
-    const plStr = `${plUp ? '+' : '–'}$${Math.abs(h.pl).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} (${plUp?'+':''}${h.plPct.toFixed(1)}%)`;
-
-    html += `<div class="fin-row">
-      <div class="fin-row-top">
+    html += `<div class="fin-card">
+      <div class="fin-card-top">
         <div>
-          <div class="fin-ticker">${esc(h.ticker)}</div>
-          <div class="fin-company">${esc(h.name)}</div>
+          <div class="fin-ticker">${esc(s.ticker)}</div>
+          <div class="fin-company">${esc(s.name)}</div>
         </div>
-        <div>
+        <div class="fin-price-block">
           <div class="fin-price">${esc(priceStr)}</div>
-          <div class="fin-daychg ${dayUp === null ? '' : dayUp ? 'up' : 'down'}">${dayStr}</div>
+          <div class="fin-chg-abs ${up === null ? '' : up ? 'up' : 'down'}">${chgAbsStr}</div>
+          <div class="fin-chg-pct ${up === null ? '' : up ? 'up' : 'down'}">${chgPctStr}</div>
         </div>
       </div>
-      <div class="fin-row-bot">
-        <div>
-          <div class="fin-val">$${h.value.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-          <div class="fin-shares">${h.shares} shares · avg $${h.avgCost.toFixed(2)}</div>
-        </div>
-        <div class="fin-pl ${plUp ? 'up' : 'down'}">${plStr}</div>
+      <div class="fin-stats">
+        <div><div class="fin-stat-lbl">Open</div><div class="fin-stat-val">${esc(openStr)}</div></div>
+        <div><div class="fin-stat-lbl">High</div><div class="fin-stat-val up">${esc(highStr)}</div></div>
+        <div><div class="fin-stat-lbl">Low</div><div class="fin-stat-val down">${esc(lowStr)}</div></div>
       </div>
+      <div class="fin-52w-row">
+        <div class="fin-52w-labels"><span>${esc(wkLowStr)}</span><span style="color:var(--text3);font-size:9px">52-WEEK RANGE</span><span>${esc(wkHighStr)}</span></div>
+        <div class="fin-52w-bar"><div class="fin-52w-fill" style="width:${dotPct}%"></div><div class="fin-52w-dot" style="left:${dotPct}%"></div></div>
+      </div>
+      ${note ? `<div class="fin-note">${esc(note)}</div>` : ''}
     </div>`;
   });
-
   html += '</div>';
 
   const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   html += `<div class="fin-update-time">Updated ${ts}</div>`;
-
   el.innerHTML = html;
 }
 
