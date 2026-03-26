@@ -190,6 +190,41 @@
     .watch-loading { padding: 16px 14px; font-size: 13px; color: var(--text3); }
     .watch-empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; line-height: 1.5; }
 
+    /* ── HOME ── */
+    .home-section { padding: 0 16px 16px; }
+    .weather-card { background: linear-gradient(145deg, #1a2a3a, #0d1f2d); border: 0.5px solid rgba(10,132,255,0.2); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 12px; }
+    .weather-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .weather-temp { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -2px; color: #fff; }
+    .weather-temp sup { font-size: 24px; font-weight: 600; vertical-align: super; }
+    .weather-icon-wrap { opacity: 0.9; }
+    .weather-condition { font-size: 17px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+    .weather-location { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .weather-row { display: flex; gap: 18px; }
+    .weather-stat { font-size: 12px; color: rgba(255,255,255,0.5); }
+    .weather-stat strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+    .weather-loading { color: rgba(255,255,255,0.4); font-size: 14px; padding: 20px 0; }
+    .weather-error { font-size: 13px; color: var(--text3); padding: 10px 0; }
+
+    .home-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+    .stat-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 12px; }
+    .stat-val { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stat-lbl { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+    .home-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+    .home-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
+    .market-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+    .market-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .market-name { font-size: 15px; font-weight: 700; }
+    .market-ticker { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 1px; }
+    .market-right { text-align: right; }
+    .market-price { font-size: 15px; font-weight: 700; }
+    .market-change { font-size: 12px; font-weight: 600; margin-top: 1px; }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+
+    .quote-text { font-size: 15px; line-height: 1.65; color: var(--text2); font-style: italic; margin-bottom: 8px; }
+    .quote-author { font-size: 12px; color: var(--text3); font-weight: 600; }
+
     /* ── CALENDAR ── */
     .cal-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
     .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
@@ -229,8 +264,26 @@
 
 <div class="content" id="content">
 
+  <!-- ── HOME ── -->
+  <div class="tab-pane active" id="pane-home">
+    <div class="home-section">
+      <div class="weather-card" id="weatherCard">
+        <div class="weather-loading">Locating…</div>
+      </div>
+      <div class="home-stats" id="homeStats"></div>
+      <div class="home-card" id="marketsCard">
+        <div class="home-card-title">Markets</div>
+        <div style="font-size:13px;color:var(--text3)">Loading…</div>
+      </div>
+      <div class="home-card" id="quoteCard">
+        <div class="home-card-title">Quote of the day</div>
+        <div style="font-size:13px;color:var(--text3)">Loading…</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── BRIEF ── -->
-  <div class="tab-pane active" id="pane-brief">
+  <div class="tab-pane" id="pane-brief">
     <div class="daily-bar">
       <div class="daily-bar-text">
         <strong>Your Daily Brief</strong>
@@ -312,7 +365,8 @@
 </div>
 
 <nav class="tab-bar">
-  <div class="tab-item active" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
+  <div class="tab-item active" onclick="goTab('home',this)"><div class="tab-label">Home</div></div>
+  <div class="tab-item" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
   <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-label">Tasks</div></div>
   <div class="tab-item" onclick="goTab('watch',this)"><div class="tab-label">Watch</div></div>
   <div class="tab-item" onclick="goTab('calendar',this)"><div class="tab-label">Calendar</div></div>
@@ -386,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTasks();
   renderCal();
   renderWatchTopics();
+  loadHome();
 });
 
 function setHeader() {
@@ -643,6 +698,123 @@ function renderBrief() {
   }
 
   document.getElementById('briefContent').innerHTML = html;
+}
+
+// ── HOME ──────────────────────────────────────
+function wmoCondition(c) {
+  if (c === 0) return 'Clear sky';
+  if (c <= 2)  return 'Mostly clear';
+  if (c === 3) return 'Overcast';
+  if (c <= 48) return 'Foggy';
+  if (c <= 55) return 'Drizzle';
+  if (c <= 67) return 'Rain';
+  if (c <= 77) return 'Snow';
+  if (c <= 82) return 'Showers';
+  if (c <= 86) return 'Snow showers';
+  return 'Thunderstorm';
+}
+
+function weatherSVG(c, size) {
+  const s = size || 56;
+  if (c === 0) return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="#FFD60A" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.7" y2="6.7"/><line x1="17.3" y1="17.3" x2="19.4" y2="19.4"/><line x1="19.4" y1="4.6" x2="17.3" y2="6.7"/><line x1="6.7" y1="17.3" x2="4.6" y2="19.4"/></svg>`;
+  if (c <= 2)  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="13" r="4" stroke="#FFD60A"/><path d="M9 9a4 4 0 0 1 7.9 1c2.2.3 3.1 2.7 1.5 4.3" stroke="#aaa"/><path d="M6 17h11" stroke="#aaa"/></svg>`;
+  if (c <= 48) return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"><path d="M3 10h2M7 6h2M3 14h2M7 18h2M11 6h2M11 18h2M15 10h2M19 6h2M15 14h2M19 18h2"/></svg>`;
+  if (c <= 67 || (c >= 80 && c <= 82)) return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25" stroke="#888"/><line x1="8" y1="19" x2="8" y2="21" stroke="#5ac8fa"/><line x1="12" y1="17" x2="12" y2="21" stroke="#5ac8fa"/><line x1="16" y1="19" x2="16" y2="21" stroke="#5ac8fa"/></svg>`;
+  if (c <= 77 || (c >= 85 && c <= 86)) return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25" stroke="#888"/><circle cx="8" cy="20" r="1" fill="#aef"/><circle cx="12" cy="18" r="1" fill="#aef"/><circle cx="16" cy="20" r="1" fill="#aef"/></svg>`;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9" stroke="#888"/><polyline points="13 11 9 17 15 17 11 23" stroke="#FFD60A"/></svg>`;
+}
+
+async function loadHome() {
+  renderHomeStats();
+  fetchCrypto();
+  fetchQuote();
+  navigator.geolocation.getCurrentPosition(
+    p => fetchWeather(p.coords.latitude, p.coords.longitude),
+    () => { document.getElementById('weatherCard').innerHTML = `<div class="weather-error">Enable location access to see weather.</div>`; }
+  );
+}
+
+async function fetchWeather(lat, lon) {
+  try {
+    const [wx, geo] = await Promise.all([
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`).then(r => r.json()),
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`).then(r => r.json()).catch(() => null)
+    ]);
+    const c = wx.current, d = wx.daily;
+    const code = c.weather_code;
+    const city = geo ? (geo.address.city || geo.address.town || geo.address.village || '') : '';
+    const country = geo ? (geo.address.country_code || '').toUpperCase() : '';
+    const location = [city, country].filter(Boolean).join(', ');
+    document.getElementById('weatherCard').innerHTML = `
+      <div class="weather-top">
+        <div>
+          <div class="weather-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+          <div class="weather-condition">${wmoCondition(code)}</div>
+          <div class="weather-location">${esc(location) || 'Your location'}</div>
+        </div>
+        <div class="weather-icon-wrap">${weatherSVG(code)}</div>
+      </div>
+      <div class="weather-row">
+        <div class="weather-stat"><strong>${Math.round(d.temperature_2m_max[0])}°</strong> / ${Math.round(d.temperature_2m_min[0])}° today</div>
+        <div class="weather-stat">Feels <strong>${Math.round(c.apparent_temperature)}°</strong></div>
+        <div class="weather-stat">Wind <strong>${Math.round(c.wind_speed_10m)} km/h</strong></div>
+        <div class="weather-stat">Humidity <strong>${c.relative_humidity_2m}%</strong></div>
+      </div>`;
+  } catch {
+    document.getElementById('weatherCard').innerHTML = `<div class="weather-error">Could not load weather.</div>`;
+  }
+}
+
+async function fetchCrypto() {
+  try {
+    const d = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true').then(r => r.json());
+    const rows = [
+      { name: 'Bitcoin', ticker: 'BTC', price: d.bitcoin.usd, change: d.bitcoin.usd_24h_change },
+      { name: 'Ethereum', ticker: 'ETH', price: d.ethereum.usd, change: d.ethereum.usd_24h_change }
+    ];
+    document.getElementById('marketsCard').innerHTML = `<div class="home-card-title">Markets</div>` +
+      rows.map(r => {
+        const up = r.change >= 0;
+        return `<div class="market-row">
+          <div><div class="market-name">${r.name}</div><div class="market-ticker">${r.ticker}</div></div>
+          <div class="market-right">
+            <div class="market-price">$${r.price.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+            <div class="market-change ${up ? 'up' : 'down'}">${up ? '+' : ''}${r.change.toFixed(2)}%</div>
+          </div>
+        </div>`;
+      }).join('');
+  } catch {
+    document.getElementById('marketsCard').innerHTML = `<div class="home-card-title">Markets</div><div style="font-size:13px;color:var(--text3)">Could not load market data.</div>`;
+  }
+}
+
+async function fetchQuote() {
+  try {
+    const d = await fetch('https://api.quotable.io/random?maxLength=120').then(r => r.json());
+    document.getElementById('quoteCard').innerHTML = `
+      <div class="home-card-title">Quote of the day</div>
+      <div class="quote-text">"${esc(d.content)}"</div>
+      <div class="quote-author">— ${esc(d.author)}</div>`;
+  } catch {
+    document.getElementById('quoteCard').innerHTML = `
+      <div class="home-card-title">Quote of the day</div>
+      <div class="quote-text">"The secret of getting ahead is getting started."</div>
+      <div class="quote-author">— Mark Twain</div>`;
+  }
+}
+
+function renderHomeStats() {
+  const tasks = getTasks().filter(t => !t.done).length;
+  const topics = getWatchTopics().length;
+  const articles = Object.values(data).reduce((s, a) => s + a.length, 0);
+  document.getElementById('homeStats').innerHTML = [
+    { val: tasks,    lbl: 'Tasks left',    color: tasks === 0 ? 'var(--green)' : 'var(--text)' },
+    { val: topics,   lbl: 'Watched topics', color: 'var(--accent)' },
+    { val: articles || '–', lbl: 'Stories today', color: 'var(--purple)' }
+  ].map(s => `<div class="stat-card">
+    <div class="stat-val" style="color:${s.color}">${s.val}</div>
+    <div class="stat-lbl">${s.lbl}</div>
+  </div>`).join('');
 }
 
 // ── TASKS ─────────────────────────────────────
