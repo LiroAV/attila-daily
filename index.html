@@ -1521,22 +1521,35 @@ const FIN_LS = 'atd_finance_v1';
 function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
 function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), prices: d })); }
 
-async function fetchAllFinancePrices() {
-  const stockSymbols = ['^GSPC', 'GC=F', ...MY_HOLDINGS.map(h => h.ticker)];
+async function fetchYFBatch(stockSymbols) {
   const yfUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' +
     stockSymbols.join(',') + '&formatted=false&lang=en-US&region=US';
-  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl);
+  const proxies = [
+    'https://corsproxy.io/?url=' + encodeURIComponent(yfUrl),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
+  ];
+  for (const url of proxies) {
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
+      const d = await r.json();
+      if (d?.quoteResponse?.result?.length) return d.quoteResponse.result;
+    } catch {}
+  }
+  return [];
+}
 
-  const [yfRes, cgRes] = await Promise.allSettled([
-    fetch(proxyUrl, { signal: AbortSignal.timeout(15000) }).then(r => r.json()),
-    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true')
-      .then(r => r.json())
+async function fetchAllFinancePrices() {
+  const stockSymbols = ['^GSPC', 'GC=F', ...MY_HOLDINGS.map(h => h.ticker)];
+
+  const [yfResult, cgRes] = await Promise.allSettled([
+    fetchYFBatch(stockSymbols),
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true', { signal: AbortSignal.timeout(10000) }).then(r => r.json())
   ]);
 
   const prices = {};
 
-  if (yfRes.status === 'fulfilled' && yfRes.value?.quoteResponse?.result) {
-    yfRes.value.quoteResponse.result.forEach(q => {
+  if (yfResult.status === 'fulfilled') {
+    yfResult.value.forEach(q => {
       prices[q.symbol] = {
         price: q.regularMarketPrice,
         changePct: q.regularMarketChangePercent,
