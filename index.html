@@ -190,6 +190,35 @@
     .watch-loading { padding: 16px 14px; font-size: 13px; color: var(--text3); }
     .watch-empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; line-height: 1.5; }
 
+    /* ── DAILY ── */
+    .daily-section { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 12px; }
+    .daily-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .daily-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
+    .holiday-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+    .holiday-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .holiday-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+    .holiday-dot.fun { background: var(--orange); }
+    .holiday-name { font-size: 14px; font-weight: 600; line-height: 1.3; }
+    .holiday-type { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .no-holidays { font-size: 13px; color: var(--text3); }
+    .gratitude-area { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; resize: none; line-height: 1.6; min-height: 90px; }
+    .gratitude-area:focus { border-color: var(--accent); }
+    .gratitude-area::placeholder { color: var(--text3); }
+    .gratitude-saved { font-size: 11px; color: var(--text3); margin-top: 6px; text-align: right; }
+    .word-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+    .word-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .word-body { flex: 1; }
+    .word-lang { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+    .word-word { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 4px; }
+    .word-def { font-size: 13px; color: var(--text2); line-height: 1.5; }
+    .word-tick { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--text3); margin-top: 2px; transition: all 0.15s; }
+    .word-tick.used { background: var(--green); border-color: var(--green); color: #fff; }
+    .word-tick-label { font-size: 10px; color: var(--text3); text-align: center; margin-top: 3px; }
+    .fact-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+    .fact-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .fact-num { font-size: 11px; font-weight: 800; color: var(--text3); width: 16px; flex-shrink: 0; padding-top: 2px; }
+    .fact-text { font-size: 14px; color: var(--text2); line-height: 1.55; }
+
     /* ── HOME ── */
     .home-section { padding: 0 16px 16px; }
     .weather-card { background: linear-gradient(145deg, #1a2a3a, #0d1f2d); border: 0.5px solid rgba(10,132,255,0.2); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 12px; }
@@ -282,6 +311,20 @@
     </div>
   </div>
 
+  <!-- ── DAILY ── -->
+  <div class="tab-pane" id="pane-daily">
+    <div class="daily-section">
+      <div class="daily-card" id="holidayCard"><div class="daily-card-title">Today's Days</div><div class="no-holidays">Loading…</div></div>
+      <div class="daily-card">
+        <div class="daily-card-title">Grateful for today</div>
+        <textarea class="gratitude-area" id="gratitudeArea" placeholder="What are you grateful for today?"></textarea>
+        <div class="gratitude-saved" id="gratitudeSaved"></div>
+      </div>
+      <div class="daily-card" id="wordsCard"><div class="daily-card-title">Words of the day</div></div>
+      <div class="daily-card" id="factsCard"><div class="daily-card-title">Did you know?</div></div>
+    </div>
+  </div>
+
   <!-- ── BRIEF ── -->
   <div class="tab-pane" id="pane-brief">
     <div class="daily-bar">
@@ -366,6 +409,7 @@
 
 <nav class="tab-bar">
   <div class="tab-item active" onclick="goTab('home',this)"><div class="tab-label">Home</div></div>
+  <div class="tab-item" onclick="goTab('daily',this)"><div class="tab-label">Daily</div></div>
   <div class="tab-item" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
   <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-label">Tasks</div></div>
   <div class="tab-item" onclick="goTab('watch',this)"><div class="tab-label">Watch</div></div>
@@ -441,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCal();
   renderWatchTopics();
   loadHome();
+  loadDaily();
 });
 
 function setHeader() {
@@ -700,6 +745,258 @@ function renderBrief() {
   document.getElementById('briefContent').innerHTML = html;
 }
 
+// ── DAILY ─────────────────────────────────────
+const DAILY_LS = 'atd_daily_v1';
+const today = () => new Date().toISOString().slice(0,10);
+function getDailyData() { try { return JSON.parse(localStorage.getItem(DAILY_LS) || '{}'); } catch { return {}; } }
+function setDailyData(d) { localStorage.setItem(DAILY_LS, JSON.stringify(d)); }
+function getTodayData() { const d = getDailyData(); return d[today()] || {}; }
+function setTodayData(patch) { const d = getDailyData(); d[today()] = { ...getTodayData(), ...patch }; setDailyData(d); }
+function dayOfYear() { const n = new Date(), s = new Date(n.getFullYear(),0,1); return Math.floor((n-s)/86400000); }
+
+const FUN_HOLIDAYS = {
+  '01-01':['New Year\'s Day','World Peace Day'],
+  '01-17':['Kid Inventors\' Day'],
+  '02-02':['Groundhog Day'],
+  '02-14':['Valentine\'s Day'],
+  '03-10':['Mario Day — MAR10'],
+  '03-14':['Pi Day — 3.14159…','National Potato Chip Day'],
+  '03-17':['St. Patrick\'s Day'],
+  '03-20':['International Day of Happiness','World Frog Day'],
+  '03-26':['Purple Day — epilepsy awareness'],
+  '04-01':['April Fools\' Day'],
+  '04-04':['World Rat Day'],
+  '04-22':['Earth Day'],
+  '04-23':['World Book Day'],
+  '05-04':['Star Wars Day — May the 4th be with you'],
+  '05-25':['Towel Day — Hitchhiker\'s Guide to the Galaxy'],
+  '06-08':['World Ocean Day'],
+  '06-18':['International Picnic Day'],
+  '06-21':['World Music Day','Summer Solstice'],
+  '07-04':['US Independence Day','National Barbecue Day'],
+  '07-13':['Embrace Your Geekness Day'],
+  '08-08':['International Cat Day'],
+  '08-13':['International Left-Handers Day'],
+  '09-13':['Roald Dahl Day'],
+  '09-19':['Talk Like a Pirate Day'],
+  '10-04':['World Animal Day'],
+  '10-10':['World Mental Health Day'],
+  '10-31':['Halloween'],
+  '11-11':['Veterans Day','Singles Day','Armistice Day'],
+  '11-17':['World Toilet Day'],
+  '12-21':['Winter Solstice — shortest day of the year'],
+  '12-25':['Christmas Day'],
+  '12-31':['New Year\'s Eve']
+};
+
+const ENG_WORDS = [
+  {w:'Petrichor',    d:'The earthy scent produced when rain falls on dry soil.'},
+  {w:'Sonder',       d:'The realization that each passerby has a life as vivid and complex as your own.'},
+  {w:'Serendipity',  d:'Finding something good without looking for it.'},
+  {w:'Ephemeral',    d:'Lasting for a very short time; transitory.'},
+  {w:'Mellifluous',  d:'Sweet and smooth to hear; like honey in sound.'},
+  {w:'Ineffable',    d:'Too great or extreme to be expressed in words.'},
+  {w:'Defenestration',d:'The act of throwing someone out of a window.'},
+  {w:'Apricity',     d:'The warmth of the sun on a cold winter\'s day.'},
+  {w:'Quixotic',     d:'Exceedingly idealistic and impractical.'},
+  {w:'Perspicacious',d:'Having sharp mental insight and understanding.'},
+  {w:'Loquacious',   d:'Tending to talk a great deal; very talkative.'},
+  {w:'Sanguine',     d:'Optimistic and positive, especially in a tough situation.'},
+  {w:'Verisimilitude',d:'The appearance of being true or real.'},
+  {w:'Limerence',    d:'An involuntary obsessive infatuation with another person.'},
+  {w:'Numinous',     d:'Having a strong spiritual quality; mysteriously awe-inspiring.'},
+  {w:'Callipygian',  d:'Having well-shaped buttocks.'},
+  {w:'Syzygy',       d:'The alignment of three celestial objects in a straight line.'},
+  {w:'Flibbertigibbet',d:'A frivolous, flighty, or overly talkative person.'},
+  {w:'Discombobulate',d:'To confuse or disconcert someone.'},
+  {w:'Pulchritude',  d:'Physical beauty.'},
+  {w:'Sesquipedalian',d:'Given to using very long words.'},
+  {w:'Hiraeth',      d:'A homesickness for a home you can\'t return to, or never had.'},
+  {w:'Obfuscate',    d:'To make something unclear or hard to understand.'},
+  {w:'Labyrinthine', d:'Resembling a labyrinth; intricate and complex.'},
+  {w:'Melancholy',   d:'A deep, pensive sadness with no obvious cause.'},
+  {w:'Zeitgeist',    d:'The defining spirit or mood of a particular period in history.'},
+  {w:'Wanderlust',   d:'A strong desire to travel and explore the world.'},
+  {w:'Schadenfreude',d:'Pleasure derived from another person\'s misfortune.'},
+  {w:'Equanimity',   d:'Mental calmness and composure, especially in difficult situations.'},
+  {w:'Propitious',   d:'Giving or indicating a good chance of success; favourable.'},
+  {w:'Capricious',   d:'Given to sudden and unaccountable changes of mood or behaviour.'},
+  {w:'Luminous',     d:'Giving off light; glowing in the dark.'},
+  {w:'Taciturn',     d:'Reserved or uncommunicative in speech; saying little.'},
+  {w:'Vivacious',    d:'Attractively lively and animated.'},
+  {w:'Pensive',      d:'Engaged in deep or serious thought.'},
+];
+
+const DEU_WORDS = [
+  {w:'Fernweh',          d:'Longing for distant places; the opposite of homesickness.'},
+  {w:'Weltschmerz',      d:'World-weariness; deep sadness about the imperfection of the world.'},
+  {w:'Torschlusspanik',  d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.'},
+  {w:'Verschlimmbessern',d:'To make something worse while trying to improve it.'},
+  {w:'Drachenfutter',    d:'Dragon food; a peace offering given to a partner after doing something wrong.'},
+  {w:'Fingerspitzengefühl',d:'Fingertip feeling; an intuitive sensitivity and delicate touch in handling situations.'},
+  {w:'Kopfkino',         d:'Head cinema; the vivid mental film that plays out in your imagination.'},
+  {w:'Waldeinsamkeit',   d:'The peaceful solitude and connection with nature felt deep in a forest.'},
+  {w:'Gemütlichkeit',    d:'A warm, cosy, convivial feeling of comfort and belonging.'},
+  {w:'Schnapsidee',      d:'A ridiculous idea that sounds great when you\'re drunk.'},
+  {w:'Treppenwitz',      d:'Staircase wit; a clever comeback you only think of after the moment has passed.'},
+  {w:'Kummerspeck',      d:'Grief bacon; weight gained from emotional eating.'},
+  {w:'Fremdschämen',     d:'Vicarious embarrassment felt on behalf of someone who should be embarrassed but isn\'t.'},
+  {w:'Backpfeifengesicht',d:'A face that is crying out to be slapped.'},
+  {w:'Schwellenangst',   d:'Threshold anxiety; hesitation or dread before crossing into a new situation.'},
+  {w:'Sturmfrei',        d:'Having the house to yourself; free from parental or authority supervision.'},
+  {w:'Weltanschauung',   d:'A complete and comprehensive worldview or philosophy of life.'},
+  {w:'Innerer Schweinehund',d:'Inner pig-dog; the lazy inner voice that talks you out of doing the right thing.'},
+  {w:'Lebensmüde',       d:'Life-tired; used humorously for someone doing something reckless or dangerous.'},
+  {w:'Doppelgänger',     d:'A ghostly double of a living person; someone who looks exactly like you.'},
+  {w:'Erklärungsnot',    d:'The desperate scramble to explain or justify yourself.'},
+  {w:'Fahrvergnügen',    d:'Driving pleasure; the pure joy of driving a well-made car.'},
+  {w:'Ohrwurm',          d:'Earworm; a tune that gets stuck in your head and won\'t leave.'},
+  {w:'Fingerhut',        d:'Thimble — literally "finger hat."'},
+  {w:'Kuddelmuddel',     d:'A complete mess or muddle; utter chaos.'},
+  {w:'Querdenker',       d:'A lateral thinker; someone who thinks outside the box.'},
+  {w:'Zweisamkeit',      d:'The cosy intimacy of being together as a couple; togetherness for two.'},
+  {w:'Verschnaufpause',  d:'A breathing pause; a short break to catch your breath.'},
+  {w:'Kabelsalat',       d:'Cable salad; a tangled mess of cables and wires.'},
+  {w:'Naschkatze',       d:'Sweet cat; a person with a sweet tooth who always nibbles on treats.'},
+  {w:'Pustekuchen',      d:'An exclamation meaning "no way!" or "fat chance!" — literally "puff pastry."'},
+  {w:'Dankbarkeit',      d:'Gratitude; the feeling of being thankful and appreciative.'},
+  {w:'Weltverbesserer',  d:'World-improver; an idealistic person who wants to make the world better.'},
+  {w:'Schmetterling',    d:'Butterfly — literally "smasher-ling" (from smearing butter, an old folk belief).'},
+  {w:'Fingerfertigkeit', d:'Manual dexterity; nimbleness and skill of the fingers.'},
+];
+
+const FACTS = [
+  'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid.',
+  'There are more possible chess games than atoms in the observable universe.',
+  'Honey never spoils — archaeologists found edible honey in 3,000-year-old Egyptian tombs.',
+  'A day on Venus is longer than a year on Venus.',
+  'Crows can recognize individual human faces and hold grudges for years.',
+  'Wombat poop is cube-shaped — the only known animal to produce cubic feces.',
+  'Sea otters hold hands while sleeping so they don\'t drift apart.',
+  'Oxford University is older than the Aztec Empire.',
+  'Bananas are slightly radioactive.',
+  'The inventor of Pringles (Fredric Baur) was buried in a Pringles can at his request.',
+  'A bolt of lightning is five times hotter than the surface of the sun.',
+  'Octopuses have three hearts, blue blood, and nine brains.',
+  'The average person will walk the equivalent of five times around the Earth in their lifetime.',
+  'Hot water can freeze faster than cold water under certain conditions (the Mpemba effect).',
+  'A group of flamingos is called a flamboyance.',
+  'The shortest war in history lasted 38 minutes — the Anglo-Zanzibar War of 1896.',
+  'Sloths can hold their breath longer than dolphins — up to 40 minutes.',
+  'Humans share 60% of their DNA with bananas.',
+  'Sharks are older than trees — sharks have existed for 450 million years, trees for 350 million.',
+  'There is a planet made mostly of diamond — 55 Cancri e, roughly twice the size of Earth.',
+  'A snail can sleep for up to three years.',
+  'The word "muscle" comes from Latin "musculus," meaning "little mouse."',
+  'Butterflies taste with their feet.',
+  'A "jiffy" is an actual unit of time: 1/100th of a second.',
+  'The original name for Google was "Backrub."',
+  'Nintendo was founded in 1889 — originally as a playing card company.',
+  'The T-Rex lived closer in time to us than to the Stegosaurus.',
+  'Vending machines kill more people per year than sharks.',
+  'A group of owls is called a parliament.',
+  'The national animal of Scotland is the unicorn.',
+  'Cleopatra wore a perfume so distinctive that soldiers could smell her barge coming before they saw it.',
+  'Astronauts are taller in space — spines expand without gravity\'s compression.',
+  'There are more trees on Earth than stars in the Milky Way.',
+  'The entire internet weighs about 50 grams — the weight of a strawberry (electrons in motion).',
+  'Newborn babies have about 270 bones. Adults have 206. Bones fuse as you grow.',
+];
+
+async function loadDaily() {
+  renderHolidays();
+  renderWords();
+  renderFacts();
+  loadGratitude();
+}
+
+async function renderHolidays() {
+  const now = new Date();
+  const mmdd = String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const fun = FUN_HOLIDAYS[mmdd] || [];
+  let official = [];
+  try {
+    const cc = localStorage.getItem('atd_country') || 'US';
+    const d = await fetch(`https://date.nager.at/api/v3/PublicHoliday/${now.getFullYear()}/${cc}`).then(r=>r.json());
+    official = d.filter(h => h.date === now.toISOString().slice(0,10)).map(h => h.localName || h.name);
+  } catch {}
+
+  const all = [
+    ...official.map(n => ({ name: n, type: 'Public holiday', fun: false })),
+    ...fun.map(n => ({ name: n, type: 'Fun day', fun: true }))
+  ];
+
+  const el = document.getElementById('holidayCard');
+  if (!all.length) {
+    el.innerHTML = `<div class="daily-card-title">Today's Days</div><div class="no-holidays">No special days today — make your own.</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="daily-card-title">Today's Days</div>` +
+    all.map(h => `<div class="holiday-item">
+      <div class="holiday-dot ${h.fun ? 'fun' : ''}"></div>
+      <div><div class="holiday-name">${esc(h.name)}</div><div class="holiday-type">${h.type}</div></div>
+    </div>`).join('');
+}
+
+function renderWords() {
+  const idx = dayOfYear();
+  const eng = ENG_WORDS[idx % ENG_WORDS.length];
+  const deu = DEU_WORDS[idx % DEU_WORDS.length];
+  const td = getTodayData();
+
+  document.getElementById('wordsCard').innerHTML = `<div class="daily-card-title">Words of the day</div>` +
+    [
+      { lang: 'English', color: '#0A84FF', word: eng, key: 'usedEng' },
+      { lang: 'German',  color: '#bf5af2', word: deu, key: 'usedDeu' }
+    ].map(item => {
+      const used = !!td[item.key];
+      return `<div class="word-item">
+        <div class="word-body">
+          <div class="word-lang" style="color:${item.color}">${item.lang}</div>
+          <div class="word-word">${esc(item.word.w)}</div>
+          <div class="word-def">${esc(item.word.d)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <button class="word-tick ${used?'used':''}" onclick="toggleWord('${item.key}')">${used?'✓':''}</button>
+          <div class="word-tick-label">${used?'Used!':'Used?'}</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function toggleWord(key) {
+  const td = getTodayData();
+  setTodayData({ [key]: !td[key] });
+  renderWords();
+}
+
+function renderFacts() {
+  const idx = dayOfYear();
+  const f1 = FACTS[idx % FACTS.length];
+  const f2 = FACTS[(idx + Math.floor(FACTS.length / 2)) % FACTS.length];
+  document.getElementById('factsCard').innerHTML = `<div class="daily-card-title">Did you know?</div>` +
+    [f1, f2].map((f, i) => `<div class="fact-item">
+      <div class="fact-num">${i+1}</div>
+      <div class="fact-text">${esc(f)}</div>
+    </div>`).join('');
+}
+
+function loadGratitude() {
+  const td = getTodayData();
+  const area = document.getElementById('gratitudeArea');
+  area.value = td.gratitude || '';
+  let saveTimer;
+  area.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    document.getElementById('gratitudeSaved').textContent = 'Saving…';
+    saveTimer = setTimeout(() => {
+      setTodayData({ gratitude: area.value });
+      document.getElementById('gratitudeSaved').textContent = 'Saved';
+    }, 800);
+  });
+  if (td.gratitude) document.getElementById('gratitudeSaved').textContent = 'Saved';
+}
+
 // ── HOME ──────────────────────────────────────
 function wmoCondition(c) {
   if (c === 0) return 'Clear sky';
@@ -744,6 +1041,7 @@ async function fetchWeather(lat, lon) {
     const code = c.weather_code;
     const city = geo ? (geo.address.city || geo.address.town || geo.address.village || '') : '';
     const country = geo ? (geo.address.country_code || '').toUpperCase() : '';
+    if (country) localStorage.setItem('atd_country', country);
     const location = [city, country].filter(Boolean).join(', ');
     document.getElementById('weatherCard').innerHTML = `
       <div class="weather-top">
