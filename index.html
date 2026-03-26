@@ -275,6 +275,39 @@
     @keyframes rot { to { transform: rotate(360deg); } }
     ::-webkit-scrollbar { display: none; }
     .divider { height: 1px; background: var(--border); margin: 12px 16px 16px; }
+
+    /* ── FINANCE ── */
+    .fin-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .fin-title { font-size: 22px; font-weight: 700; }
+    .fin-market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 14px; }
+    .fin-mcard { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; }
+    .fin-mcard.up-card { border-color: rgba(48,209,88,0.3); background: rgba(48,209,88,0.05); }
+    .fin-mcard.down-card { border-color: rgba(255,69,58,0.3); background: rgba(255,69,58,0.05); }
+    .fin-mcard-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .fin-mcard-price { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 3px; }
+    .fin-mcard-chg { font-size: 13px; font-weight: 600; }
+    .fin-summary { margin: 0 16px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .fin-summary-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 14px; }
+    .fin-summary-row { display: flex; justify-content: space-between; gap: 8px; }
+    .fin-summary-item { flex: 1; }
+    .fin-summary-val { font-size: 16px; font-weight: 800; letter-spacing: -0.4px; }
+    .fin-summary-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .fin-holdings-head { padding: 0 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+    .fin-holdings-label { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+    .fin-holdings-count { font-size: 12px; color: var(--text3); }
+    .fin-list { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 8px; }
+    .fin-row { background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+    .fin-row-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+    .fin-ticker { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
+    .fin-company { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .fin-price { font-size: 15px; font-weight: 700; text-align: right; }
+    .fin-daychg { font-size: 12px; font-weight: 600; text-align: right; margin-top: 2px; }
+    .fin-row-bot { display: flex; align-items: flex-end; justify-content: space-between; }
+    .fin-val { font-size: 13px; font-weight: 600; color: var(--text2); }
+    .fin-shares { font-size: 11px; color: var(--text3); margin-top: 3px; }
+    .fin-pl { font-size: 12px; font-weight: 700; }
+    .fin-loading { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; }
+    .fin-update-time { text-align: center; font-size: 11px; color: var(--text3); padding: 4px 16px 12px; }
   </style>
 </head>
 <body>
@@ -378,6 +411,17 @@
     <div class="watch-topics" id="watchTopics"></div>
   </div>
 
+  <!-- ── FINANCE ── -->
+  <div class="tab-pane" id="pane-finance">
+    <div class="fin-head">
+      <span class="fin-title">Finance</span>
+      <button class="icon-btn" onclick="loadFinance(true)">↻</button>
+    </div>
+    <div id="financeContent">
+      <div class="fin-loading">Loading market data…</div>
+    </div>
+  </div>
+
   <!-- ── CALENDAR ── -->
   <div class="tab-pane" id="pane-calendar">
     <div style="padding:4px 16px 14px"><span style="font-size:22px;font-weight:700">Calendar</span></div>
@@ -406,6 +450,7 @@
   <div class="tab-item" onclick="goTab('brief',this)"><div class="tab-label">Brief</div></div>
   <div class="tab-item" onclick="goTab('tasks',this)"><div class="tab-label">Tasks</div></div>
   <div class="tab-item" onclick="goTab('watch',this)"><div class="tab-label">Watch</div></div>
+  <div class="tab-item" onclick="goTab('finance',this)"><div class="tab-label">Finance</div></div>
   <div class="tab-item" onclick="goTab('calendar',this)"><div class="tab-label">Calendar</div></div>
 </nav>
 
@@ -1442,6 +1487,190 @@ function watchCardShell(entry, inner, count) {
   </div>${inner}`;
 }
 
+// ── FINANCE ───────────────────────────────────
+const MARKET_OVERVIEW = [
+  { symbol: '^GSPC',   label: 'S&P 500'  },
+  { symbol: 'GC=F',    label: 'Gold'     },
+  { symbol: 'BTC-USD', label: 'Bitcoin'  },
+  { symbol: 'ETH-USD', label: 'Ethereum' }
+];
+
+const MY_HOLDINGS = [
+  { ticker: 'META',  name: 'Meta Platforms',            shares: 3.0175,  avgCost: 630.62 },
+  { ticker: 'COIN',  name: 'Coinbase Global',           shares: 1.3323,  avgCost: 225.92 },
+  { ticker: 'MSFT',  name: 'Microsoft',                 shares: 1.2753,  avgCost: 392.84 },
+  { ticker: 'ELF',   name: 'e.l.f. Beauty',             shares: 3.0674,  avgCost: 65.53  },
+  { ticker: 'CAKE',  name: 'Cheesecake Factory',        shares: 2.0145,  avgCost: 50.14  },
+  { ticker: 'AMZN',  name: 'Amazon',                    shares: 4.856,   avgCost: 206.54 },
+  { ticker: 'IONQ',  name: 'IonQ Inc',                  shares: 3.9737,  avgCost: 25.42  },
+  { ticker: 'SCHG',  name: 'Schwab US Large-Cap Growth', shares: 18.8904, avgCost: 26.52 },
+  { ticker: 'VT',    name: 'Vanguard Total World Stock', shares: 4.1574,  avgCost: 120.51 },
+  { ticker: 'QQQM',  name: 'Invesco Nasdaq 100 ETF',    shares: 2.4479,  avgCost: 204.66 },
+  { ticker: 'SOFI',  name: 'SoFi Technologies',         shares: 30.2596, avgCost: 13.29  },
+  { ticker: 'TSM',   name: 'Taiwan Semiconductor ADR',  shares: 1.1024,  avgCost: 182.77 },
+  { ticker: 'GOOGL', name: 'Alphabet Class A',          shares: 1.7553,  avgCost: 171.48 },
+  { ticker: 'VGT',   name: 'Vanguard IT ETF',           shares: 1.7049,  avgCost: 587.12 },
+  { ticker: 'NVDA',  name: 'NVIDIA',                    shares: 5.1918,  avgCost: 115.95 },
+  { ticker: 'PLTR',  name: 'Palantir Technologies',     shares: 5.702,   avgCost: 88.21  },
+  { ticker: 'VOO',   name: 'Vanguard S&P 500 ETF',      shares: 5.3188,  avgCost: 527.17 },
+  { ticker: 'AMD',   name: 'AMD',                       shares: 5.6079,  avgCost: 107.35 },
+];
+
+const FIN_LS = 'atd_finance_v1';
+
+function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
+function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), prices: d })); }
+
+async function fetchYFPrice(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+  const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const d = await r.json();
+  const meta = d.chart.result[0].meta;
+  const price = meta.regularMarketPrice;
+  const prev = meta.chartPreviousClose || meta.previousClose || price;
+  const changePct = ((price - prev) / prev) * 100;
+  const changeAbs = price - prev;
+  return { symbol, price, changePct, changeAbs };
+}
+
+async function loadFinance(force) {
+  const el = document.getElementById('financeContent');
+  if (!el) return;
+
+  const cache = getFinCache();
+  if (cache && !force) {
+    renderFinance(cache.prices);
+    if ((Date.now() - cache.ts) / 60000 < 15) return;
+  } else if (!cache) {
+    el.innerHTML = '<div class="fin-loading">Loading market data…</div>';
+  }
+
+  const allSymbols = [
+    ...MARKET_OVERVIEW.map(m => m.symbol),
+    ...MY_HOLDINGS.map(h => h.ticker)
+  ];
+  const results = await Promise.allSettled(allSymbols.map(s => fetchYFPrice(s)));
+  const prices = {};
+  results.forEach((r, i) => { if (r.status === 'fulfilled') prices[allSymbols[i]] = r.value; });
+
+  if (Object.keys(prices).length > 0) {
+    setFinCache(prices);
+    renderFinance(prices);
+  }
+}
+
+function fmtFinPrice(price, symbol) {
+  if (price == null) return '–';
+  if (symbol === '^GSPC') return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (symbol === 'BTC-USD' || symbol === 'ETH-USD') return '$' + price.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function renderFinance(prices) {
+  const el = document.getElementById('financeContent');
+  if (!el) return;
+
+  // Market overview grid
+  let html = '<div class="fin-market-grid">';
+  MARKET_OVERVIEW.forEach(m => {
+    const p = prices[m.symbol];
+    const priceStr = p ? fmtFinPrice(p.price, m.symbol) : '–';
+    const chgPct = p ? p.changePct : null;
+    const up = chgPct != null ? chgPct >= 0 : null;
+    const chgStr = chgPct != null ? `${up ? '+' : ''}${chgPct.toFixed(2)}%` : '–';
+    const cls = up === null ? '' : up ? 'up-card' : 'down-card';
+    html += `<div class="fin-mcard ${cls}">
+      <div class="fin-mcard-label">${esc(m.label)}</div>
+      <div class="fin-mcard-price">${esc(priceStr)}</div>
+      <div class="fin-mcard-chg ${up === null ? '' : up ? 'up' : 'down'}">${chgStr}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Portfolio summary totals
+  let totalValue = 0, totalCost = 0, coveredCost = 0;
+  MY_HOLDINGS.forEach(h => {
+    const cost = h.shares * h.avgCost;
+    totalCost += cost;
+    const p = prices[h.ticker];
+    if (p) { totalValue += h.shares * p.price; coveredCost += cost; }
+  });
+  // Scale cost to only covered positions for accurate P&L
+  const totalPL = totalValue - coveredCost;
+  const totalPLPct = coveredCost > 0 ? (totalPL / coveredCost) * 100 : 0;
+  const plUp = totalPL >= 0;
+
+  html += `<div class="fin-summary">
+    <div class="fin-summary-title">Portfolio Summary</div>
+    <div class="fin-summary-row">
+      <div class="fin-summary-item">
+        <div class="fin-summary-val">$${totalValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+        <div class="fin-summary-lbl">Current Value</div>
+      </div>
+      <div class="fin-summary-item">
+        <div class="fin-summary-val ${plUp ? 'up' : 'down'}">${plUp ? '+' : ''}$${Math.abs(totalPL).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+        <div class="fin-summary-lbl">P&amp;L (${plUp?'+':''}${totalPLPct.toFixed(1)}%)</div>
+      </div>
+      <div class="fin-summary-item">
+        <div class="fin-summary-val">$${totalCost.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+        <div class="fin-summary-lbl">Invested</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Holdings sorted by current value desc
+  const enriched = MY_HOLDINGS.map(h => {
+    const p = prices[h.ticker];
+    const price = p ? p.price : null;
+    const value = price != null ? h.shares * price : h.shares * h.avgCost;
+    const cost = h.shares * h.avgCost;
+    const pl = price != null ? value - cost : 0;
+    const plPct = cost > 0 ? (pl / cost) * 100 : 0;
+    return { ...h, price, value, pl, plPct, changePct: p ? p.changePct : null };
+  }).sort((a, b) => b.value - a.value);
+
+  html += `<div class="fin-holdings-head">
+    <span class="fin-holdings-label">My Holdings</span>
+    <span class="fin-holdings-count">${MY_HOLDINGS.length} positions</span>
+  </div><div class="fin-list">`;
+
+  enriched.forEach(h => {
+    const priceStr = h.price != null ? '$' + h.price.toFixed(2) : '–';
+    const dayUp = h.changePct != null ? h.changePct >= 0 : null;
+    const dayStr = h.changePct != null ? `${h.changePct >= 0 ? '+' : ''}${h.changePct.toFixed(2)}%` : '–';
+    const plUp = h.pl >= 0;
+    const plStr = `${plUp ? '+' : '–'}$${Math.abs(h.pl).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} (${plUp?'+':''}${h.plPct.toFixed(1)}%)`;
+
+    html += `<div class="fin-row">
+      <div class="fin-row-top">
+        <div>
+          <div class="fin-ticker">${esc(h.ticker)}</div>
+          <div class="fin-company">${esc(h.name)}</div>
+        </div>
+        <div>
+          <div class="fin-price">${esc(priceStr)}</div>
+          <div class="fin-daychg ${dayUp === null ? '' : dayUp ? 'up' : 'down'}">${dayStr}</div>
+        </div>
+      </div>
+      <div class="fin-row-bot">
+        <div>
+          <div class="fin-val">$${h.value.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+          <div class="fin-shares">${h.shares} shares · avg $${h.avgCost.toFixed(2)}</div>
+        </div>
+        <div class="fin-pl ${plUp ? 'up' : 'down'}">${plStr}</div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+
+  const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  html += `<div class="fin-update-time">Updated ${ts}</div>`;
+
+  el.innerHTML = html;
+}
+
 // ── CALENDAR ──────────────────────────────────
 function renderCal() {
   const now = new Date(), y = calDate.getFullYear(), m = calDate.getMonth();
@@ -1474,6 +1703,7 @@ function goTab(name, el) {
       getWatchTopics().forEach(t => { if (!watchCache[t.id]) fetchWatchTopic(t); });
     });
   }
+  if (name === 'finance') loadFinance();
 }
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
