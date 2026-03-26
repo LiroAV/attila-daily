@@ -29,7 +29,7 @@
     .header-right { display: flex; gap: 8px; align-items: center; padding-bottom: 2px; }
     .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .icon-btn:active { opacity: 0.6; }
-    .x-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; letter-spacing: -0.3px; transition: background 0.15s, color 0.15s; }
+    .x-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
     .x-btn.active { background: var(--text); color: var(--bg); }
     .x-btn:active { opacity: 0.6; }
     .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#0A84FF,#BF5AF2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
@@ -178,7 +178,7 @@
   </div>
   <div class="header-right">
     <button class="icon-btn" id="refreshBtn" onclick="refreshAll()">↻</button>
-    <button class="x-btn" id="xModeBtn" onclick="toggleXMode()">HN</button>
+    <button class="x-btn" id="xModeBtn" onclick="toggleXMode()">X</button>
     <div class="avatar">A</div>
   </div>
 </div>
@@ -296,13 +296,12 @@ const WPM = 220;
 const TARGET_MIN = 10;
 const TARGET_MAX = 15;
 
-// ── HN MODE CONFIG ───────────────────────────
-const HN_API = 'https://hacker-news.firebaseio.com/v0';
-const HN_KEYWORDS = {
-  AI:         ['ai', 'openai', 'chatgpt', 'llm', 'gpt', 'claude', 'gemini', 'anthropic', 'deepmind', 'artificial intelligence', 'machine learning', 'neural'],
-  Technology: ['google', 'apple', 'microsoft', 'amazon', 'meta', 'software', 'hardware', 'github', 'startup', 'developer', 'open source', 'android', 'iphone'],
-  Research:   ['research', 'paper', 'study', 'science', 'university', 'physics', 'biology', 'journal', 'discovery', 'experiment', 'arxiv'],
-  Stocks:     ['market', 'stock', 'finance', 'economy', 'fed', 'inflation', 'ipo', 'investing', 'funding', 'revenue', 'recession', 'crypto', 'bitcoin']
+// ── X EMBED CONFIG ───────────────────────────
+const X_SEARCH = {
+  AI:         'AI OR OpenAI OR ChatGPT OR LLM',
+  Technology: 'technology OR "big tech" OR software',
+  Research:   'research OR science OR breakthrough',
+  Stocks:     'stocks OR market OR investing OR finance'
 };
 
 // ── STATE ────────────────────────────────────
@@ -445,90 +444,53 @@ function refreshAll() {
 }
 
 
-// ── HN MODE ───────────────────────────────────
-async function fetchHNStories() {
-  const r = await fetch(HN_API + '/topstories.json', { signal: AbortSignal.timeout(8000) });
-  const ids = await r.json();
-  const top = ids.slice(0, 60);
-  const stories = await Promise.all(
-    top.map(id =>
-      fetch(HN_API + '/item/' + id + '.json', { signal: AbortSignal.timeout(6000) })
-        .then(r => r.json()).catch(() => null)
-    )
-  );
-  return stories.filter(s => s && s.title && s.type === 'story');
-}
-
-async function loadXMode() {
-  document.getElementById('briefContent').innerHTML = [1,2,3].map(() =>
-    `<div class="skel skel-card" style="height:100px;margin-bottom:10px"></div>`
-  ).join('');
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spin');
-
-  try {
-    const stories = await fetchHNStories();
-    const topics = activeFilter === 'all' ? Object.keys(HN_KEYWORDS) : [activeFilter];
-    topics.forEach(topic => {
-      const kw = HN_KEYWORDS[topic];
-      xData[topic] = stories
-        .filter(s => kw.some(k => s.title.toLowerCase().includes(k)))
-        .slice(0, 8);
-    });
-  } catch(e) {
-    xData = {};
-  }
-
-  btn.classList.remove('spin');
+// ── X EMBED MODE ─────────────────────────────
+function loadXMode() {
   renderXMode();
 }
 
 function renderXMode() {
-  const topics = activeFilter === 'all' ? Object.keys(HN_KEYWORDS) : [activeFilter];
+  const topics = activeFilter === 'all' ? Object.keys(X_SEARCH) : [activeFilter];
+
   let html = `<div class="x-banner">
     <div>
-      <div class="x-banner-label">HackerNews — community pulse</div>
-      <div class="x-banner-sub">What the tech community is discussing today</div>
+      <div class="x-banner-label">X — live posts</div>
+      <div class="x-banner-sub">Real-time posts from X (Twitter)</div>
     </div>
   </div>`;
 
-  let anyPosts = false;
   topics.forEach((topic, tIdx) => {
     const cfg = TOPICS[topic];
-    const posts = xData[topic] || [];
-    if (!posts.length) return;
-    anyPosts = true;
-
+    const query = X_SEARCH[topic];
     if (tIdx > 0) html += '<div class="divider"></div>';
     html += `<div class="x-topic-header">
       <div style="display:flex;align-items:center;gap:8px">
         <div class="topic-dot" style="background:${cfg.color}"></div>
         <span class="x-topic-name" style="color:${cfg.color}">${topic}</span>
       </div>
-      <span class="x-topic-count">${posts.length} posts</span>
+    </div>
+    <div style="margin:0 16px 16px">
+      <a class="twitter-timeline"
+         data-theme="dark"
+         data-tweet-limit="5"
+         data-chrome="noheader nofooter transparent"
+         data-dnt="true"
+         href="https://twitter.com/search?q=${encodeURIComponent(query)}&src=typed_query&f=live">
+        Loading X posts...
+      </a>
     </div>`;
-
-    posts.forEach(p => {
-      const hnUrl = 'https://news.ycombinator.com/item?id=' + p.id;
-      html += `<div class="x-card">
-        <div class="x-card-header">
-          <span class="x-handle">by ${esc(p.by || 'unknown')}</span>
-          <span class="x-time">${ago(new Date(p.time * 1000))} · ${p.score} pts · ${p.descendants || 0} comments</span>
-        </div>
-        <div class="x-text">${esc(p.title)}</div>
-        <div style="margin-top:10px;display:flex;gap:16px">
-          ${p.url ? `<a class="x-link" href="${esc(p.url)}" target="_blank" rel="noopener">Read article →</a>` : ''}
-          <a class="x-link" href="${hnUrl}" target="_blank" rel="noopener">Discuss on HN →</a>
-        </div>
-      </div>`;
-    });
   });
 
-  if (!anyPosts) {
-    html += `<div class="empty"><p>No matching stories on HackerNews right now.<br>Try refreshing or switch to a different category.</p></div>`;
-  }
-
   document.getElementById('briefContent').innerHTML = html;
+
+  if (window.twttr && window.twttr.widgets) {
+    window.twttr.widgets.load();
+  } else {
+    const s = document.createElement('script');
+    s.src = 'https://platform.twitter.com/widgets.js';
+    s.async = true;
+    document.head.appendChild(s);
+  }
 }
 
 function toggleXMode() {
