@@ -130,21 +130,38 @@
     .tasks-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
     .tasks-title { font-size: 22px; font-weight: 700; }
     .tasks-badge { font-size: 12px; font-weight: 600; color: var(--text2); background: var(--bg3); padding: 3px 9px; border-radius: 10px; }
-    .task-row-input { padding: 0 16px 14px; display: flex; gap: 8px; }
+    .task-row-input { padding: 0 16px 10px; display: flex; gap: 8px; }
     .task-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 15px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; }
     .task-inp:focus { border-color: var(--accent); }
     .task-inp::placeholder { color: var(--text3); }
     .task-add-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .task-add-btn:active { opacity: 0.7; }
+    .task-mic-btn { width: 44px; height: 44px; background: var(--bg3); border: none; border-radius: 12px; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+    .task-mic-btn:active { opacity: 0.7; }
+    .task-mic-btn.recording { background: rgba(255,69,58,0.15); color: var(--red); animation: micpulse 1s ease-in-out infinite; }
+    @keyframes micpulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .voice-preview { margin: 0 16px 12px; background: var(--bg2); border: 0.5px solid var(--accent); border-radius: 12px; padding: 11px 14px; display: none; }
+    .voice-preview.show { display: block; }
+    .voice-preview-label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .voice-heard { font-size: 14px; color: var(--text2); line-height: 1.4; font-style: italic; margin-bottom: 8px; }
+    .voice-tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .task-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
-    .task-row { background: var(--card); border-radius: 12px; padding: 13px 14px; display: flex; align-items: center; gap: 11px; border: 0.5px solid var(--border); }
+    .task-row { background: var(--card); border-radius: 12px; padding: 13px 14px; display: flex; align-items: flex-start; gap: 11px; border: 0.5px solid var(--border); }
     .task-row.done { opacity: 0.4; }
-    .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
     .task-check.on { background: var(--green); border-color: var(--green); }
     .task-check.on::after { content: '✓'; font-size: 12px; color: #fff; font-weight: 700; }
-    .task-txt { flex: 1; font-size: 15px; line-height: 1.3; }
+    .task-body { flex: 1; min-width: 0; }
+    .task-txt { font-size: 15px; line-height: 1.3; }
     .task-row.done .task-txt { text-decoration: line-through; color: var(--text2); }
-    .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .task-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .tbadge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .tbadge-date { background: rgba(10,132,255,0.15); color: #0A84FF; }
+    .tbadge-time { background: rgba(48,209,88,0.15); color: #30d158; }
+    .tbadge-urgent { background: rgba(255,69,58,0.15); color: #ff453a; }
+    .tbadge-high { background: rgba(255,159,10,0.15); color: #ff9f0a; }
+    .tbadge-low { background: rgba(235,235,245,0.1); color: var(--text3); }
+    .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
     /* ── CALENDAR ── */
     .cal-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
@@ -216,7 +233,18 @@
     </div>
     <div class="task-row-input">
       <input class="task-inp" id="taskInp" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()">
+      <button class="task-mic-btn" id="micBtn" onclick="toggleVoice()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="12" rx="3"/>
+          <path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </button>
       <button class="task-add-btn" onclick="addTask()">+</button>
+    </div>
+    <div class="voice-preview" id="voicePreview">
+      <div class="voice-preview-label">I heard</div>
+      <div class="voice-heard" id="voiceHeard"></div>
+      <div class="voice-tags" id="voiceTags"></div>
     </div>
     <div class="task-list" id="taskList"></div>
   </div>
@@ -578,28 +606,166 @@ function renderBrief() {
 
 // ── TASKS ─────────────────────────────────────
 const LS = 'atd_tasks_v2';
+let pendingMeta = {};
+let recognition = null;
+let isRecording = false;
+
 function getTasks() { try { return JSON.parse(localStorage.getItem(LS) || '[]'); } catch { return []; } }
 function putTasks(t) { localStorage.setItem(LS, JSON.stringify(t)); }
+
 function addTask() {
   const inp = document.getElementById('taskInp'), txt = inp.value.trim();
   if (!txt) return;
-  const t = getTasks(); t.unshift({ id: Date.now(), text: txt, done: false }); putTasks(t);
-  inp.value = ''; renderTasks();
+  const t = getTasks();
+  t.unshift({ id: Date.now(), text: txt, done: false, ...pendingMeta });
+  putTasks(t);
+  inp.value = '';
+  pendingMeta = {};
+  document.getElementById('voicePreview').classList.remove('show');
+  renderTasks();
 }
+
 function toggleTask(id) { const t = getTasks(), x = t.find(t => t.id === id); if (x) x.done = !x.done; putTasks(t); renderTasks(); }
 function delTask(id) { putTasks(getTasks().filter(t => t.id !== id)); renderTasks(); }
+
 function renderTasks() {
   const tasks = getTasks(), rem = tasks.filter(t => !t.done).length;
   document.getElementById('taskBadge').textContent = rem === 0 ? 'All done' : rem + ' left';
   const el = document.getElementById('taskList');
   if (!tasks.length) { el.innerHTML = `<div class="empty"><p>No tasks yet.<br>Add something above.</p></div>`; return; }
-  el.innerHTML = [...tasks].sort((a, b) => a.done - b.done).map(t =>
-    `<div class="task-row ${t.done ? 'done' : ''}">
+  el.innerHTML = [...tasks].sort((a, b) => a.done - b.done).map(t => {
+    const badges = [];
+    if (t.date) badges.push(`<span class="tbadge tbadge-date">${esc(t.date)}</span>`);
+    if (t.time) badges.push(`<span class="tbadge tbadge-time">${esc(t.time)}</span>`);
+    if (t.priority === 'urgent') badges.push(`<span class="tbadge tbadge-urgent">Urgent</span>`);
+    if (t.priority === 'high')   badges.push(`<span class="tbadge tbadge-high">Important</span>`);
+    if (t.priority === 'low')    badges.push(`<span class="tbadge tbadge-low">Low priority</span>`);
+    return `<div class="task-row ${t.done ? 'done' : ''}">
       <div class="task-check ${t.done ? 'on' : ''}" onclick="toggleTask(${t.id})"></div>
-      <div class="task-txt">${esc(t.text)}</div>
+      <div class="task-body">
+        <div class="task-txt">${esc(t.text)}</div>
+        ${badges.length ? `<div class="task-meta">${badges.join('')}</div>` : ''}
+      </div>
       <button class="task-del" onclick="delTask(${t.id})">✕</button>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
+}
+
+// ── VOICE INPUT ───────────────────────────────
+function toggleVoice() {
+  if (isRecording) { stopVoice(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('Voice input is not supported in this browser. Try Safari or Chrome.'); return; }
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('taskInp').placeholder = 'Listening…';
+  };
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('taskInp').value = transcript;
+    if (e.results[e.results.length - 1].isFinal) {
+      processVoiceResult(transcript);
+    }
+  };
+
+  recognition.onend = () => stopVoice();
+  recognition.onerror = () => stopVoice();
+  recognition.start();
+}
+
+function stopVoice() {
+  isRecording = false;
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('taskInp').placeholder = 'Add a task…';
+  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+}
+
+function processVoiceResult(raw) {
+  const date     = parseTaskDate(raw);
+  const time     = parseTaskTime(raw);
+  const priority = parseTaskPriority(raw);
+  const text     = cleanTaskText(raw);
+
+  pendingMeta = {};
+  if (date)     pendingMeta.date = date;
+  if (time)     pendingMeta.time = time;
+  if (priority) pendingMeta.priority = priority;
+
+  document.getElementById('taskInp').value = text;
+
+  const tags = [];
+  if (date)     tags.push(`<span class="tbadge tbadge-date">${esc(date)}</span>`);
+  if (time)     tags.push(`<span class="tbadge tbadge-time">${esc(time)}</span>`);
+  if (priority === 'urgent') tags.push(`<span class="tbadge tbadge-urgent">Urgent</span>`);
+  if (priority === 'high')   tags.push(`<span class="tbadge tbadge-high">Important</span>`);
+  if (priority === 'low')    tags.push(`<span class="tbadge tbadge-low">Low priority</span>`);
+
+  const preview = document.getElementById('voicePreview');
+  document.getElementById('voiceHeard').textContent = '"' + raw + '"';
+  document.getElementById('voiceTags').innerHTML = tags.join('');
+  preview.classList.toggle('show', !!(date || time || priority || raw));
+}
+
+function parseTaskDate(text) {
+  const t = text.toLowerCase();
+  const now = new Date();
+  const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  if (/\btoday\b/.test(t)) return fmt(now);
+  if (/\btomorrow\b/.test(t)) { const d = new Date(now); d.setDate(d.getDate()+1); return fmt(d); }
+
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  for (let i = 0; i < days.length; i++) {
+    if (new RegExp('\\b' + days[i] + '\\b').test(t)) {
+      const d = new Date(now);
+      const diff = (i - now.getDay() + 7) % 7 || 7;
+      d.setDate(d.getDate() + diff);
+      return fmt(d);
+    }
+  }
+
+  const m = t.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})/);
+  if (m) return m[1].slice(0,3).replace(/^\w/,c=>c.toUpperCase()) + ' ' + m[2];
+
+  return null;
+}
+
+function parseTaskTime(text) {
+  const m = text.match(/\bat\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if (!m) return null;
+  let h = parseInt(m[1]);
+  const min = m[2] || '00';
+  const ampm = (m[3] || '').toLowerCase();
+  if (ampm === 'pm' && h < 12) h += 12;
+  if (ampm === 'am' && h === 12) h = 0;
+  if (!ampm && h < 7) h += 12; // assume pm for ambiguous times like "at 3"
+  return (h % 12 || 12) + ':' + min + ' ' + (h < 12 ? 'AM' : 'PM');
+}
+
+function parseTaskPriority(text) {
+  const t = text.toLowerCase();
+  if (/\b(urgent|asap|critical|very important|right away)\b/.test(t)) return 'urgent';
+  if (/\b(important|high priority|priority|don't forget|must)\b/.test(t)) return 'high';
+  if (/\b(low priority|whenever|not urgent|when (i )?can|if possible)\b/.test(t)) return 'low';
+  return null;
+}
+
+function cleanTaskText(text) {
+  return text
+    .replace(/\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi, '')
+    .replace(/\bat\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)?\b/gi, '')
+    .replace(/\b(urgent|asap|critical|very important|right away|important|high priority|priority|don't forget|must|low priority|whenever|not urgent|when i can|when can|if possible|it'?s?)\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .replace(/^,\s*/, '')
+    .replace(/,\s*$/, '');
 }
 
 // ── CALENDAR ──────────────────────────────────
