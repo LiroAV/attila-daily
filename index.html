@@ -694,38 +694,52 @@ function renderTasks() {
 
 // ── VOICE INPUT ───────────────────────────────
 function toggleVoice() {
-  if (isRecording) { stopVoice(); return; }
+  if (isRecording) {
+    if (recognition) recognition.stop();
+    return;
+  }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { alert('Voice input is not supported in this browser. Try Safari or Chrome.'); return; }
+
   recognition = new SR();
   recognition.lang = 'en-US';
+  recognition.continuous = true;
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
     isRecording = true;
     document.getElementById('micBtn').classList.add('recording');
-    document.getElementById('taskInp').placeholder = 'Listening…';
+    document.getElementById('taskInp').placeholder = 'Listening… tap mic to stop';
+    document.getElementById('taskInp').value = '';
   };
 
   recognition.onresult = (e) => {
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-    document.getElementById('taskInp').value = transcript;
-    if (e.results[e.results.length - 1].isFinal) {
-      processVoiceResult(transcript);
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
     }
+    document.getElementById('taskInp').value = transcript;
   };
 
-  recognition.onend = () => stopVoice();
-  recognition.onerror = () => stopVoice();
-  recognition.start();
-}
+  recognition.onend = () => {
+    const transcript = document.getElementById('taskInp').value.trim();
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('taskInp').placeholder = 'Add a task…';
+    recognition = null;
+    if (transcript) processVoiceResult(transcript);
+  };
 
-function stopVoice() {
-  isRecording = false;
-  document.getElementById('micBtn').classList.remove('recording');
-  document.getElementById('taskInp').placeholder = 'Add a task…';
-  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+  recognition.onerror = (e) => {
+    if (e.error === 'no-speech') return;
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('taskInp').placeholder = 'Add a task…';
+    recognition = null;
+  };
+
+  recognition.start();
 }
 
 function processVoiceResult(raw) {
@@ -837,8 +851,16 @@ function delWatchTopic(id) {
 }
 
 async function fetchWatchTopic(entry) {
-  const url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(entry.topic) + '&hl=en-US&gl=US&ceid=US:en';
-  const items = await fetchFeed(url);
+  const q = encodeURIComponent(entry.topic);
+  const sources = [
+    'https://news.google.com/rss/search?q=' + q + '&hl=en-US&gl=US&ceid=US:en',
+    'https://www.bing.com/news/search?q=' + q + '&format=RSS'
+  ];
+  let items = [];
+  for (const url of sources) {
+    items = await fetchFeed(url);
+    if (items.length) break;
+  }
   const seen = new Set();
   watchCache[entry.id] = items
     .filter(a => { if (seen.has(a.title)) return false; seen.add(a.title); return true; })
