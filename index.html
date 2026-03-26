@@ -1521,17 +1521,45 @@ const FIN_LS = 'atd_finance_v1';
 function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
 function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), prices: d })); }
 
-async function fetchYFPrice(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
-  const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const d = await r.json();
-  const meta = d.chart.result[0].meta;
-  const price = meta.regularMarketPrice;
-  const prev = meta.chartPreviousClose || meta.previousClose || price;
-  const changePct = ((price - prev) / prev) * 100;
-  const changeAbs = price - prev;
-  return { symbol, price, changePct, changeAbs };
+async function fetchAllFinancePrices() {
+  const stockSymbols = ['^GSPC', 'GC=F', ...MY_HOLDINGS.map(h => h.ticker)];
+  const yfUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' +
+    stockSymbols.join(',') + '&formatted=false&lang=en-US&region=US';
+  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl);
+
+  const [yfRes, cgRes] = await Promise.allSettled([
+    fetch(proxyUrl, { signal: AbortSignal.timeout(15000) }).then(r => r.json()),
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true')
+      .then(r => r.json())
+  ]);
+
+  const prices = {};
+
+  if (yfRes.status === 'fulfilled' && yfRes.value?.quoteResponse?.result) {
+    yfRes.value.quoteResponse.result.forEach(q => {
+      prices[q.symbol] = {
+        price: q.regularMarketPrice,
+        changePct: q.regularMarketChangePercent,
+        changeAbs: q.regularMarketChange
+      };
+    });
+  }
+
+  if (cgRes.status === 'fulfilled') {
+    const cg = cgRes.value;
+    if (cg.bitcoin) prices['BTC-USD'] = {
+      price: cg.bitcoin.usd,
+      changePct: cg.bitcoin.usd_24h_change,
+      changeAbs: cg.bitcoin.usd * cg.bitcoin.usd_24h_change / 100
+    };
+    if (cg.ethereum) prices['ETH-USD'] = {
+      price: cg.ethereum.usd,
+      changePct: cg.ethereum.usd_24h_change,
+      changeAbs: cg.ethereum.usd * cg.ethereum.usd_24h_change / 100
+    };
+  }
+
+  return prices;
 }
 
 async function loadFinance(force) {
@@ -1542,21 +1570,20 @@ async function loadFinance(force) {
   if (cache && !force) {
     renderFinance(cache.prices);
     if ((Date.now() - cache.ts) / 60000 < 15) return;
-  } else if (!cache) {
+  } else {
     el.innerHTML = '<div class="fin-loading">Loading market data…</div>';
   }
 
-  const allSymbols = [
-    ...MARKET_OVERVIEW.map(m => m.symbol),
-    ...MY_HOLDINGS.map(h => h.ticker)
-  ];
-  const results = await Promise.allSettled(allSymbols.map(s => fetchYFPrice(s)));
-  const prices = {};
-  results.forEach((r, i) => { if (r.status === 'fulfilled') prices[allSymbols[i]] = r.value; });
-
-  if (Object.keys(prices).length > 0) {
-    setFinCache(prices);
-    renderFinance(prices);
+  try {
+    const prices = await fetchAllFinancePrices();
+    if (Object.keys(prices).length > 0) {
+      setFinCache(prices);
+      renderFinance(prices);
+    } else {
+      el.innerHTML = '<div class="fin-loading">Could not load prices. Tap ↻ to retry.</div>';
+    }
+  } catch {
+    el.innerHTML = '<div class="fin-loading">Could not load prices. Tap ↻ to retry.</div>';
   }
 }
 
