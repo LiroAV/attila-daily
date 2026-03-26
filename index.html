@@ -212,7 +212,8 @@
     .word-body { flex: 1; }
     .word-lang { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
     .word-word { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 4px; }
-    .word-def { font-size: 13px; color: var(--text2); line-height: 1.5; }
+    .word-def { font-size: 13px; color: var(--text2); line-height: 1.5; margin-bottom: 5px; }
+    .word-example { font-size: 12px; color: var(--text3); font-style: italic; line-height: 1.45; }
     .word-tick { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--text3); margin-top: 2px; transition: all 0.15s; }
     .word-tick.used { background: var(--green); border-color: var(--green); color: #fff; }
     .word-tick-label { font-size: 10px; color: var(--text3); text-align: center; margin-top: 3px; }
@@ -220,6 +221,10 @@
     .fact-item:last-child { border-bottom: none; padding-bottom: 0; }
     .fact-num { font-size: 11px; font-weight: 800; color: var(--text3); width: 16px; flex-shrink: 0; padding-top: 2px; }
     .fact-text { font-size: 14px; color: var(--text2); line-height: 1.55; }
+    .history-year { font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; margin-bottom: 6px; }
+    .history-text { font-size: 14px; color: var(--text2); line-height: 1.65; }
+    .knowledge-item { padding: 9px 0; border-bottom: 0.5px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+    .knowledge-item:last-child { border-bottom: none; padding-bottom: 0; }
 
     /* ── HOME ── */
     .home-section { padding: 0 16px 16px; }
@@ -343,10 +348,6 @@
         <div class="weather-loading">Locating…</div>
       </div>
       <div class="home-stats" id="homeStats"></div>
-      <div class="home-card" id="marketsCard">
-        <div class="home-card-title">Markets</div>
-        <div style="font-size:13px;color:var(--text3)">Loading…</div>
-      </div>
       <div class="home-card" id="quoteCard">
         <div class="home-card-title">Quote of the day</div>
         <div style="font-size:13px;color:var(--text3)">Loading…</div>
@@ -357,8 +358,10 @@
         <textarea class="gratitude-area" id="gratitudeArea" placeholder="What are you grateful for today?"></textarea>
         <div class="gratitude-saved" id="gratitudeSaved"></div>
       </div>
+      <div class="daily-card" id="historyCard"><div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div></div>
       <div class="daily-card" id="wordsCard"><div class="daily-card-title">Words of the day</div></div>
       <div class="daily-card" id="factsCard"><div class="daily-card-title">Did you know?</div></div>
+      <div class="daily-card" id="knowledgeCard"><div class="daily-card-title">Worth Knowing</div></div>
     </div>
   </div>
 
@@ -855,71 +858,71 @@ const FUN_HOLIDAYS = {
 };
 
 const ENG_WORDS = [
-  {w:'Petrichor',    d:'The earthy scent produced when rain falls on dry soil.'},
-  {w:'Sonder',       d:'The realization that each passerby has a life as vivid and complex as your own.'},
-  {w:'Serendipity',  d:'Finding something good without looking for it.'},
-  {w:'Ephemeral',    d:'Lasting for a very short time; transitory.'},
-  {w:'Mellifluous',  d:'Sweet and smooth to hear; like honey in sound.'},
-  {w:'Ineffable',    d:'Too great or extreme to be expressed in words.'},
-  {w:'Defenestration',d:'The act of throwing someone out of a window.'},
-  {w:'Apricity',     d:'The warmth of the sun on a cold winter\'s day.'},
-  {w:'Quixotic',     d:'Exceedingly idealistic and impractical.'},
-  {w:'Perspicacious',d:'Having sharp mental insight and understanding.'},
-  {w:'Loquacious',   d:'Tending to talk a great deal; very talkative.'},
-  {w:'Sanguine',     d:'Optimistic and positive, especially in a tough situation.'},
-  {w:'Verisimilitude',d:'The appearance of being true or real.'},
-  {w:'Limerence',    d:'An involuntary obsessive infatuation with another person.'},
-  {w:'Numinous',     d:'Having a strong spiritual quality; mysteriously awe-inspiring.'},
-  {w:'Callipygian',  d:'Having well-shaped buttocks.'},
-  {w:'Syzygy',       d:'The alignment of three celestial objects in a straight line.'},
-  {w:'Flibbertigibbet',d:'A frivolous, flighty, or overly talkative person.'},
-  {w:'Discombobulate',d:'To confuse or disconcert someone.'},
-  {w:'Pulchritude',  d:'Physical beauty.'},
-  {w:'Sesquipedalian',d:'Given to using very long words.'},
-  {w:'Hiraeth',      d:'A homesickness for a home you can\'t return to, or never had.'},
-  {w:'Obfuscate',    d:'To make something unclear or hard to understand.'},
-  {w:'Labyrinthine', d:'Resembling a labyrinth; intricate and complex.'},
-  {w:'Melancholy',   d:'A deep, pensive sadness with no obvious cause.'},
-  {w:'Zeitgeist',    d:'The defining spirit or mood of a particular period in history.'},
-  {w:'Wanderlust',   d:'A strong desire to travel and explore the world.'},
-  {w:'Schadenfreude',d:'Pleasure derived from another person\'s misfortune.'},
-  {w:'Equanimity',   d:'Mental calmness and composure, especially in difficult situations.'},
-  {w:'Propitious',   d:'Giving or indicating a good chance of success; favourable.'},
-  {w:'Capricious',   d:'Given to sudden and unaccountable changes of mood or behaviour.'},
-  {w:'Luminous',     d:'Giving off light; glowing in the dark.'},
-  {w:'Taciturn',     d:'Reserved or uncommunicative in speech; saying little.'},
-  {w:'Vivacious',    d:'Attractively lively and animated.'},
-  {w:'Pensive',      d:'Engaged in deep or serious thought.'},
+  {w:'Petrichor',     d:'The earthy scent produced when rain falls on dry soil.',                               e:'"After weeks of drought, the petrichor that rose from the garden was intoxicating."'},
+  {w:'Sonder',        d:'The realization that each passerby has a life as vivid and complex as your own.',      e:'"Watching the crowd from the café window, he was struck by a sudden sonder."'},
+  {w:'Serendipity',   d:'Finding something good without looking for it.',                                       e:'"Meeting his co-founder at that random conference was pure serendipity."'},
+  {w:'Ephemeral',     d:'Lasting for a very short time; transitory.',                                           e:'"Cherry blossoms are beautiful precisely because they are so ephemeral."'},
+  {w:'Mellifluous',   d:'Sweet and smooth to hear; like honey in sound.',                                       e:'"The cellist\'s mellifluous tone filled the entire hall."'},
+  {w:'Ineffable',     d:'Too great or extreme to be expressed in words.',                                       e:'"The view from the summit was ineffable — no photograph could do it justice."'},
+  {w:'Defenestration',d:'The act of throwing someone out of a window.',                                         e:'"The committee\'s sudden defenestration of the chairman shocked everyone."'},
+  {w:'Apricity',      d:'The warmth of the sun on a cold winter\'s day.',                                       e:'"He found apricity sitting on the south-facing bench in January."'},
+  {w:'Quixotic',      d:'Exceedingly idealistic and impractical.',                                              e:'"Her quixotic plan to cycle across Antarctica raised many eyebrows."'},
+  {w:'Perspicacious', d:'Having sharp mental insight and understanding.',                                       e:'"A perspicacious investor spotted the opportunity before the market reacted."'},
+  {w:'Loquacious',    d:'Tending to talk a great deal; very talkative.',                                        e:'"The loquacious professor filled every available second with anecdotes."'},
+  {w:'Sanguine',      d:'Optimistic and positive, especially in a tough situation.',                            e:'"Despite the setbacks, she remained sanguine about the project\'s outcome."'},
+  {w:'Verisimilitude',d:'The appearance of being true or real.',                                                e:'"The film\'s verisimilitude was enhanced by shooting on location."'},
+  {w:'Limerence',     d:'An involuntary obsessive infatuation with another person.',                            e:'"His limerence faded once he got to know her as a real, flawed person."'},
+  {w:'Numinous',      d:'Having a strong spiritual quality; mysteriously awe-inspiring.',                       e:'"Standing inside the ancient cathedral, she felt a numinous awe wash over her."'},
+  {w:'Callipygian',   d:'Having well-shaped buttocks.',                                                         e:'"The sculptor was celebrated for his callipygian figures."'},
+  {w:'Syzygy',        d:'The alignment of three celestial objects in a straight line.',                         e:'"During syzygy, the Moon\'s gravitational pull on the oceans is at its peak."'},
+  {w:'Flibbertigibbet',d:'A frivolous, flighty, or overly talkative person.',                                  e:'"That flibbertigibbet couldn\'t focus on anything for more than five minutes."'},
+  {w:'Discombobulate',d:'To confuse or disconcert someone.',                                                    e:'"Jet lag never fails to completely discombobulate me for the first two days."'},
+  {w:'Pulchritude',   d:'Physical beauty.',                                                                     e:'"Renaissance painters celebrated the pulchritude of the human form."'},
+  {w:'Sesquipedalian',d:'Given to using very long words.',                                                      e:'"His sesquipedalian tendencies made every email a small ordeal."'},
+  {w:'Hiraeth',       d:'A homesickness for a home you can\'t return to, or never had.',                        e:'"Years after emigrating, she still felt a deep hiraeth for the village she grew up in."'},
+  {w:'Obfuscate',     d:'To make something unclear or hard to understand.',                                     e:'"The contract was deliberately written to obfuscate the true fees."'},
+  {w:'Labyrinthine',  d:'Resembling a labyrinth; intricate and complex.',                                       e:'"The labyrinthine bureaucracy made getting a permit take three months."'},
+  {w:'Melancholy',    d:'A deep, pensive sadness with no obvious cause.',                                       e:'"A long stretch of grey November skies always brings on a quiet melancholy."'},
+  {w:'Zeitgeist',     d:'The defining spirit or mood of a particular period in history.',                       e:'"Streaming perfectly captured the zeitgeist of the 2010s."'},
+  {w:'Wanderlust',    d:'A strong desire to travel and explore the world.',                                     e:'"After years of the same commute, her wanderlust became impossible to ignore."'},
+  {w:'Schadenfreude', d:'Pleasure derived from another person\'s misfortune.',                                  e:'"He felt a twinge of schadenfreude when his smug rival missed the flight."'},
+  {w:'Equanimity',    d:'Mental calmness and composure, especially in difficult situations.',                   e:'"She faced the unexpected diagnosis with remarkable equanimity."'},
+  {w:'Propitious',    d:'Giving or indicating a good chance of success; favourable.',                           e:'"Clear skies and a light wind made it a propitious day for the launch."'},
+  {w:'Capricious',    d:'Given to sudden and unaccountable changes of mood or behaviour.',                      e:'"The capricious weather meant you needed an umbrella and sunscreen on the same day."'},
+  {w:'Luminous',      d:'Giving off light; glowing in the dark.',                                               e:'"The luminous full moon lit the trail without a torch."'},
+  {w:'Taciturn',      d:'Reserved or uncommunicative in speech; saying little.',                                e:'"The new hire was so taciturn that colleagues wondered if something was wrong."'},
+  {w:'Vivacious',     d:'Attractively lively and animated.',                                                    e:'"Her vivacious energy made her the natural centre of every gathering."'},
+  {w:'Pensive',       d:'Engaged in deep or serious thought.',                                                  e:'"He sat by the window, pensive, replaying the conversation in his mind."'},
 ];
 
 const DEU_WORDS = [
-  {w:'Fernweh',          d:'Longing for distant places; the opposite of homesickness.'},
-  {w:'Weltschmerz',      d:'World-weariness; deep sadness about the imperfection of the world.'},
-  {w:'Torschlusspanik',  d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.'},
-  {w:'Verschlimmbessern',d:'To make something worse while trying to improve it.'},
-  {w:'Drachenfutter',    d:'Dragon food; a peace offering given to a partner after doing something wrong.'},
-  {w:'Fingerspitzengefühl',d:'Fingertip feeling; an intuitive sensitivity and delicate touch in handling situations.'},
-  {w:'Kopfkino',         d:'Head cinema; the vivid mental film that plays out in your imagination.'},
-  {w:'Waldeinsamkeit',   d:'The peaceful solitude and connection with nature felt deep in a forest.'},
-  {w:'Gemütlichkeit',    d:'A warm, cosy, convivial feeling of comfort and belonging.'},
-  {w:'Schnapsidee',      d:'A ridiculous idea that sounds great when you\'re drunk.'},
-  {w:'Treppenwitz',      d:'Staircase wit; a clever comeback you only think of after the moment has passed.'},
-  {w:'Kummerspeck',      d:'Grief bacon; weight gained from emotional eating.'},
-  {w:'Fremdschämen',     d:'Vicarious embarrassment felt on behalf of someone who should be embarrassed but isn\'t.'},
-  {w:'Backpfeifengesicht',d:'A face that is crying out to be slapped.'},
-  {w:'Schwellenangst',   d:'Threshold anxiety; hesitation or dread before crossing into a new situation.'},
-  {w:'Sturmfrei',        d:'Having the house to yourself; free from parental or authority supervision.'},
-  {w:'Weltanschauung',   d:'A complete and comprehensive worldview or philosophy of life.'},
-  {w:'Innerer Schweinehund',d:'Inner pig-dog; the lazy inner voice that talks you out of doing the right thing.'},
-  {w:'Lebensmüde',       d:'Life-tired; used humorously for someone doing something reckless or dangerous.'},
-  {w:'Doppelgänger',     d:'A ghostly double of a living person; someone who looks exactly like you.'},
-  {w:'Erklärungsnot',    d:'The desperate scramble to explain or justify yourself.'},
-  {w:'Fahrvergnügen',    d:'Driving pleasure; the pure joy of driving a well-made car.'},
-  {w:'Ohrwurm',          d:'Earworm; a tune that gets stuck in your head and won\'t leave.'},
-  {w:'Fingerhut',        d:'Thimble — literally "finger hat."'},
-  {w:'Kuddelmuddel',     d:'A complete mess or muddle; utter chaos.'},
-  {w:'Querdenker',       d:'A lateral thinker; someone who thinks outside the box.'},
-  {w:'Zweisamkeit',      d:'The cosy intimacy of being together as a couple; togetherness for two.'},
+  {w:'Fernweh',           d:'Longing for distant places; the opposite of homesickness.',                        e:'"After months at home, his Fernweh became unbearable and he booked a flight."'},
+  {w:'Weltschmerz',       d:'World-weariness; deep sadness about the imperfection of the world.',              e:'"Reading the news on a bad day can trigger a real Weltschmerz."'},
+  {w:'Torschlusspanik',   d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.',     e:'"At 35, she felt a creeping Torschlusspanik about changing careers."'},
+  {w:'Verschlimmbessern', d:'To make something worse while trying to improve it.',                              e:'"He tried to fix his original mistake but ended up verschlimmbessern it."'},
+  {w:'Drachenfutter',     d:'Dragon food; a peace offering given to a partner after doing something wrong.',   e:'"He came home late with flowers — classic Drachenfutter."'},
+  {w:'Fingerspitzengefühl',d:'Fingertip feeling; an intuitive sensitivity and delicate touch.',                 e:'"Negotiating a peace deal requires extraordinary Fingerspitzengefühl."'},
+  {w:'Kopfkino',          d:'Head cinema; the vivid mental film that plays out in your imagination.',           e:'"When she didn\'t reply for hours, his Kopfkino went into overdrive."'},
+  {w:'Waldeinsamkeit',    d:'The peaceful solitude and connection with nature felt deep in a forest.',          e:'"She found the Waldeinsamkeit of the Black Forest deeply healing."'},
+  {w:'Gemütlichkeit',     d:'A warm, cosy, convivial feeling of comfort and belonging.',                        e:'"The small alpine hut had an irresistible Gemütlichkeit about it."'},
+  {w:'Schnapsidee',       d:'A ridiculous idea that sounds great when you\'re drunk.',                          e:'"Driving to Morocco was a total Schnapsidee, but it turned out wonderfully."'},
+  {w:'Treppenwitz',       d:'Staircase wit; a clever comeback you only think of after the moment has passed.',  e:'"He thought of the perfect reply on the walk home — a classic Treppenwitz."'},
+  {w:'Kummerspeck',       d:'Grief bacon; weight gained from emotional eating.',                                e:'"Two weeks of Kummerspeck after the breakup left him with noticeably tighter jeans."'},
+  {w:'Fremdschämen',      d:'Vicarious embarrassment felt on behalf of someone who isn\'t embarrassed.',       e:'"Watching that speech filled her with Fremdschämen."'},
+  {w:'Backpfeifengesicht',d:'A face that is crying out to be slapped.',                                         e:'"Every office has that one person with an undeniable Backpfeifengesicht."'},
+  {w:'Schwellenangst',    d:'Threshold anxiety; hesitation or dread before crossing into a new situation.',    e:'"He stood at the gallery entrance for ten minutes, paralyzed by Schwellenangst."'},
+  {w:'Sturmfrei',         d:'Having the house to yourself; free from parental or authority supervision.',       e:'"With his parents away, he finally had the place sturmfrei for the weekend."'},
+  {w:'Weltanschauung',    d:'A complete and comprehensive worldview or philosophy of life.',                    e:'"Her travels shaped a Weltanschauung no classroom could have provided."'},
+  {w:'Innerer Schweinehund',d:'Inner pig-dog; the lazy inner voice that talks you out of doing the right thing.',e:'"Every morning, his innerer Schweinehund convinces him to skip the gym."'},
+  {w:'Lebensmüde',        d:'Life-tired; used humorously for someone doing something reckless.',                e:'"You\'d have to be lebensmüde to eat that ten-year-old cheese."'},
+  {w:'Doppelgänger',      d:'A ghostly double of a living person; someone who looks exactly like you.',         e:'"She swore she saw her Doppelgänger on the subway platform."'},
+  {w:'Erklärungsnot',     d:'The desperate scramble to explain or justify yourself.',                           e:'"Caught leaving early, he stumbled through a painful Erklärungsnot."'},
+  {w:'Fahrvergnügen',     d:'Driving pleasure; the pure joy of driving a well-made car.',                       e:'"That mountain road was pure Fahrvergnügen in a well-tuned sports car."'},
+  {w:'Ohrwurm',           d:'Earworm; a tune that gets stuck in your head and won\'t leave.',                   e:'"That jingle is such an Ohrwurm — I\'ve been humming it for three days."'},
+  {w:'Fingerhut',         d:'Thimble — literally "finger hat."',                                                e:'"She used a Fingerhut to push the needle through the heavy canvas."'},
+  {w:'Kuddelmuddel',      d:'A complete mess or muddle; utter chaos.',                                          e:'"After moving, the apartment was a total Kuddelmuddel of boxes and cables."'},
+  {w:'Querdenker',        d:'A lateral thinker; someone who thinks outside the box.',                           e:'"The startup hired a few Querdenker to shake up their product strategy."'},
+  {w:'Zweisamkeit',       d:'The cosy intimacy of being together as a couple; togetherness for two.',           e:'"Sunday mornings were their time for Zweisamkeit — phones off, coffee on."'},
   {w:'Verschnaufpause',  d:'A breathing pause; a short break to catch your breath.'},
   {w:'Kabelsalat',       d:'Cable salad; a tangled mess of cables and wires.'},
   {w:'Naschkatze',       d:'Sweet cat; a person with a sweet tooth who always nibbles on treats.'},
@@ -968,10 +971,131 @@ const FACTS = [
   'Newborn babies have about 270 bones. Adults have 206. Bones fuse as you grow.',
 ];
 
+const HISTORY_EVENTS = {
+  '01-01':'1863 — Lincoln signs the Emancipation Proclamation, declaring enslaved people in Confederate states to be free.',
+  '01-07':'1610 — Galileo discovers the four largest moons of Jupiter, now called the Galilean moons.',
+  '01-10':'1946 — The U.S. Army bounces a radar signal off the Moon for the first time.',
+  '01-15':'1929 — Martin Luther King Jr. is born in Atlanta, Georgia.',
+  '01-17':'1961 — Eisenhower delivers his farewell address, coining the term "military-industrial complex."',
+  '01-20':'1961 — JFK is inaugurated, declaring: "Ask not what your country can do for you — ask what you can do for your country."',
+  '01-27':'1945 — Soviet troops liberate Auschwitz, revealing the full scale of the Holocaust.',
+  '01-28':'1986 — Space Shuttle Challenger breaks apart 73 seconds after launch, killing all seven crew.',
+  '01-30':'1948 — Mahatma Gandhi is assassinated in New Delhi at age 78.',
+  '02-04':'2004 — Mark Zuckerberg launches "TheFacebook" from his Harvard dorm room.',
+  '02-11':'1990 — Nelson Mandela is released from prison after 27 years.',
+  '02-12':'1809 — Charles Darwin is born — on the exact same day as Abraham Lincoln.',
+  '02-14':'1929 — The St. Valentine\'s Day Massacre: seven rivals of Al Capone are shot in Chicago.',
+  '02-18':'1930 — Clyde Tombaugh discovers Pluto at the Lowell Observatory in Arizona.',
+  '02-19':'1473 — Copernicus is born; he would propose that the Earth orbits the Sun.',
+  '02-24':'1582 — Pope Gregory XIII introduces the Gregorian calendar, correcting the Julian calendar\'s drift.',
+  '03-05':'1953 — Joseph Stalin dies after a stroke, ending his 29-year rule of the Soviet Union.',
+  '03-06':'1475 — Michelangelo is born; he will paint the Sistine Chapel ceiling at age 33.',
+  '03-10':'1876 — Alexander Graham Bell makes the world\'s first telephone call: "Mr. Watson, come here."',
+  '03-14':'1879 — Albert Einstein is born in Ulm, Germany.',
+  '03-15':'44 BC — Julius Caesar is assassinated on the Ides of March by senators including Brutus and Cassius.',
+  '03-16':'1926 — Robert Goddard launches the world\'s first liquid-fueled rocket — it travels 12 metres in 2.5 seconds.',
+  '03-20':'1980 — The Rubik\'s Cube goes on international sale.',
+  '03-25':'1807 — Britain\'s Slave Trade Act passes, abolishing the slave trade across the British Empire.',
+  '03-26':'1953 — Jonas Salk announces his polio vaccine is safe and effective, saving millions of lives.',
+  '04-01':'1976 — Apple Computer is founded by Steve Jobs, Steve Wozniak, and Ronald Wayne in a garage.',
+  '04-04':'1968 — Martin Luther King Jr. is assassinated at the Lorraine Motel in Memphis, Tennessee.',
+  '04-12':'1961 — Yuri Gagarin becomes the first human in space, completing one orbit of Earth in 108 minutes.',
+  '04-15':'1912 — The Titanic sinks after hitting an iceberg, killing over 1,500 people.',
+  '04-19':'1775 — The American Revolutionary War begins at Lexington and Concord.',
+  '04-22':'1970 — The first Earth Day mobilises 20 million Americans for environmental protection.',
+  '04-23':'1564 — William Shakespeare is born in Stratford-upon-Avon.',
+  '04-30':'1789 — George Washington is inaugurated as the first President of the United States.',
+  '05-06':'1954 — Roger Bannister runs the first sub-four-minute mile: 3 minutes 59.4 seconds.',
+  '05-08':'1945 — VE Day: Nazi Germany surrenders, ending World War II in Europe.',
+  '05-14':'1948 — The State of Israel is proclaimed by David Ben-Gurion.',
+  '05-17':'1954 — The Supreme Court rules in Brown v. Board of Education that school segregation is unconstitutional.',
+  '05-21':'1927 — Lindbergh completes the first solo nonstop transatlantic flight, landing in Paris after 33.5 hours.',
+  '05-25':'1977 — Star Wars is released, launching one of the most successful franchises in history.',
+  '05-29':'1953 — Hillary and Norgay become the first climbers to summit Mount Everest.',
+  '06-06':'1944 — D-Day: 156,000 Allied troops land on the beaches of Normandy.',
+  '06-16':'1963 — Valentina Tereshkova becomes the first woman in space.',
+  '06-17':'1972 — Five men are arrested at the Watergate complex, beginning the scandal that ends Nixon\'s presidency.',
+  '06-28':'1914 — Archduke Franz Ferdinand is assassinated in Sarajevo, triggering World War I.',
+  '07-04':'1776 — The Declaration of Independence is adopted, declaring thirteen colonies free from British rule.',
+  '07-16':'1969 — Apollo 11 launches toward the Moon with Armstrong, Aldrin, and Collins aboard.',
+  '07-20':'1969 — Neil Armstrong becomes the first human to walk on the Moon.',
+  '07-26':'1948 — Truman signs Executive Order 9981, desegregating the U.S. Armed Forces.',
+  '08-06':'1945 — The first atomic bomb is dropped on Hiroshima, Japan, killing an estimated 80,000 instantly.',
+  '08-13':'1961 — Construction of the Berlin Wall begins, dividing Germany for the next 28 years.',
+  '08-15':'1947 — India gains independence from Britain after nearly 200 years of colonial rule.',
+  '08-26':'1920 — The 19th Amendment is certified, granting women in the U.S. the right to vote.',
+  '08-28':'1963 — Martin Luther King Jr. delivers "I Have a Dream" during the March on Washington.',
+  '09-01':'1939 — Germany invades Poland, starting World War II.',
+  '09-11':'2001 — Terrorist attacks on the U.S. kill nearly 3,000 people and change global security forever.',
+  '09-12':'1962 — Kennedy delivers "We choose to go to the Moon" at Rice University.',
+  '09-17':'1787 — The U.S. Constitution is signed in Philadelphia.',
+  '10-04':'1957 — The Soviet Union launches Sputnik 1, the world\'s first artificial satellite.',
+  '10-12':'1492 — Columbus lands in the Bahamas, beginning sustained European contact with the Americas.',
+  '10-14':'1947 — Chuck Yeager becomes the first person to break the sound barrier.',
+  '10-28':'1886 — The Statue of Liberty is dedicated in New York Harbor.',
+  '10-29':'1929 — Black Tuesday: the U.S. stock market crashes, triggering the Great Depression.',
+  '10-31':'1517 — Martin Luther nails his 95 Theses to a church door in Wittenberg, sparking the Reformation.',
+  '11-09':'1989 — The Berlin Wall falls; East Germany opens its borders after 28 years.',
+  '11-11':'1918 — World War I ends at the 11th hour of the 11th day of the 11th month.',
+  '11-19':'1863 — Lincoln delivers the Gettysburg Address.',
+  '11-22':'1963 — President Kennedy is assassinated in Dallas, Texas.',
+  '12-01':'1955 — Rosa Parks refuses to give up her bus seat, sparking the Montgomery Bus Boycott.',
+  '12-07':'1941 — Japan attacks Pearl Harbor; the U.S. enters World War II the next day.',
+  '12-10':'1948 — The Universal Declaration of Human Rights is adopted by the United Nations.',
+  '12-17':'1903 — The Wright brothers make the first powered airplane flight at Kitty Hawk — 12 seconds, 36 metres.',
+  '12-25':'800 — Charlemagne is crowned Holy Roman Emperor by Pope Leo III in Rome.',
+  '12-31':'1999 — The world transitions to the year 2000 without the feared Y2K collapse.',
+};
+
+const KNOWLEDGE = [
+  'The speed of light is exactly 299,792,458 m/s. The metre itself is defined by this constant.',
+  'DNA pairs: Adenine (A) with Thymine (T), and Cytosine (C) with Guanine (G). These four bases encode all life.',
+  'Newton\'s three laws: (1) objects at rest stay at rest; (2) F = ma; (3) every action has an equal and opposite reaction.',
+  'Water expands by ~9% when it freezes — which is why ice floats and pipes burst in winter.',
+  'The brain uses ~20% of the body\'s total energy despite being only ~2% of body weight.',
+  'A byte = 8 bits. 1 KB = 1,024 bytes. 1 MB = 1,024 KB. 1 GB = 1,024 MB. 1 TB = 1,024 GB.',
+  'The three branches of U.S. government: Legislative (Congress makes laws), Executive (President enforces), Judicial (Supreme Court interprets).',
+  'The Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34… Each number is the sum of the two before it. It appears throughout nature.',
+  'Photosynthesis: 6CO₂ + 6H₂O + sunlight → C₆H₁₂O₆ + 6O₂. Plants absorb carbon dioxide and release oxygen.',
+  'The electromagnetic spectrum (longest to shortest wavelength): Radio → Microwave → Infrared → Visible → UV → X-ray → Gamma.',
+  'GDP measures the total value of all goods and services a country produces in a year. It\'s the standard measure of economic size.',
+  'Maslow\'s hierarchy (base to peak): Physiological → Safety → Love & Belonging → Esteem → Self-actualisation.',
+  'The Dunning-Kruger effect: people with limited knowledge tend to overestimate their own competence.',
+  'Supply and demand: when supply rises or demand falls, prices drop. When supply falls or demand rises, prices rise.',
+  'Compound interest: A = P(1 + r/n)^(nt). Einstein reportedly called it "the eighth wonder of the world."',
+  'The rule of 72: divide 72 by your annual return to estimate how many years it takes to double your money (e.g. 72 ÷ 8% = 9 years).',
+  'Blood types: A, B, AB, O. O-negative is the universal donor. AB-positive is the universal recipient.',
+  'The speed of sound in air is ~343 m/s (1,235 km/h) at 20°C — roughly 1 mile every 5 seconds.',
+  'Ohm\'s Law: V = IR. Voltage equals Current times Resistance. Double the resistance, halve the current.',
+  'There are 206 bones in the adult human body. Babies are born with ~270; they fuse as you grow.',
+  'The brain\'s four lobes: Frontal (decisions, personality), Parietal (sensory), Temporal (memory, language), Occipital (vision).',
+  'Common cognitive biases: Confirmation bias (only seeking info that agrees with you), Sunk cost fallacy (throwing good money after bad), Recency bias (overweighting the latest event).',
+  'A calorie (kcal) is the energy to heat 1 kg of water by 1°C. Carbs and protein have ~4 kcal/g; fat has ~9 kcal/g.',
+  'Earth is ~4.5 billion years old. Complex life appeared ~600 million years ago. Homo sapiens ~300,000 years ago.',
+  'Latitude lines run east–west and measure north–south position (0° = equator, 90° = poles). Longitude lines measure east–west position (0° = Greenwich).',
+  'The P/E ratio (Price-to-Earnings) shows what investors pay per $1 of profit. A high P/E implies growth expectations; a low P/E may signal value.',
+  'Three types of rock: Igneous (cooled magma), Sedimentary (compressed layers), Metamorphic (transformed by heat or pressure).',
+  'Inflation measures how fast prices rise. Central banks typically target ~2% per year. High inflation erodes purchasing power.',
+  'The logical fallacy "ad hominem" attacks the person instead of their argument — it never disproves the claim.',
+  'Roman numerals: I=1, V=5, X=10, L=50, C=100, D=500, M=1000. Smaller before larger = subtraction (IV=4, IX=9, XL=40).',
+  'In statistics: mean = average, median = middle value, mode = most frequent. Standard deviation measures spread.',
+  'Light takes ~8 minutes to travel from the Sun to Earth. The nearest star beyond our Sun (Proxima Centauri) is 4.2 light-years away.',
+  'The mitochondria produce ATP via cellular respiration, powering virtually every function in your body.',
+  'Logical reasoning forms: modus ponens — if P then Q; P is true; therefore Q is true. Modus tollens — Q is false; therefore P is false.',
+  'The seven SI base units: metre (length), kilogram (mass), second (time), ampere (current), kelvin (temperature), mole (amount), candela (luminosity).',
+  'The stock market has returned ~10% per year on average historically (S&P 500). Adjusted for inflation, roughly 7%.',
+  'Herd immunity is reached when enough of a population is immune to slow the spread of disease — typically 70–95% depending on contagiousness.',
+  'The double helix structure of DNA was described by Watson and Crick in 1953, based largely on X-ray data from Rosalind Franklin.',
+  'Sleep stages: NREM 1 (light) → NREM 2 (deeper) → NREM 3 (deep/restorative) → REM (dreaming). A full cycle takes ~90 minutes.',
+  'The concept of opportunity cost: every choice has a cost — what you give up by not choosing the next best alternative.',
+];
+
 async function loadDaily() {
   renderHolidays();
+  renderHistory();
   renderWords();
   renderFacts();
+  renderKnowledge();
   loadGratitude();
 }
 
@@ -1034,6 +1158,7 @@ function renderWords() {
           <div class="word-lang" style="color:${item.color}">${item.lang}</div>
           <div class="word-word">${esc(item.word.w)}</div>
           <div class="word-def">${esc(item.word.d)}</div>
+          ${item.word.e ? `<div class="word-example">${esc(item.word.e)}</div>` : ''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:center">
           <button class="word-tick ${used?'used':''}" onclick="toggleWord('${item.key}')">${used?'✓':''}</button>
@@ -1051,12 +1176,52 @@ function toggleWord(key) {
 
 function renderFacts() {
   const idx = dayOfYear();
-  const q = Math.floor(FACTS.length / 4);
-  const facts = [0, 1, 2, 3].map(i => FACTS[(idx + i * q) % FACTS.length]);
+  const q = Math.floor(FACTS.length / 5);
+  const facts = [0, 1, 2, 3, 4].map(i => FACTS[(idx + i * q) % FACTS.length]);
   document.getElementById('factsCard').innerHTML = `<div class="daily-card-title">Did you know?</div>` +
     facts.map((f, i) => `<div class="fact-item">
       <div class="fact-num">${i+1}</div>
       <div class="fact-text">${esc(f)}</div>
+    </div>`).join('');
+}
+
+function renderHistory() {
+  const mmdd = new Date().toISOString().slice(5, 10);
+  const event = HISTORY_EVENTS[mmdd];
+  const el = document.getElementById('historyCard');
+  if (event) {
+    const m = event.match(/^(\d{1,4}(?:\s*BC)?)\s*[—–]/);
+    const year = m ? m[1] : '';
+    const text = m ? event.slice(event.indexOf('—') + 1).trim() : event;
+    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
+      ${year ? `<div class="history-year">${esc(year)}</div>` : ''}
+      <div class="history-text">${esc(text)}</div>`;
+  } else {
+    // Fallback: pick a rotating general history fact
+    const fallbacks = [
+      'The printing press, invented by Gutenberg around 1440, enabled mass production of books and transformed European literacy.',
+      'The Panama Canal (opened 1914) reduced the sailing distance between the Atlantic and Pacific by over 12,000 km.',
+      'The Great Wall of China was built over many centuries — the most recent sections date to the Ming Dynasty (1368–1644).',
+      'The Roman Empire lasted over 1,000 years (27 BC – 476 AD in the west; until 1453 AD in the east as Byzantium).',
+      'The Renaissance (14th–17th century) saw an explosion of art, science, and philosophy that reshaped Western civilisation.',
+      'The Industrial Revolution began in Britain around 1760, shifting economies from agriculture to manufacturing.',
+      'The first modern Olympic Games were held in Athens in 1896, with 14 nations and 241 athletes competing.',
+      'The Black Death (1347–1351) killed an estimated 30–60% of Europe\'s population, reshaping its society and economy.',
+    ];
+    const fact = fallbacks[dayOfYear() % fallbacks.length];
+    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
+      <div class="history-text">${esc(fact)}</div>`;
+  }
+}
+
+function renderKnowledge() {
+  const idx = dayOfYear();
+  const q = Math.floor(KNOWLEDGE.length / 2);
+  const items = [0, 1].map(i => KNOWLEDGE[(idx + i * q) % KNOWLEDGE.length]);
+  document.getElementById('knowledgeCard').innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
+    items.map((k, i) => `<div class="knowledge-item">
+      <div class="fact-num">${i + 1}</div>
+      <div class="fact-text">${esc(k)}</div>
     </div>`).join('');
 }
 
@@ -1102,7 +1267,6 @@ function weatherSVG(c, size) {
 
 async function loadHome() {
   renderHomeStats();
-  fetchCrypto();
   fetchQuote();
   loadDaily();
   navigator.geolocation.getCurrentPosition(
