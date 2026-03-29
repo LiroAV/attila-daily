@@ -482,10 +482,10 @@
         <div style="padding:0 14px 10px" id="karpathyEmbed">
           <a class="twitter-timeline"
              data-theme="dark"
-             data-tweet-limit="4"
+             data-tweet-limit="5"
              data-chrome="noheader nofooter transparent noborders noscrollbar"
              data-dnt="true"
-             href="https://twitter.com/karpathy">
+             href="https://twitter.com/search?q=from%3Akarpathy&src=typed_query&f=live">
             Loading @karpathy posts…
           </a>
         </div>
@@ -628,6 +628,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCal();
   renderWatchTopics();
   loadHome();
+  // Preload Twitter widget so @karpathy embed is ready when Watch tab opens
+  const tw = document.createElement('script');
+  tw.src = 'https://platform.twitter.com/widgets.js';
+  tw.async = true;
+  document.head.appendChild(tw);
 });
 
 function setHeader() {
@@ -2207,14 +2212,11 @@ function goTab(name, el) {
   el.classList.add('active');
   document.getElementById('content').scrollTop = 0;
   if (name === 'watch') {
-    if (window.twttr && window.twttr.widgets) {
-      window.twttr.widgets.load();
-    } else if (!document.querySelector('script[src*="widgets.js"]')) {
-      const s = document.createElement('script');
-      s.src = 'https://platform.twitter.com/widgets.js';
-      s.async = true;
-      document.head.appendChild(s);
-    }
+    setTimeout(() => {
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(document.getElementById('karpathyEmbed'));
+      }
+    }, 300);
     if (!watchPool && !watchPoolLoading) {
       loadWatchPool().then(() => {
         getWatchTopics().forEach(t => { if (!watchCache[t.id]) fetchWatchTopic(t); });
