@@ -1,4 +1,4 @@
-const CACHE = 'attila-daily-v12';
+const CACHE = 'attila-daily-v13';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

@@ -1699,14 +1699,8 @@ function cleanTaskText(text) {
 }
 
 // ── FINANCE ───────────────────────────────────
-const FIN_KEY_LS = 'atd_finnhub_key';
-function getFinnhubKey() { return localStorage.getItem(FIN_KEY_LS) || ''; }
-function saveFinnhubKey() {
-  const key = document.getElementById('finnhubKeyInp')?.value.trim();
-  if (!key) return;
-  localStorage.setItem(FIN_KEY_LS, key);
-  loadFinance(true);
-}
+const FINNHUB_KEY = 'd75r099r01qk56kdq300d75r099r01qk56kdq30g';
+function getFinnhubKey() { return FINNHUB_KEY; }
 
 const MARKET_OVERVIEW = [
   { symbol: '^GSPC',   label: 'S&P 500'  },
@@ -1788,16 +1782,6 @@ async function fetchAllFinancePrices() {
 async function loadFinance(force) {
   const el = document.getElementById('financeContent');
   if (!el) return;
-
-  if (!getFinnhubKey()) {
-    el.innerHTML = `<div style="padding:24px 16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Connect Finance Data</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5">Requires a free <strong>Finnhub</strong> API key — sign up at <a href="https://finnhub.io" target="_blank" style="color:var(--accent)">finnhub.io</a> (30 seconds, free forever).</div>
-      <input class="task-inp" id="finnhubKeyInp" type="text" placeholder="Paste Finnhub API key…" style="margin-bottom:8px;display:block;width:100%">
-      <button style="width:100%;height:44px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer" onclick="saveFinnhubKey()">Save & Load</button>
-    </div>`;
-    return;
-  }
 
   const cache = getFinCache();
   if (cache && !force) {
