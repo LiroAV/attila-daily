@@ -1699,9 +1699,18 @@ function cleanTaskText(text) {
 }
 
 // ── FINANCE ───────────────────────────────────
+const FIN_KEY_LS = 'atd_finnhub_key';
+function getFinnhubKey() { return localStorage.getItem(FIN_KEY_LS) || ''; }
+function saveFinnhubKey() {
+  const key = document.getElementById('finnhubKeyInp')?.value.trim();
+  if (!key) return;
+  localStorage.setItem(FIN_KEY_LS, key);
+  loadFinance(true);
+}
+
 const MARKET_OVERVIEW = [
   { symbol: '^GSPC',   label: 'S&P 500'  },
-  { symbol: 'GC=F',    label: 'Gold'     },
+  { symbol: '^IXIC',   label: 'Nasdaq'   },
   { symbol: 'BTC-USD', label: 'Bitcoin'  },
   { symbol: 'ETH-USD', label: 'Ethereum' }
 ];
@@ -1732,74 +1741,44 @@ const FIN_LS = 'atd_finance_v2';
 function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
 function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), quotes: d })); }
 
-// Encode symbols so ^ and = don't break query strings
-function encodeSymbolList(syms) {
-  return syms.map(s => s.replace(/\^/g, '%5E').replace(/=/g, '%3D')).join(',');
-}
-
-async function fetchYFBatch(symbols) {
-  const symStr = encodeSymbolList(symbols);
-  const yfUrl = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + symStr +
-    '&formatted=false&lang=en-US&region=US';
-  const proxies = [
-    'https://corsproxy.io/?url=' + encodeURIComponent(yfUrl),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
-  ];
-  for (const url of proxies) {
-    try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(14000) });
-      const d = await r.json();
-      if (d?.quoteResponse?.result?.length) return d.quoteResponse.result;
-    } catch {}
-  }
-  return [];
+async function fetchFinnhubBatch(symbols, token) {
+  const results = await Promise.allSettled(
+    symbols.map(sym =>
+      fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${token}`, { signal: AbortSignal.timeout(10000) })
+        .then(r => r.json()).then(d => ({ sym, d }))
+    )
+  );
+  const quotes = {};
+  results.forEach(r => {
+    if (r.status === 'fulfilled' && r.value.d.c) {
+      const { sym, d } = r.value;
+      quotes[sym] = { price: d.c, changeAbs: d.d, changePct: d.dp, open: d.o, high: d.h, low: d.l, prevClose: d.pc, wkHigh: null, wkLow: null, name: '' };
+    }
+  });
+  return quotes;
 }
 
 async function fetchAllFinancePrices() {
-  const stockSymbols = ['^GSPC', 'GC=F', ...TRACKED_STOCKS.map(s => s.ticker)];
+  const token = getFinnhubKey();
+  const stockSymbols = ['^GSPC', '^IXIC', ...TRACKED_STOCKS.map(s => s.ticker)];
 
-  const [yfResult, cgRes] = await Promise.allSettled([
-    fetchYFBatch(stockSymbols),
+  const [fhResult, cgRes] = await Promise.allSettled([
+    fetchFinnhubBatch(stockSymbols, token),
     fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&order=market_cap_desc&per_page=2&page=1&sparkline=false', { signal: AbortSignal.timeout(10000) }).then(r => r.json())
   ]);
 
   const quotes = {};
 
-  if (yfResult.status === 'fulfilled') {
-    yfResult.value.forEach(q => {
-      quotes[q.symbol] = {
-        price:     q.regularMarketPrice,
-        changeAbs: q.regularMarketChange,
-        changePct: q.regularMarketChangePercent,
-        open:      q.regularMarketOpen,
-        high:      q.regularMarketDayHigh,
-        low:       q.regularMarketDayLow,
-        prevClose: q.regularMarketPreviousClose,
-        wkHigh:    q.fiftyTwoWeekHigh,
-        wkLow:     q.fiftyTwoWeekLow,
-        name:      q.shortName || q.longName || ''
-      };
-    });
+  if (fhResult.status === 'fulfilled') {
+    Object.assign(quotes, fhResult.value);
+    TRACKED_STOCKS.forEach(s => { if (quotes[s.ticker]) quotes[s.ticker].name = s.name; });
   }
 
   if (cgRes.status === 'fulfilled' && Array.isArray(cgRes.value)) {
     cgRes.value.forEach(c => {
       const sym = c.id === 'bitcoin' ? 'BTC-USD' : 'ETH-USD';
-      const price = c.current_price;
-      const chgAbs = c.price_change_24h;
-      const open = price - chgAbs;
-      quotes[sym] = {
-        price,
-        changeAbs: chgAbs,
-        changePct: c.price_change_percentage_24h,
-        open,
-        high:      c.high_24h,
-        low:       c.low_24h,
-        prevClose: open,
-        wkHigh:    c.ath,
-        wkLow:     c.atl,
-        name:      c.name
-      };
+      const price = c.current_price, chgAbs = c.price_change_24h;
+      quotes[sym] = { price, changeAbs: chgAbs, changePct: c.price_change_percentage_24h, open: price - chgAbs, high: c.high_24h, low: c.low_24h, prevClose: price - chgAbs, wkHigh: c.ath, wkLow: c.atl, name: c.name };
     });
   }
 
@@ -1809,6 +1788,16 @@ async function fetchAllFinancePrices() {
 async function loadFinance(force) {
   const el = document.getElementById('financeContent');
   if (!el) return;
+
+  if (!getFinnhubKey()) {
+    el.innerHTML = `<div style="padding:24px 16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Connect Finance Data</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5">Requires a free <strong>Finnhub</strong> API key — sign up at <a href="https://finnhub.io" target="_blank" style="color:var(--accent)">finnhub.io</a> (30 seconds, free forever).</div>
+      <input class="task-inp" id="finnhubKeyInp" type="text" placeholder="Paste Finnhub API key…" style="margin-bottom:8px;display:block;width:100%">
+      <button style="width:100%;height:44px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer" onclick="saveFinnhubKey()">Save & Load</button>
+    </div>`;
+    return;
+  }
 
   const cache = getFinCache();
   if (cache && !force) {
@@ -1833,7 +1822,7 @@ async function loadFinance(force) {
 
 function fmtP(price, symbol) {
   if (price == null) return '–';
-  if (symbol === '^GSPC') return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (symbol === '^GSPC' || symbol === '^IXIC') return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (symbol === 'BTC-USD' || symbol === 'ETH-USD') return '$' + price.toLocaleString('en-US', { maximumFractionDigits: 0 });
   return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -1862,7 +1851,9 @@ function renderFinance(quotes) {
     const up = q ? q.changePct >= 0 : null;
     const cls = up === null ? '' : up ? 'up-card' : 'down-card';
     const priceStr = q ? fmtP(q.price, m.symbol) : '–';
-    const chgAbsStr = q ? `${up ? '+' : ''}${m.symbol === '^GSPC' || m.symbol === 'GC=F' ? (up?'+':'')+q.changeAbs.toFixed(2) : (up?'+':'')+'$'+Math.abs(q.changeAbs).toFixed(m.symbol==='BTC-USD'?0:2)}` : '';
+    const isIndex = m.symbol === '^GSPC' || m.symbol === '^IXIC';
+    const isCrypto = m.symbol === 'BTC-USD' || m.symbol === 'ETH-USD';
+    const chgAbsStr = q ? (isIndex ? `${up?'+':''}${q.changeAbs.toFixed(2)}` : `${up?'+':''}$${Math.abs(q.changeAbs).toFixed(isCrypto?0:2)}`) : '';
     const chgPctStr = q ? `(${up ? '+' : ''}${q.changePct.toFixed(2)}%)` : '–';
     const openStr  = q && q.open ? `Open ${fmtP(q.open, m.symbol)}` : '';
     html += `<div class="fin-mcard ${cls}">
@@ -1912,10 +1903,10 @@ function renderFinance(quotes) {
         <div><div class="fin-stat-lbl">High</div><div class="fin-stat-val up">${esc(highStr)}</div></div>
         <div><div class="fin-stat-lbl">Low</div><div class="fin-stat-val down">${esc(lowStr)}</div></div>
       </div>
-      <div class="fin-52w-row">
+      ${q && q.wkHigh && q.wkLow ? `<div class="fin-52w-row">
         <div class="fin-52w-labels"><span>${esc(wkLowStr)}</span><span style="color:var(--text3);font-size:9px">52-WEEK RANGE</span><span>${esc(wkHighStr)}</span></div>
         <div class="fin-52w-bar"><div class="fin-52w-fill" style="width:${dotPct}%"></div><div class="fin-52w-dot" style="left:${dotPct}%"></div></div>
-      </div>
+      </div>` : ''}
       ${note ? `<div class="fin-note">${esc(note)}</div>` : ''}
     </div>`;
   });
