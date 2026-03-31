@@ -165,33 +165,6 @@
     .tbadge-low { background: rgba(235,235,245,0.1); color: var(--text3); }
     .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-    /* ── WATCH ── */
-    .watch-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
-    .watch-title { font-size: 22px; font-weight: 700; }
-    .watch-row-input { padding: 0 16px 20px; display: flex; gap: 8px; }
-    .watch-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 15px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; }
-    .watch-inp:focus { border-color: var(--accent); }
-    .watch-inp::placeholder { color: var(--text3); }
-    .watch-add-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .watch-add-btn:active { opacity: 0.7; }
-    .watch-topics { padding: 0 16px; display: flex; flex-direction: column; gap: 14px; }
-    .watch-card { background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
-    .watch-card-header { padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
-    .watch-topic-name { font-size: 15px; font-weight: 700; }
-    .watch-topic-right { display: flex; align-items: center; gap: 10px; }
-    .watch-count { font-size: 12px; color: var(--text3); }
-    .watch-del { background: none; border: none; color: var(--text3); font-size: 16px; cursor: pointer; padding: 0 2px; }
-    .watch-del:active { color: var(--red); }
-    .watch-article { padding: 11px 14px; display: flex; gap: 10px; align-items: flex-start; border-bottom: 0.5px solid var(--border); text-decoration: none; color: inherit; }
-    .watch-article:last-child { border-bottom: none; }
-    .watch-article:active { opacity: 0.7; }
-    .watch-article-score { font-size: 12px; font-weight: 800; width: 18px; flex-shrink: 0; padding-top: 2px; }
-    .watch-article-body { flex: 1; min-width: 0; }
-    .watch-article-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 3px; }
-    .watch-article-meta { font-size: 11px; color: var(--text3); }
-    .watch-loading { padding: 16px 14px; font-size: 13px; color: var(--text3); }
-    .watch-empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; line-height: 1.5; }
-
     /* ── DAILY ── */
     .daily-section { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 12px; }
     .daily-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
@@ -241,7 +214,7 @@
     .weather-loading { color: rgba(255,255,255,0.4); font-size: 14px; padding: 20px 0; }
     .weather-error { font-size: 13px; color: var(--text3); padding: 10px 0; }
 
-    .home-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+    .home-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
     .stat-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 12px; }
     .stat-val { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
     .stat-lbl { font-size: 11px; color: var(--text3); font-weight: 500; }
@@ -261,22 +234,25 @@
     .quote-text { font-size: 15px; line-height: 1.65; color: var(--text2); font-style: italic; margin-bottom: 8px; }
     .quote-author { font-size: 12px; color: var(--text3); font-weight: 600; }
 
-    /* ── CALENDAR ── */
-    .cal-card { margin: 0 16px 16px; background: var(--card); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; }
-    .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
-    .cal-month { font-size: 17px; font-weight: 600; }
-    .cal-btn { background: none; border: none; color: var(--accent); font-size: 22px; cursor: pointer; padding: 2px 8px; }
-    .cal-grid { padding: 0 12px 12px; }
-    .cal-dow { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 4px; }
-    .cal-dow span { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); padding: 3px 0; }
-    .cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-    .cal-d { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 50%; color: var(--text); cursor: pointer; }
-    .cal-d.dim { color: var(--text3); }
-    .cal-d.today { background: var(--accent); font-weight: 700; color: #fff; }
-    .gcal-btn-wrap { margin: 0 16px; background: linear-gradient(135deg,rgba(10,132,255,.12),rgba(191,90,242,.12)); border: 0.5px solid rgba(10,132,255,.25); border-radius: 16px; padding: 20px; text-align: center; }
-    .gcal-btn-wrap h3 { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
-    .gcal-btn-wrap p { font-size: 13px; color: var(--text2); margin-bottom: 14px; line-height: 1.4; }
-    .gcal-open { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 15px; font-weight: 600; text-decoration: none; }
+    /* ── SPOTIFY ── */
+    .sp-connect p { font-size: 13px; color: var(--text2); margin-bottom: 10px; line-height: 1.45; }
+    .sp-inp { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--text); font-family: inherit; outline: none; margin-bottom: 8px; }
+    .sp-inp:focus { border-color: #1DB954; }
+    .sp-btn { width: 100%; height: 40px; background: #1DB954; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .sp-btn:active { opacity: 0.8; }
+    .sp-now { display: flex; align-items: center; gap: 14px; }
+    .sp-art { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--bg3); }
+    .sp-info { flex: 1; min-width: 0; }
+    .sp-status { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #1DB954; margin-bottom: 4px; }
+    .sp-track { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-artist { font-size: 12px; color: var(--text2); margin-top: 3px; }
+    .sp-progress { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 10px; }
+    .sp-progress-fill { height: 100%; background: #1DB954; border-radius: 2px; }
+    .sp-disconnect { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; margin-top: 8px; display: block; }
+    /* ── JOKE ── */
+    .joke-setup { font-size: 15px; line-height: 1.65; color: var(--text2); margin-bottom: 8px; }
+    .joke-delivery { font-size: 15px; font-weight: 700; line-height: 1.5; color: var(--text); }
+    .joke-single { font-size: 15px; line-height: 1.65; color: var(--text2); }
 
     .spin { animation: rot 1s linear infinite; display: inline-block; }
     @keyframes rot { to { transform: rotate(360deg); } }
@@ -324,23 +300,6 @@
     .fin-loading { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; }
     .fin-update-time { text-align: center; font-size: 11px; color: var(--text3); padding: 4px 16px 12px; }
 
-    /* ── SLEEP LOG ── */
-    .sleep-inputs { display: flex; gap: 8px; margin-bottom: 12px; align-items: flex-end; }
-    .sleep-field { flex: 1; }
-    .sleep-field label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text3); display: block; margin-bottom: 5px; }
-    .sleep-inp { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; color-scheme: dark; }
-    .sleep-inp:focus { border-color: var(--accent); }
-    .sleep-log-btn { height: 40px; padding: 0 16px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
-    .sleep-log-btn:active { opacity: 0.7; }
-    .sleep-avg { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
-    .sleep-avg strong { color: var(--text); }
-    .sleep-chart { display: flex; gap: 4px; height: 80px; align-items: stretch; }
-    .sleep-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
-    .sleep-bar-val { font-size: 8px; color: var(--text2); height: 14px; flex-shrink: 0; text-align: center; line-height: 14px; }
-    .sleep-bar-area { flex: 1; width: 100%; position: relative; }
-    .sleep-bar { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 2px 2px 0 0; min-height: 3px; transition: height 0.3s; }
-    .sleep-bar-label { font-size: 9px; color: var(--text3); height: 14px; flex-shrink: 0; text-align: center; line-height: 14px; }
-
     /* ── MORNING BRIEF ── */
     .brief-api-row { display: flex; gap: 8px; margin-bottom: 10px; }
     .brief-key-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--text); font-family: inherit; outline: none; min-width: 0; }
@@ -377,6 +336,10 @@
         <div class="weather-loading">Locating…</div>
       </div>
       <div class="home-stats" id="homeStats"></div>
+      <div class="home-card" id="spotifyCard">
+        <div class="home-card-title">Spotify</div>
+        <div id="spotifyContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
       <div class="home-card" id="quoteCard">
         <div class="home-card-title">Quote of the day</div>
         <div style="font-size:13px;color:var(--text3)">Loading…</div>
@@ -397,25 +360,14 @@
         <textarea class="gratitude-area" id="gratitudeArea" placeholder="What are you grateful for today?"></textarea>
         <div class="gratitude-saved" id="gratitudeSaved"></div>
       </div>
-      <div class="daily-card" id="sleepCard">
-        <div class="daily-card-title">Sleep Log</div>
-        <div class="sleep-inputs">
-          <div class="sleep-field">
-            <label for="sleepBedtime">Bedtime</label>
-            <input class="sleep-inp" id="sleepBedtime" type="time" value="23:00">
-          </div>
-          <div class="sleep-field">
-            <label for="sleepWaketime">Wake time</label>
-            <input class="sleep-inp" id="sleepWaketime" type="time" value="07:00">
-          </div>
-          <button class="sleep-log-btn" onclick="logSleep()">Log</button>
-        </div>
-        <div id="sleepHistory"></div>
-      </div>
       <div class="daily-card" id="historyCard"><div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div></div>
       <div class="daily-card" id="wordsCard"><div class="daily-card-title">Words of the day</div></div>
       <div class="daily-card" id="factsCard"><div class="daily-card-title">Did you know?</div></div>
       <div class="daily-card" id="knowledgeCard"><div class="daily-card-title">Worth Knowing</div></div>
+      <div class="home-card" id="jokeCard">
+        <div class="home-card-title">Daily Joke</div>
+        <div id="jokeContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
     </div>
   </div>
 
@@ -466,38 +418,6 @@
     <div class="task-list" id="taskList"></div>
   </div>
 
-  <!-- ── WATCH ── -->
-  <div class="tab-pane" id="pane-watch">
-    <div class="watch-head">
-      <span class="watch-title">Watch</span>
-    </div>
-    <div style="margin: 0 16px 14px">
-      <div class="watch-card">
-        <div class="watch-card-header">
-          <span class="watch-topic-name">@karpathy</span>
-          <div class="watch-topic-right">
-            <span class="watch-count" style="color:var(--purple)">AI · Pinned</span>
-          </div>
-        </div>
-        <div style="padding:0 14px 10px" id="karpathyEmbed">
-          <a class="twitter-timeline"
-             data-theme="dark"
-             data-tweet-limit="5"
-             data-chrome="noheader nofooter transparent noborders noscrollbar"
-             data-dnt="true"
-             href="https://twitter.com/search?q=from%3Akarpathy&src=typed_query&f=live">
-            Loading @karpathy posts…
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="watch-row-input">
-      <input class="watch-inp" id="watchInp" placeholder="Add a topic to track…" onkeydown="if(event.key==='Enter')addWatchTopic()">
-      <button class="watch-add-btn" onclick="addWatchTopic()">+</button>
-    </div>
-    <div class="watch-topics" id="watchTopics"></div>
-  </div>
-
   <!-- ── FINANCE ── -->
   <div class="tab-pane" id="pane-finance">
     <div class="fin-head">
@@ -509,26 +429,6 @@
     </div>
   </div>
 
-  <!-- ── CALENDAR ── -->
-  <div class="tab-pane" id="pane-calendar">
-    <div style="padding:4px 16px 14px"><span style="font-size:22px;font-weight:700">Calendar</span></div>
-    <div class="cal-card">
-      <div class="cal-nav">
-        <button class="cal-btn" onclick="calShift(-1)">‹</button>
-        <div class="cal-month" id="calMonth"></div>
-        <button class="cal-btn" onclick="calShift(1)">›</button>
-      </div>
-      <div class="cal-grid">
-        <div class="cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
-        <div class="cal-days" id="calDays"></div>
-      </div>
-    </div>
-    <div class="gcal-btn-wrap">
-      <h3>Open Google Calendar</h3>
-      <p>Your full schedule for<br>attilahuba.vizhanyo@gmail.com</p>
-      <a href="https://calendar.google.com/calendar/r" target="_blank" class="gcal-open">Open Calendar →</a>
-    </div>
-  </div>
 
 </div>
 
@@ -545,17 +445,9 @@
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     <div class="tab-label">Tasks</div>
   </div>
-  <div class="tab-item" onclick="goTab('watch',this)">
-    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-    <div class="tab-label">Watch</div>
-  </div>
   <div class="tab-item" onclick="goTab('finance',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <div class="tab-label">Finance</div>
-  </div>
-  <div class="tab-item" onclick="goTab('calendar',this)">
-    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    <div class="tab-label">Cal</div>
   </div>
 </nav>
 
@@ -618,21 +510,14 @@ let data = {};
 let xData = {};
 let xMode = false;
 let activeFilter = 'all';
-let calDate = new Date();
 
 // ── BOOT ─────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await handleSpotifyCallback();
   setHeader();
   loadAll();
   renderTasks();
-  renderCal();
-  renderWatchTopics();
   loadHome();
-  // Preload Twitter widget so @karpathy embed is ready when Watch tab opens
-  const tw = document.createElement('script');
-  tw.src = 'https://platform.twitter.com/widgets.js';
-  tw.async = true;
-  document.head.appendChild(tw);
 });
 
 function setHeader() {
@@ -901,273 +786,11 @@ function getTodayData() { const d = getDailyData(); return d[today()] || {}; }
 function setTodayData(patch) { const d = getDailyData(); d[today()] = { ...getTodayData(), ...patch }; setDailyData(d); }
 function dayOfYear() { const n = new Date(), s = new Date(n.getFullYear(),0,1); return Math.floor((n-s)/86400000); }
 
-const FUN_HOLIDAYS = {
-  '01-01':['New Year\'s Day','World Peace Day'],
-  '01-17':['Kid Inventors\' Day'],
-  '02-02':['Groundhog Day'],
-  '02-14':['Valentine\'s Day'],
-  '03-10':['Mario Day — MAR10'],
-  '03-14':['Pi Day — 3.14159…','National Potato Chip Day'],
-  '03-17':['St. Patrick\'s Day'],
-  '03-20':['International Day of Happiness','World Frog Day'],
-  '03-26':['Purple Day — epilepsy awareness'],
-  '04-01':['April Fools\' Day'],
-  '04-04':['World Rat Day'],
-  '04-22':['Earth Day'],
-  '04-23':['World Book Day'],
-  '05-04':['Star Wars Day — May the 4th be with you'],
-  '05-25':['Towel Day — Hitchhiker\'s Guide to the Galaxy'],
-  '06-08':['World Ocean Day'],
-  '06-18':['International Picnic Day'],
-  '06-21':['World Music Day','Summer Solstice'],
-  '07-04':['US Independence Day','National Barbecue Day'],
-  '07-13':['Embrace Your Geekness Day'],
-  '08-08':['International Cat Day'],
-  '08-13':['International Left-Handers Day'],
-  '09-13':['Roald Dahl Day'],
-  '09-19':['Talk Like a Pirate Day'],
-  '10-04':['World Animal Day'],
-  '10-10':['World Mental Health Day'],
-  '10-31':['Halloween'],
-  '11-11':['Veterans Day','Singles Day','Armistice Day'],
-  '11-17':['World Toilet Day'],
-  '12-21':['Winter Solstice — shortest day of the year'],
-  '12-25':['Christmas Day'],
-  '12-31':['New Year\'s Eve']
-};
 
-const ENG_WORDS = [
-  {w:'Petrichor',     d:'The earthy scent produced when rain falls on dry soil.',                               e:'"After weeks of drought, the petrichor that rose from the garden was intoxicating."'},
-  {w:'Sonder',        d:'The realization that each passerby has a life as vivid and complex as your own.',      e:'"Watching the crowd from the café window, he was struck by a sudden sonder."'},
-  {w:'Serendipity',   d:'Finding something good without looking for it.',                                       e:'"Meeting his co-founder at that random conference was pure serendipity."'},
-  {w:'Ephemeral',     d:'Lasting for a very short time; transitory.',                                           e:'"Cherry blossoms are beautiful precisely because they are so ephemeral."'},
-  {w:'Mellifluous',   d:'Sweet and smooth to hear; like honey in sound.',                                       e:'"The cellist\'s mellifluous tone filled the entire hall."'},
-  {w:'Ineffable',     d:'Too great or extreme to be expressed in words.',                                       e:'"The view from the summit was ineffable — no photograph could do it justice."'},
-  {w:'Defenestration',d:'The act of throwing someone out of a window.',                                         e:'"The committee\'s sudden defenestration of the chairman shocked everyone."'},
-  {w:'Apricity',      d:'The warmth of the sun on a cold winter\'s day.',                                       e:'"He found apricity sitting on the south-facing bench in January."'},
-  {w:'Quixotic',      d:'Exceedingly idealistic and impractical.',                                              e:'"Her quixotic plan to cycle across Antarctica raised many eyebrows."'},
-  {w:'Perspicacious', d:'Having sharp mental insight and understanding.',                                       e:'"A perspicacious investor spotted the opportunity before the market reacted."'},
-  {w:'Loquacious',    d:'Tending to talk a great deal; very talkative.',                                        e:'"The loquacious professor filled every available second with anecdotes."'},
-  {w:'Sanguine',      d:'Optimistic and positive, especially in a tough situation.',                            e:'"Despite the setbacks, she remained sanguine about the project\'s outcome."'},
-  {w:'Verisimilitude',d:'The appearance of being true or real.',                                                e:'"The film\'s verisimilitude was enhanced by shooting on location."'},
-  {w:'Limerence',     d:'An involuntary obsessive infatuation with another person.',                            e:'"His limerence faded once he got to know her as a real, flawed person."'},
-  {w:'Numinous',      d:'Having a strong spiritual quality; mysteriously awe-inspiring.',                       e:'"Standing inside the ancient cathedral, she felt a numinous awe wash over her."'},
-  {w:'Callipygian',   d:'Having well-shaped buttocks.',                                                         e:'"The sculptor was celebrated for his callipygian figures."'},
-  {w:'Syzygy',        d:'The alignment of three celestial objects in a straight line.',                         e:'"During syzygy, the Moon\'s gravitational pull on the oceans is at its peak."'},
-  {w:'Flibbertigibbet',d:'A frivolous, flighty, or overly talkative person.',                                  e:'"That flibbertigibbet couldn\'t focus on anything for more than five minutes."'},
-  {w:'Discombobulate',d:'To confuse or disconcert someone.',                                                    e:'"Jet lag never fails to completely discombobulate me for the first two days."'},
-  {w:'Pulchritude',   d:'Physical beauty.',                                                                     e:'"Renaissance painters celebrated the pulchritude of the human form."'},
-  {w:'Sesquipedalian',d:'Given to using very long words.',                                                      e:'"His sesquipedalian tendencies made every email a small ordeal."'},
-  {w:'Hiraeth',       d:'A homesickness for a home you can\'t return to, or never had.',                        e:'"Years after emigrating, she still felt a deep hiraeth for the village she grew up in."'},
-  {w:'Obfuscate',     d:'To make something unclear or hard to understand.',                                     e:'"The contract was deliberately written to obfuscate the true fees."'},
-  {w:'Labyrinthine',  d:'Resembling a labyrinth; intricate and complex.',                                       e:'"The labyrinthine bureaucracy made getting a permit take three months."'},
-  {w:'Melancholy',    d:'A deep, pensive sadness with no obvious cause.',                                       e:'"A long stretch of grey November skies always brings on a quiet melancholy."'},
-  {w:'Zeitgeist',     d:'The defining spirit or mood of a particular period in history.',                       e:'"Streaming perfectly captured the zeitgeist of the 2010s."'},
-  {w:'Wanderlust',    d:'A strong desire to travel and explore the world.',                                     e:'"After years of the same commute, her wanderlust became impossible to ignore."'},
-  {w:'Schadenfreude', d:'Pleasure derived from another person\'s misfortune.',                                  e:'"He felt a twinge of schadenfreude when his smug rival missed the flight."'},
-  {w:'Equanimity',    d:'Mental calmness and composure, especially in difficult situations.',                   e:'"She faced the unexpected diagnosis with remarkable equanimity."'},
-  {w:'Propitious',    d:'Giving or indicating a good chance of success; favourable.',                           e:'"Clear skies and a light wind made it a propitious day for the launch."'},
-  {w:'Capricious',    d:'Given to sudden and unaccountable changes of mood or behaviour.',                      e:'"The capricious weather meant you needed an umbrella and sunscreen on the same day."'},
-  {w:'Luminous',      d:'Giving off light; glowing in the dark.',                                               e:'"The luminous full moon lit the trail without a torch."'},
-  {w:'Taciturn',      d:'Reserved or uncommunicative in speech; saying little.',                                e:'"The new hire was so taciturn that colleagues wondered if something was wrong."'},
-  {w:'Vivacious',     d:'Attractively lively and animated.',                                                    e:'"Her vivacious energy made her the natural centre of every gathering."'},
-  {w:'Pensive',       d:'Engaged in deep or serious thought.',                                                  e:'"He sat by the window, pensive, replaying the conversation in his mind."'},
-];
 
-const DEU_WORDS = [
-  {w:'Fernweh',           d:'Longing for distant places; the opposite of homesickness.',                        e:'"After months at home, his Fernweh became unbearable and he booked a flight."'},
-  {w:'Weltschmerz',       d:'World-weariness; deep sadness about the imperfection of the world.',              e:'"Reading the news on a bad day can trigger a real Weltschmerz."'},
-  {w:'Torschlusspanik',   d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.',     e:'"At 35, she felt a creeping Torschlusspanik about changing careers."'},
-  {w:'Verschlimmbessern', d:'To make something worse while trying to improve it.',                              e:'"He tried to fix his original mistake but ended up verschlimmbessern it."'},
-  {w:'Drachenfutter',     d:'Dragon food; a peace offering given to a partner after doing something wrong.',   e:'"He came home late with flowers — classic Drachenfutter."'},
-  {w:'Fingerspitzengefühl',d:'Fingertip feeling; an intuitive sensitivity and delicate touch.',                 e:'"Negotiating a peace deal requires extraordinary Fingerspitzengefühl."'},
-  {w:'Kopfkino',          d:'Head cinema; the vivid mental film that plays out in your imagination.',           e:'"When she didn\'t reply for hours, his Kopfkino went into overdrive."'},
-  {w:'Waldeinsamkeit',    d:'The peaceful solitude and connection with nature felt deep in a forest.',          e:'"She found the Waldeinsamkeit of the Black Forest deeply healing."'},
-  {w:'Gemütlichkeit',     d:'A warm, cosy, convivial feeling of comfort and belonging.',                        e:'"The small alpine hut had an irresistible Gemütlichkeit about it."'},
-  {w:'Schnapsidee',       d:'A ridiculous idea that sounds great when you\'re drunk.',                          e:'"Driving to Morocco was a total Schnapsidee, but it turned out wonderfully."'},
-  {w:'Treppenwitz',       d:'Staircase wit; a clever comeback you only think of after the moment has passed.',  e:'"He thought of the perfect reply on the walk home — a classic Treppenwitz."'},
-  {w:'Kummerspeck',       d:'Grief bacon; weight gained from emotional eating.',                                e:'"Two weeks of Kummerspeck after the breakup left him with noticeably tighter jeans."'},
-  {w:'Fremdschämen',      d:'Vicarious embarrassment felt on behalf of someone who isn\'t embarrassed.',       e:'"Watching that speech filled her with Fremdschämen."'},
-  {w:'Backpfeifengesicht',d:'A face that is crying out to be slapped.',                                         e:'"Every office has that one person with an undeniable Backpfeifengesicht."'},
-  {w:'Schwellenangst',    d:'Threshold anxiety; hesitation or dread before crossing into a new situation.',    e:'"He stood at the gallery entrance for ten minutes, paralyzed by Schwellenangst."'},
-  {w:'Sturmfrei',         d:'Having the house to yourself; free from parental or authority supervision.',       e:'"With his parents away, he finally had the place sturmfrei for the weekend."'},
-  {w:'Weltanschauung',    d:'A complete and comprehensive worldview or philosophy of life.',                    e:'"Her travels shaped a Weltanschauung no classroom could have provided."'},
-  {w:'Innerer Schweinehund',d:'Inner pig-dog; the lazy inner voice that talks you out of doing the right thing.',e:'"Every morning, his innerer Schweinehund convinces him to skip the gym."'},
-  {w:'Lebensmüde',        d:'Life-tired; used humorously for someone doing something reckless.',                e:'"You\'d have to be lebensmüde to eat that ten-year-old cheese."'},
-  {w:'Doppelgänger',      d:'A ghostly double of a living person; someone who looks exactly like you.',         e:'"She swore she saw her Doppelgänger on the subway platform."'},
-  {w:'Erklärungsnot',     d:'The desperate scramble to explain or justify yourself.',                           e:'"Caught leaving early, he stumbled through a painful Erklärungsnot."'},
-  {w:'Fahrvergnügen',     d:'Driving pleasure; the pure joy of driving a well-made car.',                       e:'"That mountain road was pure Fahrvergnügen in a well-tuned sports car."'},
-  {w:'Ohrwurm',           d:'Earworm; a tune that gets stuck in your head and won\'t leave.',                   e:'"That jingle is such an Ohrwurm — I\'ve been humming it for three days."'},
-  {w:'Fingerhut',         d:'Thimble — literally "finger hat."',                                                e:'"She used a Fingerhut to push the needle through the heavy canvas."'},
-  {w:'Kuddelmuddel',      d:'A complete mess or muddle; utter chaos.',                                          e:'"After moving, the apartment was a total Kuddelmuddel of boxes and cables."'},
-  {w:'Querdenker',        d:'A lateral thinker; someone who thinks outside the box.',                           e:'"The startup hired a few Querdenker to shake up their product strategy."'},
-  {w:'Zweisamkeit',       d:'The cosy intimacy of being together as a couple; togetherness for two.',           e:'"Sunday mornings were their time for Zweisamkeit — phones off, coffee on."'},
-  {w:'Verschnaufpause',  d:'A breathing pause; a short break to catch your breath.'},
-  {w:'Kabelsalat',       d:'Cable salad; a tangled mess of cables and wires.'},
-  {w:'Naschkatze',       d:'Sweet cat; a person with a sweet tooth who always nibbles on treats.'},
-  {w:'Pustekuchen',      d:'An exclamation meaning "no way!" or "fat chance!" — literally "puff pastry."'},
-  {w:'Dankbarkeit',      d:'Gratitude; the feeling of being thankful and appreciative.'},
-  {w:'Weltverbesserer',  d:'World-improver; an idealistic person who wants to make the world better.'},
-  {w:'Schmetterling',    d:'Butterfly — literally "smasher-ling" (from smearing butter, an old folk belief).'},
-  {w:'Fingerfertigkeit', d:'Manual dexterity; nimbleness and skill of the fingers.'},
-];
 
-const FACTS = [
-  'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid.',
-  'There are more possible chess games than atoms in the observable universe.',
-  'Honey never spoils — archaeologists found edible honey in 3,000-year-old Egyptian tombs.',
-  'A day on Venus is longer than a year on Venus.',
-  'Crows can recognize individual human faces and hold grudges for years.',
-  'Wombat poop is cube-shaped — the only known animal to produce cubic feces.',
-  'Sea otters hold hands while sleeping so they don\'t drift apart.',
-  'Oxford University is older than the Aztec Empire.',
-  'Bananas are slightly radioactive.',
-  'The inventor of Pringles (Fredric Baur) was buried in a Pringles can at his request.',
-  'A bolt of lightning is five times hotter than the surface of the sun.',
-  'Octopuses have three hearts, blue blood, and nine brains.',
-  'The average person will walk the equivalent of five times around the Earth in their lifetime.',
-  'Hot water can freeze faster than cold water under certain conditions (the Mpemba effect).',
-  'A group of flamingos is called a flamboyance.',
-  'The shortest war in history lasted 38 minutes — the Anglo-Zanzibar War of 1896.',
-  'Sloths can hold their breath longer than dolphins — up to 40 minutes.',
-  'Humans share 60% of their DNA with bananas.',
-  'Sharks are older than trees — sharks have existed for 450 million years, trees for 350 million.',
-  'There is a planet made mostly of diamond — 55 Cancri e, roughly twice the size of Earth.',
-  'A snail can sleep for up to three years.',
-  'The word "muscle" comes from Latin "musculus," meaning "little mouse."',
-  'Butterflies taste with their feet.',
-  'A "jiffy" is an actual unit of time: 1/100th of a second.',
-  'The original name for Google was "Backrub."',
-  'Nintendo was founded in 1889 — originally as a playing card company.',
-  'The T-Rex lived closer in time to us than to the Stegosaurus.',
-  'Vending machines kill more people per year than sharks.',
-  'A group of owls is called a parliament.',
-  'The national animal of Scotland is the unicorn.',
-  'Cleopatra wore a perfume so distinctive that soldiers could smell her barge coming before they saw it.',
-  'Astronauts are taller in space — spines expand without gravity\'s compression.',
-  'There are more trees on Earth than stars in the Milky Way.',
-  'The entire internet weighs about 50 grams — the weight of a strawberry (electrons in motion).',
-  'Newborn babies have about 270 bones. Adults have 206. Bones fuse as you grow.',
-];
 
-const HISTORY_EVENTS = {
-  '01-01':'1863 — Lincoln signs the Emancipation Proclamation, declaring enslaved people in Confederate states to be free.',
-  '01-07':'1610 — Galileo discovers the four largest moons of Jupiter, now called the Galilean moons.',
-  '01-10':'1946 — The U.S. Army bounces a radar signal off the Moon for the first time.',
-  '01-15':'1929 — Martin Luther King Jr. is born in Atlanta, Georgia.',
-  '01-17':'1961 — Eisenhower delivers his farewell address, coining the term "military-industrial complex."',
-  '01-20':'1961 — JFK is inaugurated, declaring: "Ask not what your country can do for you — ask what you can do for your country."',
-  '01-27':'1945 — Soviet troops liberate Auschwitz, revealing the full scale of the Holocaust.',
-  '01-28':'1986 — Space Shuttle Challenger breaks apart 73 seconds after launch, killing all seven crew.',
-  '01-30':'1948 — Mahatma Gandhi is assassinated in New Delhi at age 78.',
-  '02-04':'2004 — Mark Zuckerberg launches "TheFacebook" from his Harvard dorm room.',
-  '02-11':'1990 — Nelson Mandela is released from prison after 27 years.',
-  '02-12':'1809 — Charles Darwin is born — on the exact same day as Abraham Lincoln.',
-  '02-14':'1929 — The St. Valentine\'s Day Massacre: seven rivals of Al Capone are shot in Chicago.',
-  '02-18':'1930 — Clyde Tombaugh discovers Pluto at the Lowell Observatory in Arizona.',
-  '02-19':'1473 — Copernicus is born; he would propose that the Earth orbits the Sun.',
-  '02-24':'1582 — Pope Gregory XIII introduces the Gregorian calendar, correcting the Julian calendar\'s drift.',
-  '03-05':'1953 — Joseph Stalin dies after a stroke, ending his 29-year rule of the Soviet Union.',
-  '03-06':'1475 — Michelangelo is born; he will paint the Sistine Chapel ceiling at age 33.',
-  '03-10':'1876 — Alexander Graham Bell makes the world\'s first telephone call: "Mr. Watson, come here."',
-  '03-14':'1879 — Albert Einstein is born in Ulm, Germany.',
-  '03-15':'44 BC — Julius Caesar is assassinated on the Ides of March by senators including Brutus and Cassius.',
-  '03-16':'1926 — Robert Goddard launches the world\'s first liquid-fueled rocket — it travels 12 metres in 2.5 seconds.',
-  '03-20':'1980 — The Rubik\'s Cube goes on international sale.',
-  '03-25':'1807 — Britain\'s Slave Trade Act passes, abolishing the slave trade across the British Empire.',
-  '03-26':'1953 — Jonas Salk announces his polio vaccine is safe and effective, saving millions of lives.',
-  '04-01':'1976 — Apple Computer is founded by Steve Jobs, Steve Wozniak, and Ronald Wayne in a garage.',
-  '04-04':'1968 — Martin Luther King Jr. is assassinated at the Lorraine Motel in Memphis, Tennessee.',
-  '04-12':'1961 — Yuri Gagarin becomes the first human in space, completing one orbit of Earth in 108 minutes.',
-  '04-15':'1912 — The Titanic sinks after hitting an iceberg, killing over 1,500 people.',
-  '04-19':'1775 — The American Revolutionary War begins at Lexington and Concord.',
-  '04-22':'1970 — The first Earth Day mobilises 20 million Americans for environmental protection.',
-  '04-23':'1564 — William Shakespeare is born in Stratford-upon-Avon.',
-  '04-30':'1789 — George Washington is inaugurated as the first President of the United States.',
-  '05-06':'1954 — Roger Bannister runs the first sub-four-minute mile: 3 minutes 59.4 seconds.',
-  '05-08':'1945 — VE Day: Nazi Germany surrenders, ending World War II in Europe.',
-  '05-14':'1948 — The State of Israel is proclaimed by David Ben-Gurion.',
-  '05-17':'1954 — The Supreme Court rules in Brown v. Board of Education that school segregation is unconstitutional.',
-  '05-21':'1927 — Lindbergh completes the first solo nonstop transatlantic flight, landing in Paris after 33.5 hours.',
-  '05-25':'1977 — Star Wars is released, launching one of the most successful franchises in history.',
-  '05-29':'1953 — Hillary and Norgay become the first climbers to summit Mount Everest.',
-  '06-06':'1944 — D-Day: 156,000 Allied troops land on the beaches of Normandy.',
-  '06-16':'1963 — Valentina Tereshkova becomes the first woman in space.',
-  '06-17':'1972 — Five men are arrested at the Watergate complex, beginning the scandal that ends Nixon\'s presidency.',
-  '06-28':'1914 — Archduke Franz Ferdinand is assassinated in Sarajevo, triggering World War I.',
-  '07-04':'1776 — The Declaration of Independence is adopted, declaring thirteen colonies free from British rule.',
-  '07-16':'1969 — Apollo 11 launches toward the Moon with Armstrong, Aldrin, and Collins aboard.',
-  '07-20':'1969 — Neil Armstrong becomes the first human to walk on the Moon.',
-  '07-26':'1948 — Truman signs Executive Order 9981, desegregating the U.S. Armed Forces.',
-  '08-06':'1945 — The first atomic bomb is dropped on Hiroshima, Japan, killing an estimated 80,000 instantly.',
-  '08-13':'1961 — Construction of the Berlin Wall begins, dividing Germany for the next 28 years.',
-  '08-15':'1947 — India gains independence from Britain after nearly 200 years of colonial rule.',
-  '08-26':'1920 — The 19th Amendment is certified, granting women in the U.S. the right to vote.',
-  '08-28':'1963 — Martin Luther King Jr. delivers "I Have a Dream" during the March on Washington.',
-  '09-01':'1939 — Germany invades Poland, starting World War II.',
-  '09-11':'2001 — Terrorist attacks on the U.S. kill nearly 3,000 people and change global security forever.',
-  '09-12':'1962 — Kennedy delivers "We choose to go to the Moon" at Rice University.',
-  '09-17':'1787 — The U.S. Constitution is signed in Philadelphia.',
-  '10-04':'1957 — The Soviet Union launches Sputnik 1, the world\'s first artificial satellite.',
-  '10-12':'1492 — Columbus lands in the Bahamas, beginning sustained European contact with the Americas.',
-  '10-14':'1947 — Chuck Yeager becomes the first person to break the sound barrier.',
-  '10-28':'1886 — The Statue of Liberty is dedicated in New York Harbor.',
-  '10-29':'1929 — Black Tuesday: the U.S. stock market crashes, triggering the Great Depression.',
-  '10-31':'1517 — Martin Luther nails his 95 Theses to a church door in Wittenberg, sparking the Reformation.',
-  '11-09':'1989 — The Berlin Wall falls; East Germany opens its borders after 28 years.',
-  '11-11':'1918 — World War I ends at the 11th hour of the 11th day of the 11th month.',
-  '11-19':'1863 — Lincoln delivers the Gettysburg Address.',
-  '11-22':'1963 — President Kennedy is assassinated in Dallas, Texas.',
-  '12-01':'1955 — Rosa Parks refuses to give up her bus seat, sparking the Montgomery Bus Boycott.',
-  '12-07':'1941 — Japan attacks Pearl Harbor; the U.S. enters World War II the next day.',
-  '12-10':'1948 — The Universal Declaration of Human Rights is adopted by the United Nations.',
-  '12-17':'1903 — The Wright brothers make the first powered airplane flight at Kitty Hawk — 12 seconds, 36 metres.',
-  '12-25':'800 — Charlemagne is crowned Holy Roman Emperor by Pope Leo III in Rome.',
-  '12-31':'1999 — The world transitions to the year 2000 without the feared Y2K collapse.',
-};
 
-const KNOWLEDGE = [
-  'The speed of light is exactly 299,792,458 m/s. The metre itself is defined by this constant.',
-  'DNA pairs: Adenine (A) with Thymine (T), and Cytosine (C) with Guanine (G). These four bases encode all life.',
-  'Newton\'s three laws: (1) objects at rest stay at rest; (2) F = ma; (3) every action has an equal and opposite reaction.',
-  'Water expands by ~9% when it freezes — which is why ice floats and pipes burst in winter.',
-  'The brain uses ~20% of the body\'s total energy despite being only ~2% of body weight.',
-  'A byte = 8 bits. 1 KB = 1,024 bytes. 1 MB = 1,024 KB. 1 GB = 1,024 MB. 1 TB = 1,024 GB.',
-  'The three branches of U.S. government: Legislative (Congress makes laws), Executive (President enforces), Judicial (Supreme Court interprets).',
-  'The Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34… Each number is the sum of the two before it. It appears throughout nature.',
-  'Photosynthesis: 6CO₂ + 6H₂O + sunlight → C₆H₁₂O₆ + 6O₂. Plants absorb carbon dioxide and release oxygen.',
-  'The electromagnetic spectrum (longest to shortest wavelength): Radio → Microwave → Infrared → Visible → UV → X-ray → Gamma.',
-  'GDP measures the total value of all goods and services a country produces in a year. It\'s the standard measure of economic size.',
-  'Maslow\'s hierarchy (base to peak): Physiological → Safety → Love & Belonging → Esteem → Self-actualisation.',
-  'The Dunning-Kruger effect: people with limited knowledge tend to overestimate their own competence.',
-  'Supply and demand: when supply rises or demand falls, prices drop. When supply falls or demand rises, prices rise.',
-  'Compound interest: A = P(1 + r/n)^(nt). Einstein reportedly called it "the eighth wonder of the world."',
-  'The rule of 72: divide 72 by your annual return to estimate how many years it takes to double your money (e.g. 72 ÷ 8% = 9 years).',
-  'Blood types: A, B, AB, O. O-negative is the universal donor. AB-positive is the universal recipient.',
-  'The speed of sound in air is ~343 m/s (1,235 km/h) at 20°C — roughly 1 mile every 5 seconds.',
-  'Ohm\'s Law: V = IR. Voltage equals Current times Resistance. Double the resistance, halve the current.',
-  'There are 206 bones in the adult human body. Babies are born with ~270; they fuse as you grow.',
-  'The brain\'s four lobes: Frontal (decisions, personality), Parietal (sensory), Temporal (memory, language), Occipital (vision).',
-  'Common cognitive biases: Confirmation bias (only seeking info that agrees with you), Sunk cost fallacy (throwing good money after bad), Recency bias (overweighting the latest event).',
-  'A calorie (kcal) is the energy to heat 1 kg of water by 1°C. Carbs and protein have ~4 kcal/g; fat has ~9 kcal/g.',
-  'Earth is ~4.5 billion years old. Complex life appeared ~600 million years ago. Homo sapiens ~300,000 years ago.',
-  'Latitude lines run east–west and measure north–south position (0° = equator, 90° = poles). Longitude lines measure east–west position (0° = Greenwich).',
-  'The P/E ratio (Price-to-Earnings) shows what investors pay per $1 of profit. A high P/E implies growth expectations; a low P/E may signal value.',
-  'Three types of rock: Igneous (cooled magma), Sedimentary (compressed layers), Metamorphic (transformed by heat or pressure).',
-  'Inflation measures how fast prices rise. Central banks typically target ~2% per year. High inflation erodes purchasing power.',
-  'The logical fallacy "ad hominem" attacks the person instead of their argument — it never disproves the claim.',
-  'Roman numerals: I=1, V=5, X=10, L=50, C=100, D=500, M=1000. Smaller before larger = subtraction (IV=4, IX=9, XL=40).',
-  'In statistics: mean = average, median = middle value, mode = most frequent. Standard deviation measures spread.',
-  'Light takes ~8 minutes to travel from the Sun to Earth. The nearest star beyond our Sun (Proxima Centauri) is 4.2 light-years away.',
-  'The mitochondria produce ATP via cellular respiration, powering virtually every function in your body.',
-  'Logical reasoning forms: modus ponens — if P then Q; P is true; therefore Q is true. Modus tollens — Q is false; therefore P is false.',
-  'The seven SI base units: metre (length), kilogram (mass), second (time), ampere (current), kelvin (temperature), mole (amount), candela (luminosity).',
-  'The stock market has returned ~10% per year on average historically (S&P 500). Adjusted for inflation, roughly 7%.',
-  'Herd immunity is reached when enough of a population is immune to slow the spread of disease — typically 70–95% depending on contagiousness.',
-  'The double helix structure of DNA was described by Watson and Crick in 1953, based largely on X-ray data from Rosalind Franklin.',
-  'Sleep stages: NREM 1 (light) → NREM 2 (deeper) → NREM 3 (deep/restorative) → REM (dreaming). A full cycle takes ~90 minutes.',
-  'The concept of opportunity cost: every choice has a cost — what you give up by not choosing the next best alternative.',
-];
 
 async function loadDaily() {
   renderHolidays();
@@ -1181,8 +804,10 @@ async function loadDaily() {
 async function renderHolidays() {
   const now = new Date();
   const todayStr = now.toISOString().slice(0,10);
-  const mmdd = todayStr.slice(5);
-  const fun = FUN_HOLIDAYS[mmdd] || [];
+  const el = document.getElementById('holidayCard');
+
+  const td = getTodayData();
+  if (td.holidays) { renderHolidayHTML(el, td.holidays); return; }
 
   let official = [];
   try {
@@ -1198,17 +823,27 @@ async function renderHolidays() {
     results.flat()
       .filter(h => h.date === todayStr)
       .forEach(h => {
-        const name = h.name;
-        if (!seen.has(name)) { seen.add(name); official.push(name); }
+        if (!seen.has(h.name)) { seen.add(h.name); official.push({ name: h.name, type: 'Public holiday', fun: false }); }
       });
   } catch {}
 
-  const all = [
-    ...official.map(n => ({ name: n, type: 'Public holiday', fun: false })),
-    ...fun.map(n => ({ name: n, type: 'Fun day', fun: true }))
-  ].slice(0, 4);
+  let fun = [];
+  try {
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const dy = String(now.getDate()).padStart(2,'0');
+    const r = await fetch(`https://www.checkiday.com/api/3/?d=${m}/${dy}/${now.getFullYear()}`, { signal: AbortSignal.timeout(6000) });
+    const cdata = await r.json();
+    if (cdata.holidays && cdata.holidays.length) {
+      fun = cdata.holidays.slice(0, 3).map(h => ({ name: h.name, type: 'Special day', fun: true }));
+    }
+  } catch {}
 
-  const el = document.getElementById('holidayCard');
+  const all = [...official, ...fun].slice(0, 5);
+  setTodayData({ holidays: all });
+  renderHolidayHTML(el, all);
+}
+
+function renderHolidayHTML(el, all) {
   if (!all.length) {
     el.innerHTML = `<div class="daily-card-title">Today's Days</div><div class="no-holidays">No special days today — make your own.</div>`;
     return;
@@ -1220,33 +855,48 @@ async function renderHolidays() {
     </div>`).join('');
 }
 
+const DEU_WORDS_MINI = [
+  {w:'Torschlusspanik',    d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.',      e:'"At 35, she felt a creeping Torschlusspanik about changing careers."'},
+  {w:'Fernweh',            d:'Longing for distant places; the opposite of homesickness.',                        e:'"After months at home, his Fernweh became unbearable and he booked a flight."'},
+  {w:'Waldeinsamkeit',     d:'The peaceful solitude and connection with nature felt deep in a forest.',          e:'"She found the Waldeinsamkeit of the Black Forest deeply healing."'},
+  {w:'Gemütlichkeit',      d:'A warm, cosy, convivial feeling of comfort and belonging.',                        e:'"The small alpine hut had an irresistible Gemütlichkeit about it."'},
+  {w:'Kopfkino',           d:'Head cinema; the vivid mental film that plays out in your imagination.',           e:'"When she didn\'t reply for hours, his Kopfkino went into overdrive."'},
+  {w:'Fingerspitzengefühl',d:'Fingertip feeling; an intuitive sensitivity and delicate touch.',                  e:'"Negotiating a peace deal requires extraordinary Fingerspitzengefühl."'},
+  {w:'Verschlimmbessern',  d:'To make something worse while trying to improve it.',                              e:'"He tried to fix his original mistake but ended up verschlimmbessern-ing it."'},
+  {w:'Weltschmerz',        d:'World-weariness; deep sadness about the imperfection of the world.',              e:'"Reading the news on a bad day can trigger a real Weltschmerz."'},
+  {w:'Schnapsidee',        d:'A ridiculous idea that sounds great when you\'re drunk.',                          e:'"Driving to Morocco was a total Schnapsidee, but it turned out wonderfully."'},
+  {w:'Ohrwurm',            d:'Earworm; a tune that gets stuck in your head and won\'t leave.',                  e:'"That jingle is such an Ohrwurm — I\'ve been humming it for three days."'},
+];
+
 async function renderWords() {
   const el = document.getElementById('wordsCard');
   el.innerHTML = `<div class="daily-card-title">Words of the day</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
 
-  const deu = DEU_WORDS[dayOfYear() % DEU_WORDS.length];
   const td = getTodayData();
+  const deu = DEU_WORDS_MINI[dayOfYear() % DEU_WORDS_MINI.length];
 
-  let engWord = null;
-  try {
-    const mwUrl = 'https://www.merriam-webster.com/wotd/feed/rss2';
-    const r = await fetch(R2J + encodeURIComponent(mwUrl), { signal: AbortSignal.timeout(8000) });
-    const d = await r.json();
-    if (d.status === 'ok' && d.items && d.items[0]) {
-      const item = d.items[0];
-      const w = strip(item.title || '').trim();
-      const rawDesc = strip(item.description || item.content || '');
-      const sents = rawDesc.match(/[^.!?]+[.!?]+/g) || [];
-      const def = sents.filter(s => s.split(/\s+/).length > 3).slice(0, 2).join(' ').trim() || rawDesc.slice(0, 150);
-      if (w && def) engWord = { w, d: def, e: null };
-    }
-  } catch {}
-  if (!engWord) engWord = ENG_WORDS[dayOfYear() % ENG_WORDS.length];
+  let engWord = td.engWord || null;
+  if (!engWord) {
+    try {
+      const mwUrl = 'https://www.merriam-webster.com/wotd/feed/rss2';
+      const r = await fetch(R2J + encodeURIComponent(mwUrl), { signal: AbortSignal.timeout(8000) });
+      const d = await r.json();
+      if (d.status === 'ok' && d.items && d.items[0]) {
+        const item = d.items[0];
+        const w = strip(item.title || '').trim();
+        const rawDesc = strip(item.description || item.content || '');
+        const sents = rawDesc.match(/[^.!?]+[.!?]+/g) || [];
+        const def = sents.filter(s => s.split(/\s+/).length > 3).slice(0, 2).join(' ').trim() || rawDesc.slice(0, 150);
+        if (w && def) { engWord = { w, d: def, e: null }; setTodayData({ engWord }); }
+      }
+    } catch {}
+  }
+  if (!engWord) engWord = { w: 'Serendipity', d: 'Finding something good without looking for it.', e: '"Meeting his co-founder at that random conference was pure serendipity."' };
 
   el.innerHTML = `<div class="daily-card-title">Words of the day</div>` +
     [
       { lang: 'English', color: '#0A84FF', word: engWord, key: 'usedEng' },
-      { lang: 'German',  color: '#bf5af2', word: deu, key: 'usedDeu' }
+      { lang: 'German',  color: '#bf5af2', word: deu,     key: 'usedDeu' }
     ].map(item => {
       const used = !!td[item.key];
       return `<div class="word-item">
@@ -1273,6 +923,14 @@ function toggleWord(key) {
 async function renderFacts() {
   const el = document.getElementById('factsCard');
   el.innerHTML = `<div class="daily-card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+
+  const td = getTodayData();
+  if (td.facts && td.facts.length >= 3) {
+    el.innerHTML = `<div class="daily-card-title">Did you know?</div>` +
+      td.facts.map((f, i) => `<div class="fact-item"><div class="fact-num">${i+1}</div><div class="fact-text">${esc(f)}</div></div>`).join('');
+    return;
+  }
+
   try {
     const results = await Promise.allSettled(
       Array.from({length: 5}, () =>
@@ -1282,28 +940,28 @@ async function renderFacts() {
     );
     const facts = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
     if (facts.length >= 3) {
+      setTodayData({ facts });
       el.innerHTML = `<div class="daily-card-title">Did you know?</div>` +
-        facts.map((f, i) => `<div class="fact-item">
-          <div class="fact-num">${i+1}</div>
-          <div class="fact-text">${esc(f)}</div>
-        </div>`).join('');
+        facts.map((f, i) => `<div class="fact-item"><div class="fact-num">${i+1}</div><div class="fact-text">${esc(f)}</div></div>`).join('');
       return;
     }
   } catch {}
-  // Local fallback
-  const idx = dayOfYear();
-  const q = Math.floor(FACTS.length / 5);
-  const facts = [0, 1, 2, 3, 4].map(i => FACTS[(idx + i * q) % FACTS.length]);
-  el.innerHTML = `<div class="daily-card-title">Did you know?</div>` +
-    facts.map((f, i) => `<div class="fact-item">
-      <div class="fact-num">${i+1}</div>
-      <div class="fact-text">${esc(f)}</div>
-    </div>`).join('');
+
+  el.innerHTML = `<div class="daily-card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Could not load facts — check your connection.</div>`;
 }
 
 async function renderHistory() {
   const el = document.getElementById('historyCard');
   el.innerHTML = `<div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div>`;
+
+  const td = getTodayData();
+  if (td.historyEvent) {
+    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
+      <div class="history-year">${esc(String(td.historyEvent.year))}</div>
+      <div class="history-text">${esc(td.historyEvent.text)}</div>`;
+    return;
+  }
+
   try {
     const now = new Date();
     const r = await fetch(
@@ -1314,48 +972,57 @@ async function renderHistory() {
     const events = (d.events || []).filter(e => e.year && e.text);
     if (events.length) {
       const evt = events[Math.floor(Math.random() * Math.min(events.length, 10))];
+      const historyEvent = { year: String(evt.year), text: evt.text };
+      setTodayData({ historyEvent });
       el.innerHTML = `<div class="daily-card-title">This Day in History</div>
-        <div class="history-year">${esc(String(evt.year))}</div>
-        <div class="history-text">${esc(evt.text)}</div>`;
+        <div class="history-year">${esc(historyEvent.year)}</div>
+        <div class="history-text">${esc(historyEvent.text)}</div>`;
       return;
     }
   } catch {}
-  // Local fallback
-  const mmdd = new Date().toISOString().slice(5, 10);
-  const event = HISTORY_EVENTS[mmdd];
-  if (event) {
-    const m = event.match(/^(\d{1,4}(?:\s*BC)?)\s*[—–]/);
-    const year = m ? m[1] : '';
-    const text = m ? event.slice(event.indexOf('—') + 1).trim() : event;
-    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
-      ${year ? `<div class="history-year">${esc(year)}</div>` : ''}
-      <div class="history-text">${esc(text)}</div>`;
-  } else {
-    const fallbacks = [
-      'The printing press, invented by Gutenberg around 1440, enabled mass production of books and transformed European literacy.',
-      'The Panama Canal (opened 1914) reduced the sailing distance between the Atlantic and Pacific by over 12,000 km.',
-      'The Great Wall of China was built over many centuries — the most recent sections date to the Ming Dynasty (1368–1644).',
-      'The Roman Empire lasted over 1,000 years (27 BC – 476 AD in the west; until 1453 AD in the east as Byzantium).',
-      'The Renaissance (14th–17th century) saw an explosion of art, science, and philosophy that reshaped Western civilisation.',
-      'The Industrial Revolution began in Britain around 1760, shifting economies from agriculture to manufacturing.',
-      'The first modern Olympic Games were held in Athens in 1896, with 14 nations and 241 athletes competing.',
-      'The Black Death (1347–1351) killed an estimated 30–60% of Europe\'s population, reshaping its society and economy.',
-    ];
-    const fact = fallbacks[dayOfYear() % fallbacks.length];
-    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
-      <div class="history-text">${esc(fact)}</div>`;
-  }
+
+  el.innerHTML = `<div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Could not load history — check your connection.</div>`;
 }
 
-function renderKnowledge() {
-  const idx = dayOfYear();
-  const q = Math.floor(KNOWLEDGE.length / 2);
-  const items = [0, 1].map(i => KNOWLEDGE[(idx + i * q) % KNOWLEDGE.length]);
-  document.getElementById('knowledgeCard').innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
-    items.map((k, i) => `<div class="knowledge-item">
-      <div class="fact-num">${i + 1}</div>
-      <div class="fact-text">${esc(k)}</div>
-    </div>`).join('');
+async function renderKnowledge() {
+  const el = document.getElementById('knowledgeCard');
+  el.innerHTML = `<div class="daily-card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+
+  const td = getTodayData();
+  if (td.knowledge && td.knowledge.length >= 2) {
+    el.innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
+      td.knowledge.map((k, i) => `<div class="knowledge-item">
+        <div class="fact-num">${i+1}</div>
+        <div class="fact-text">${esc(k)}</div>
+      </div>`).join('');
+    return;
+  }
+
+  try {
+    const results = await Promise.allSettled([
+      fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary', { signal: AbortSignal.timeout(6000) }).then(r => r.json()),
+      fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary', { signal: AbortSignal.timeout(6000) }).then(r => r.json()),
+    ]);
+    const items = results
+      .filter(r => r.status === 'fulfilled' && r.value && r.value.extract)
+      .map(r => {
+        const p = r.value;
+        const sentence = (p.extract.match(/[^.!?]+[.!?]+/) || [p.extract])[0].trim();
+        return `${p.title}: ${sentence}`;
+      });
+    if (items.length >= 1) {
+      while (items.length < 2) items.push(items[0]);
+      setTodayData({ knowledge: items });
+      el.innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
+        items.map((k, i) => `<div class="knowledge-item">
+          <div class="fact-num">${i+1}</div>
+          <div class="fact-text">${esc(k)}</div>
+        </div>`).join('');
+      return;
+    }
+  } catch {}
+
+  el.innerHTML = `<div class="daily-card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Could not load content — check your connection.</div>`;
 }
 
 function loadGratitude() {
@@ -1373,62 +1040,6 @@ function loadGratitude() {
   });
   if (td.gratitude) document.getElementById('gratitudeSaved').textContent = 'Saved';
 }
-
-// ── SLEEP LOG ─────────────────────────────────
-const SLP_LS = 'atd_sleep_v1';
-function getSleepLog() { try { return JSON.parse(localStorage.getItem(SLP_LS) || '{}'); } catch { return {}; } }
-function putSleepLog(d) { localStorage.setItem(SLP_LS, JSON.stringify(d)); }
-
-function logSleep() {
-  const bed = document.getElementById('sleepBedtime').value;
-  const wake = document.getElementById('sleepWaketime').value;
-  if (!bed || !wake) return;
-  const [bh, bm] = bed.split(':').map(Number);
-  const [wh, wm] = wake.split(':').map(Number);
-  let bedMin = bh * 60 + bm, wakeMin = wh * 60 + wm;
-  if (wakeMin <= bedMin) wakeMin += 24 * 60;
-  const durMin = wakeMin - bedMin;
-  const log = getSleepLog();
-  log[today()] = { bed, wake, durMin };
-  putSleepLog(log);
-  renderSleepHistory();
-}
-
-function renderSleepHistory() {
-  const el = document.getElementById('sleepHistory');
-  if (!el) return;
-  const log = getSleepLog();
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    const label = ['S','M','T','W','T','F','S'][d.getDay()];
-    days.push({ key, label, entry: log[key] || null });
-  }
-  const durations = days.filter(d => d.entry).map(d => d.entry.durMin);
-  const avgMin = durations.length ? Math.round(durations.reduce((a,b) => a+b, 0) / durations.length) : 0;
-  const maxDur = Math.max(...durations, 8 * 60);
-  const avgStr = avgMin ? `${Math.floor(avgMin/60)}h ${avgMin%60}m` : '–';
-  let html = `<div class="sleep-avg">7-day avg: <strong>${avgStr}</strong></div><div class="sleep-chart">`;
-  days.forEach(d => {
-    const pct = d.entry ? Math.round((d.entry.durMin / maxDur) * 100) : 0;
-    const valStr = d.entry ? `${Math.floor(d.entry.durMin/60)}h${d.entry.durMin%60 ? d.entry.durMin%60+'m' : ''}` : '';
-    const color = d.entry ? (d.entry.durMin >= 420 ? 'var(--green)' : d.entry.durMin >= 360 ? 'var(--orange)' : 'var(--red)') : 'var(--bg3)';
-    const isToday = d.key === today();
-    html += `<div class="sleep-bar-col">
-      <div class="sleep-bar-val">${valStr}</div>
-      <div class="sleep-bar-area">
-        <div class="sleep-bar" style="height:${d.entry ? pct+'%' : '8%'};background:${color};opacity:${d.entry ? 1 : 0.3};${isToday ? 'box-shadow:0 0 6px rgba(10,132,255,0.5)' : ''}"></div>
-      </div>
-      <div class="sleep-bar-label">${d.label}</div>
-    </div>`;
-  });
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function initSleepLog() { renderSleepHistory(); }
 
 // ── MORNING BRIEF ─────────────────────────────
 const CLAUDE_KEY_LS = 'atd_claude_key';
@@ -1510,10 +1121,177 @@ function buildBriefContext() {
     if (btc) mkt.push(`BTC $${btc.price.toFixed(0)} (${btc.changePct>=0?'+':''}${btc.changePct.toFixed(2)}%)`);
     if (mkt.length) parts.push(`Markets: ${mkt.join(', ')}`);
   }
-  const sleepLog = getSleepLog();
-  const lastSleep = sleepLog[today()] || sleepLog[new Date(Date.now()-86400000).toISOString().slice(0,10)];
-  if (lastSleep) parts.push(`Last sleep: ${Math.floor(lastSleep.durMin/60)}h ${lastSleep.durMin%60}m`);
   return parts.join('\n');
+}
+
+// ── JOKE ──────────────────────────────────────
+async function loadJoke() {
+  const el = document.getElementById('jokeContent');
+  const td = getTodayData();
+  if (td.joke) { renderJoke(el, td.joke); return; }
+  try {
+    const d = await fetch('https://v2.jokeapi.dev/joke/Any?safe-mode&blacklistFlags=nsfw,racist,sexist', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+    if (d && !d.error) {
+      const joke = d.type === 'twopart' ? { setup: d.setup, delivery: d.delivery } : { single: d.joke };
+      setTodayData({ joke });
+      renderJoke(el, joke);
+      return;
+    }
+  } catch {}
+  el.innerHTML = `<div class="joke-single" style="color:var(--text3)">Could not load joke — check your connection.</div>`;
+}
+
+function renderJoke(el, joke) {
+  if (joke.single) {
+    el.innerHTML = `<div class="joke-single">${esc(joke.single)}</div>`;
+  } else {
+    el.innerHTML = `<div class="joke-setup">${esc(joke.setup)}</div><div class="joke-delivery">${esc(joke.delivery)}</div>`;
+  }
+}
+
+// ── SPOTIFY ───────────────────────────────────
+const SP_LS = {
+  clientId:    'spotify_client_id',
+  accessToken: 'spotify_access_token',
+  refreshToken:'spotify_refresh_token',
+  expiresAt:   'spotify_expires_at',
+  verifier:    'spotify_pkce_verifier',
+};
+
+function spGet(k) { return localStorage.getItem(SP_LS[k]) || ''; }
+function spSet(k, v) { localStorage.setItem(SP_LS[k], v); }
+
+function generateSpVerifier() {
+  const arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function generateSpChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function connectSpotify() {
+  const clientId = document.getElementById('spClientIdInp').value.trim();
+  if (!clientId) return;
+  spSet('clientId', clientId);
+  const verifier = generateSpVerifier();
+  spSet('verifier', verifier);
+  const challenge = await generateSpChallenge(verifier);
+  const redirectUri = window.location.href.split('?')[0].split('#')[0];
+  const params = new URLSearchParams({
+    client_id: clientId,
+    response_type: 'code',
+    redirect_uri: redirectUri,
+    scope: 'user-read-currently-playing user-read-recently-played',
+    code_challenge_method: 'S256',
+    code_challenge: challenge,
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+}
+
+async function handleSpotifyCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const clientId = spGet('clientId');
+  if (!code || !clientId) return;
+  window.history.replaceState({}, document.title, window.location.pathname);
+  const verifier = spGet('verifier');
+  const redirectUri = window.location.href.split('?')[0].split('#')[0];
+  try {
+    const r = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: clientId, grant_type: 'authorization_code', code, redirect_uri: redirectUri, code_verifier: verifier }),
+    });
+    const d = await r.json();
+    if (d.access_token) {
+      spSet('accessToken', d.access_token);
+      spSet('refreshToken', d.refresh_token || '');
+      spSet('expiresAt', String(Date.now() + d.expires_in * 1000));
+    }
+  } catch {}
+}
+
+async function getSpToken() {
+  const expiresAt = parseInt(spGet('expiresAt') || '0');
+  if (spGet('accessToken') && Date.now() < expiresAt - 60000) return spGet('accessToken');
+  const clientId = spGet('clientId');
+  const refreshToken = spGet('refreshToken');
+  if (!clientId || !refreshToken) return null;
+  try {
+    const r = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken, client_id: clientId }),
+    });
+    const d = await r.json();
+    if (d.access_token) {
+      spSet('accessToken', d.access_token);
+      spSet('expiresAt', String(Date.now() + d.expires_in * 1000));
+      if (d.refresh_token) spSet('refreshToken', d.refresh_token);
+      return d.access_token;
+    }
+  } catch {}
+  return null;
+}
+
+function disconnectSpotify() {
+  ['clientId','accessToken','refreshToken','expiresAt','verifier'].forEach(k => localStorage.removeItem(SP_LS[k]));
+  loadSpotify();
+}
+
+async function loadSpotify() {
+  const el = document.getElementById('spotifyContent');
+  if (!spGet('clientId')) { renderSpConnect(el); return; }
+  el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+  const token = await getSpToken();
+  if (!token) { renderSpConnect(el); return; }
+  try {
+    // Try currently playing first
+    const r1 = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(6000)
+    });
+    if (r1.status === 200) {
+      const d = await r1.json();
+      if (d && d.item) { renderSpTrack(el, d.item, d.is_playing, d.progress_ms, d.item.duration_ms); return; }
+    }
+    // Fall back to recently played
+    const r2 = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
+      headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(6000)
+    });
+    if (r2.ok) {
+      const d = await r2.json();
+      if (d.items && d.items[0]) { renderSpTrack(el, d.items[0].track, false, 0, 0); return; }
+    }
+  } catch {}
+  el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Nothing playing right now.</div><button class="sp-disconnect" onclick="disconnectSpotify()">Disconnect Spotify</button>`;
+}
+
+function renderSpTrack(el, track, isPlaying, progress, duration) {
+  const art = (track.album.images[1] || track.album.images[0] || {}).url || '';
+  const artists = track.artists.map(a => a.name).join(', ');
+  const pct = duration ? Math.round((progress / duration) * 100) : 0;
+  el.innerHTML = `<div class="sp-now">
+    ${art ? `<img class="sp-art" src="${esc(art)}" alt="">` : `<div class="sp-art"></div>`}
+    <div class="sp-info">
+      <div class="sp-status">${isPlaying ? '▶ Now playing' : 'Last played'}</div>
+      <div class="sp-track">${esc(track.name)}</div>
+      <div class="sp-artist">${esc(artists)}</div>
+      ${duration ? `<div class="sp-progress"><div class="sp-progress-fill" style="width:${pct}%"></div></div>` : ''}
+    </div>
+  </div>
+  <button class="sp-disconnect" onclick="disconnectSpotify()">Disconnect</button>`;
+}
+
+function renderSpConnect(el) {
+  el.innerHTML = `<div class="sp-connect">
+    <p>Connect Spotify to see what you're playing. You'll need a free <strong>Spotify Developer</strong> app — Client ID only, no secret needed.</p>
+    <input class="sp-inp" id="spClientIdInp" type="text" placeholder="Paste your Spotify Client ID…">
+    <button class="sp-btn" onclick="connectSpotify()">Connect Spotify</button>
+  </div>`;
 }
 
 // ── HOME ──────────────────────────────────────
@@ -1544,7 +1322,8 @@ async function loadHome() {
   renderHomeStats();
   fetchQuote();
   loadDaily();
-  initSleepLog();
+  loadJoke();
+  loadSpotify();
   initMorningBrief();
   navigator.geolocation.getCurrentPosition(
     p => fetchWeather(p.coords.latitude, p.coords.longitude),
@@ -1608,27 +1387,49 @@ async function fetchCrypto() {
 }
 
 async function fetchQuote() {
-  try {
-    const d = await fetch('https://api.quotable.io/random?maxLength=120').then(r => r.json());
+  const td = getTodayData();
+  if (td.quote) {
     document.getElementById('quoteCard').innerHTML = `
       <div class="home-card-title">Quote of the day</div>
-      <div class="quote-text">"${esc(d.content)}"</div>
-      <div class="quote-author">— ${esc(d.author)}</div>`;
-  } catch {
-    document.getElementById('quoteCard').innerHTML = `
-      <div class="home-card-title">Quote of the day</div>
-      <div class="quote-text">"The secret of getting ahead is getting started."</div>
-      <div class="quote-author">— Mark Twain</div>`;
+      <div class="quote-text">"${esc(td.quote.text)}"</div>
+      <div class="quote-author">— ${esc(td.quote.author)}</div>`;
+    return;
   }
+  try {
+    const d = await fetch('https://zenquotes.io/api/today', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+    if (d && d[0] && d[0].q) {
+      const quote = { text: d[0].q, author: d[0].a };
+      setTodayData({ quote });
+      document.getElementById('quoteCard').innerHTML = `
+        <div class="home-card-title">Quote of the day</div>
+        <div class="quote-text">"${esc(quote.text)}"</div>
+        <div class="quote-author">— ${esc(quote.author)}</div>`;
+      return;
+    }
+  } catch {}
+  try {
+    const d = await fetch('https://dummyjson.com/quotes/random', { signal: AbortSignal.timeout(6000) }).then(r => r.json());
+    if (d && d.quote) {
+      const quote = { text: d.quote, author: d.author };
+      setTodayData({ quote });
+      document.getElementById('quoteCard').innerHTML = `
+        <div class="home-card-title">Quote of the day</div>
+        <div class="quote-text">"${esc(quote.text)}"</div>
+        <div class="quote-author">— ${esc(quote.author)}</div>`;
+      return;
+    }
+  } catch {}
+  document.getElementById('quoteCard').innerHTML = `
+    <div class="home-card-title">Quote of the day</div>
+    <div class="quote-text">"The secret of getting ahead is getting started."</div>
+    <div class="quote-author">— Mark Twain</div>`;
 }
 
 function renderHomeStats() {
   const tasks = getTasks().filter(t => !t.done).length;
-  const topics = getWatchTopics().length;
   const articles = Object.values(data).reduce((s, a) => s + a.length, 0);
   document.getElementById('homeStats').innerHTML = [
-    { val: tasks,    lbl: 'Tasks left',    color: tasks === 0 ? 'var(--green)' : 'var(--text)' },
-    { val: topics,   lbl: 'Watched topics', color: 'var(--accent)' },
+    { val: tasks,           lbl: 'Tasks left',    color: tasks === 0 ? 'var(--green)' : 'var(--text)' },
     { val: articles || '–', lbl: 'Stories today', color: 'var(--purple)' }
   ].map(s => `<div class="stat-card">
     <div class="stat-val" style="color:${s.color}">${s.val}</div>
@@ -1823,137 +1624,6 @@ function cleanTaskText(text) {
     .trim()
     .replace(/^,\s*/, '')
     .replace(/,\s*$/, '');
-}
-
-// ── WATCH ─────────────────────────────────────
-const WLS = 'atd_watch_v1';
-let watchCache = {};
-let watchPool = null;
-let watchPoolLoading = false;
-
-const WATCH_POOL_FEEDS = [
-  'http://feeds.bbci.co.uk/news/world/rss.xml',
-  'http://feeds.bbci.co.uk/news/rss.xml',
-  'https://www.theguardian.com/world/rss',
-  'https://www.aljazeera.com/xml/rss/all.xml',
-  'https://feeds.npr.org/1001/rss.xml',
-  'https://techcrunch.com/feed/',
-  'https://venturebeat.com/feed/',
-  'https://www.wired.com/feed/rss',
-  'https://www.theverge.com/rss/index.xml',
-  'https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^NDX,AAPL,NVDA,MSFT',
-  'https://www.marketwatch.com/rss/topstories',
-  'https://feeds.a.dj.com/rss/RSSMarketsMain.xml'
-];
-
-function getWatchTopics() { try { return JSON.parse(localStorage.getItem(WLS) || '[]'); } catch { return []; } }
-function putWatchTopics(t) { localStorage.setItem(WLS, JSON.stringify(t)); }
-
-function addWatchTopic() {
-  const inp = document.getElementById('watchInp');
-  const txt = inp.value.trim();
-  if (!txt) return;
-  const topics = getWatchTopics();
-  if (topics.find(t => t.topic.toLowerCase() === txt.toLowerCase())) { inp.value = ''; return; }
-  const entry = { id: Date.now(), topic: txt };
-  topics.unshift(entry);
-  putWatchTopics(topics);
-  inp.value = '';
-  renderWatchTopics();
-  fetchWatchTopic(entry);
-}
-
-function delWatchTopic(id) {
-  putWatchTopics(getWatchTopics().filter(t => t.id !== id));
-  delete watchCache[id];
-  renderWatchTopics();
-}
-
-async function loadWatchPool() {
-  if (watchPool) return;
-  watchPoolLoading = true;
-  const results = await Promise.allSettled(WATCH_POOL_FEEDS.map(u => fetchFeed(u)));
-  watchPool = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-  watchPoolLoading = false;
-}
-
-function topicKeywords(topic) {
-  return topic.toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(w => w.length >= 3);
-}
-
-function articleMatchesTopic(keywords, article) {
-  const text = (article.title + ' ' + strip(article.description || '')).toLowerCase();
-  if (keywords.length === 1) return text.includes(keywords[0]);
-  const hits = keywords.filter(k => text.includes(k)).length;
-  return hits >= Math.ceil(keywords.length * 0.6);
-}
-
-async function fetchWatchTopic(entry) {
-  if (!watchPool) await loadWatchPool();
-  const keywords = topicKeywords(entry.topic);
-  const matches = watchPool
-    .filter(a => articleMatchesTopic(keywords, a))
-    .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-  const seen = new Set();
-  watchCache[entry.id] = matches
-    .filter(a => { if (seen.has(a.title)) return false; seen.add(a.title); return true; })
-    .slice(0, 8);
-  renderWatchCard(entry);
-}
-
-function renderWatchTopics() {
-  const topics = getWatchTopics();
-  const el = document.getElementById('watchTopics');
-  if (!topics.length) {
-    el.innerHTML = `<div class="watch-empty">No topics yet.<br>Add something above — e.g. "Anthropic IPO" or "Iran-Israel war".</div>`;
-    return;
-  }
-  el.innerHTML = topics.map(t => `<div class="watch-card" id="wcard-${t.id}"></div>`).join('');
-  topics.forEach(t => {
-    if (watchCache[t.id]) renderWatchCard(t);
-    else {
-      document.getElementById('wcard-' + t.id).innerHTML =
-        watchCardShell(t, `<div class="watch-loading">Loading…</div>`);
-      fetchWatchTopic(t);
-    }
-  });
-}
-
-function renderWatchCard(entry) {
-  const el = document.getElementById('wcard-' + entry.id);
-  if (!el) return;
-  const articles = watchCache[entry.id] || [];
-  let inner = '';
-  if (!articles.length) {
-    inner = `<div class="watch-loading">No recent news found for this topic.</div>`;
-  } else {
-    inner = articles.map(a => {
-      const score = getScore(a.title || '', a.description || '');
-      const sc = scoreColor(score);
-      const source = src(a);
-      return `<a class="watch-article" href="${esc(a.link || '#')}" target="_blank" rel="noopener">
-        <span class="watch-article-score" style="color:${sc.color}">${score}</span>
-        <div class="watch-article-body">
-          <div class="watch-article-title">${esc(a.title || '')}</div>
-          <div class="watch-article-meta">${esc(source)} · ${ago(a.pubDate)}</div>
-        </div>
-      </a>`;
-    }).join('');
-  }
-  el.innerHTML = watchCardShell(entry, inner, articles.length);
-}
-
-function watchCardShell(entry, inner, count) {
-  return `<div class="watch-card-header">
-    <span class="watch-topic-name">${esc(entry.topic)}</span>
-    <div class="watch-topic-right">
-      ${count != null ? `<span class="watch-count">${count} articles</span>` : ''}
-      <button class="watch-del" onclick="delWatchTopic(${entry.id})">✕</button>
-    </div>
-  </div>${inner}`;
 }
 
 // ── FINANCE ───────────────────────────────────
@@ -2184,26 +1854,6 @@ function renderFinance(quotes) {
   el.innerHTML = html;
 }
 
-// ── CALENDAR ──────────────────────────────────
-function renderCal() {
-  const now = new Date(), y = calDate.getFullYear(), m = calDate.getMonth();
-  document.getElementById('calMonth').textContent = calDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  const first = new Date(y, m, 1).getDay(), total = new Date(y, m + 1, 0).getDate(), prev = new Date(y, m, 0).getDate();
-  const cells = Math.ceil((first + total) / 7) * 7;
-  let html = '';
-  for (let i = 0; i < cells; i++) {
-    const d = i - first + 1;
-    if (d < 1) html += `<div class="cal-d dim">${prev + d}</div>`;
-    else if (d > total) html += `<div class="cal-d dim">${d - total}</div>`;
-    else {
-      const isToday = y === now.getFullYear() && m === now.getMonth() && d === now.getDate();
-      html += `<div class="cal-d ${isToday ? 'today' : ''}">${d}</div>`;
-    }
-  }
-  document.getElementById('calDays').innerHTML = html;
-}
-function calShift(n) { calDate.setMonth(calDate.getMonth() + n); renderCal(); }
-
 // ── NAV ───────────────────────────────────────
 function goTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -2211,18 +1861,6 @@ function goTab(name, el) {
   document.getElementById('pane-' + name).classList.add('active');
   el.classList.add('active');
   document.getElementById('content').scrollTop = 0;
-  if (name === 'watch') {
-    setTimeout(() => {
-      if (window.twttr && window.twttr.widgets) {
-        window.twttr.widgets.load(document.getElementById('karpathyEmbed'));
-      }
-    }, 300);
-    if (!watchPool && !watchPoolLoading) {
-      loadWatchPool().then(() => {
-        getWatchTopics().forEach(t => { if (!watchCache[t.id]) fetchWatchTopic(t); });
-      });
-    }
-  }
   if (name === 'finance') loadFinance();
 }
 
