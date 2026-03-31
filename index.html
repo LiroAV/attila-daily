@@ -265,6 +265,17 @@
       body { max-width: 440px; margin: 0 auto; border-left: 0.5px solid var(--border); border-right: 0.5px solid var(--border); box-shadow: 0 0 60px rgba(0,0,0,0.8); }
     }
 
+    /* ── CLUB EVENTS ── */
+    .club-event-item { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+    .club-event-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .club-event-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .club-event-body { flex: 1; min-width: 0; }
+    .club-event-club { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+    .club-event-date { font-size: 12px; color: var(--text3); margin-bottom: 3px; }
+    .club-event-title { font-size: 14px; font-weight: 600; color: var(--text); text-decoration: none; line-height: 1.35; display: block; }
+    .club-event-title:active { opacity: 0.6; }
+    .club-event-visit { font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
+
     /* ── FINANCE ── */
     .fin-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
     .fin-title { font-size: 22px; font-weight: 700; }
@@ -336,6 +347,10 @@
         <div class="weather-loading">Locating…</div>
       </div>
       <div class="home-stats" id="homeStats"></div>
+      <div class="home-card" id="clubEventsCard">
+        <div class="home-card-title">Upcoming Events</div>
+        <div id="clubEventsContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
       <div class="home-card" id="spotifyCard">
         <div class="home-card-title">Spotify</div>
         <div id="spotifyContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
@@ -1124,6 +1139,62 @@ function buildBriefContext() {
   return parts.join('\n');
 }
 
+// ── CLUB EVENTS ───────────────────────────────
+const CLUBS = [
+  { id: 'icuzh',  name: 'IC UZH',  color: '#0A84FF', url: 'https://www.icuzh.ch/events',   api: 'https://www.icuzh.ch/api/events?page=1&limit=50' },
+  { id: 'fvoec',  name: 'FVOEC',   color: '#30d158', url: 'https://fvoec.ch/events',        api: null },
+  { id: 'uzhack', name: 'UZHack',  color: '#bf5af2', url: 'https://uzhack.com/schedule',    api: null },
+];
+const EVENTS_LS = 'atd_club_events_v1';
+const EVENTS_TTL = 4 * 60 * 60 * 1000;
+
+async function loadClubEvents() {
+  const el = document.getElementById('clubEventsContent');
+  try {
+    const cached = JSON.parse(localStorage.getItem(EVENTS_LS) || '{}');
+    if (cached.ts && Date.now() - cached.ts < EVENTS_TTL && cached.events) {
+      renderClubEvents(el, cached.events); return;
+    }
+  } catch {}
+  const events = {};
+  try {
+    const d = await fetch('https://www.icuzh.ch/api/events?page=1&limit=50', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+    const now = new Date();
+    const upcoming = (d.docs || [])
+      .filter(e => e._status === 'published' && new Date(e.start) >= now)
+      .sort((a, b) => new Date(a.start) - new Date(b.start));
+    if (upcoming[0]) events.icuzh = { title: upcoming[0].name, start: upcoming[0].start, location: upcoming[0].location || '' };
+  } catch {}
+  localStorage.setItem(EVENTS_LS, JSON.stringify({ ts: Date.now(), events }));
+  renderClubEvents(el, events);
+}
+
+function renderClubEvents(el, events) {
+  el.innerHTML = CLUBS.map(club => {
+    const e = events[club.id];
+    if (e) {
+      const d = new Date(e.start);
+      const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      return `<div class="club-event-item">
+        <div class="club-event-dot" style="background:${club.color}"></div>
+        <div class="club-event-body">
+          <div class="club-event-club" style="color:${club.color}">${club.name}</div>
+          <div class="club-event-date">${dateStr} · ${timeStr}${e.location ? ' · ' + esc(e.location) : ''}</div>
+          <a class="club-event-title" href="${esc(club.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>
+        </div>
+      </div>`;
+    }
+    return `<div class="club-event-item">
+      <div class="club-event-dot" style="background:${club.color};opacity:0.35"></div>
+      <div class="club-event-body">
+        <div class="club-event-club" style="color:${club.color}">${club.name}</div>
+        <a class="club-event-visit" href="${esc(club.url)}" target="_blank" rel="noopener">View schedule →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ── JOKE ──────────────────────────────────────
 async function loadJoke() {
   const el = document.getElementById('jokeContent');
@@ -1323,6 +1394,7 @@ async function loadHome() {
   fetchQuote();
   loadDaily();
   loadJoke();
+  loadClubEvents();
   loadSpotify();
   initMorningBrief();
   navigator.geolocation.getCurrentPosition(
