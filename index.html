@@ -20,25 +20,62 @@
       --border: rgba(84,84,88,0.55); --card: #1c1c1e;
     }
     [data-theme="sakura"] {
-      --bg: #1a0f14; --bg2: #2a1a22; --bg3: #3a2530;
-      --text: #fdf0f4; --text2: rgba(253,220,232,0.75); --text3: rgba(253,220,232,0.4);
-      --accent: #e8749a; --green: #7ec87e; --red: #e85555; --orange: #e8a44a; --purple: #c47ec8;
-      --border: rgba(220,140,170,0.25); --card: #2a1a22;
+      --bg: transparent; --bg2: rgba(255,245,248,0.82); --bg3: rgba(255,235,242,0.75);
+      --text: #2d1a22; --text2: rgba(80,40,55,0.75); --text3: rgba(100,55,70,0.5);
+      --accent: #c0446e; --green: #5a9e6f; --red: #c94040; --orange: #c87832; --purple: #8b5ca8;
+      --border: rgba(200,130,155,0.3); --card: rgba(255,245,248,0.82);
     }
 
-    /* ── CHERRY BLOSSOM PETALS ── */
-    .petal {
-      position: fixed; top: -30px; pointer-events: none; z-index: 9990;
-      font-size: 16px; animation: petal-fall linear infinite;
-      opacity: 0;
+    /* ── SAKURA BACKGROUND ── */
+    #sakuraBg {
+      display: none;
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(255,182,213,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 5%,  rgba(255,210,230,0.45) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 90%, rgba(180,230,160,0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 5%  70%, rgba(180,220,150,0.3)  0%, transparent 40%),
+        radial-gradient(ellipse at 95% 60%, rgba(255,200,220,0.35) 0%, transparent 40%),
+        linear-gradient(160deg, #fce8f0 0%, #fdf5f0 35%, #eef7e8 65%, #f5fce8 100%);
+      pointer-events: none;
     }
-    @keyframes petal-fall {
-      0%   { transform: translateX(0) rotate(0deg);   opacity: 0; }
-      5%   { opacity: 0.85; }
-      90%  { opacity: 0.7; }
-      100% { transform: translateX(var(--drift)) rotate(var(--spin)); opacity: 0; top: 110vh; }
+    [data-theme="sakura"] #sakuraBg { display: block; }
+
+    /* Sakura blossoms SVG pattern overlay */
+    #sakuraBg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle 3px at 15% 20%, rgba(220,100,140,0.18) 0%, transparent 100%),
+        radial-gradient(circle 2px at 35% 8%,  rgba(220,100,140,0.14) 0%, transparent 100%),
+        radial-gradient(circle 4px at 70% 15%, rgba(220,100,140,0.12) 0%, transparent 100%),
+        radial-gradient(circle 2px at 88% 30%, rgba(220,100,140,0.16) 0%, transparent 100%),
+        radial-gradient(circle 3px at 55% 85%, rgba(100,180,100,0.14) 0%, transparent 100%),
+        radial-gradient(circle 2px at 25% 75%, rgba(100,180,100,0.12) 0%, transparent 100%),
+        radial-gradient(circle 3px at 90% 80%, rgba(220,100,140,0.1)  0%, transparent 100%);
     }
-    #petalContainer { position: fixed; inset: 0; pointer-events: none; z-index: 9990; overflow: hidden; }
+
+    /* Sakura overrides for hardcoded bg elements */
+    [data-theme="sakura"] body { background: #fce8f0; }
+    [data-theme="sakura"] .safe-top { background: transparent; }
+    [data-theme="sakura"] .header { background: transparent; }
+    [data-theme="sakura"] .tab-bar { background: rgba(252,235,243,0.92); border-top-color: rgba(200,130,155,0.35); }
+    [data-theme="sakura"] .content { background: transparent; position: relative; z-index: 1; }
+    [data-theme="sakura"] .weather-card { background: linear-gradient(145deg, rgba(220,100,140,0.18), rgba(180,220,150,0.15)); border-color: rgba(200,120,150,0.3); }
+    [data-theme="sakura"] .weather-temp { color: #2d1a22; }
+    [data-theme="sakura"] .weather-loc { color: rgba(60,30,45,0.8); }
+    [data-theme="sakura"] .weather-meta span { color: rgba(60,30,45,0.65); }
+    [data-theme="sakura"] .fin-mcard.up-card { border-color: rgba(90,158,111,0.4); background: rgba(90,158,111,0.08); }
+    [data-theme="sakura"] .fin-mcard.down-card { border-color: rgba(201,64,64,0.3); background: rgba(201,64,64,0.05); }
+    [data-theme="sakura"] .quiz-next-btn { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
+    [data-theme="sakura"] .icon-btn { background: rgba(255,235,242,0.85); border: 0.5px solid rgba(200,130,155,0.4); }
+    [data-theme="sakura"] .avatar { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
+    [data-theme="sakura"] .tab-item.active .tab-dot { background: #c0446e; }
+    [data-theme="sakura"] .tab-item.active .tab-icon { color: #c0446e; }
+    [data-theme="sakura"] .tab-icon { color: rgba(100,55,70,0.45); }
+    [data-theme="sakura"] #splash { background: #fce8f0; }
+
+    #petalContainer { display: none; }
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
     .safe-top { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
 
@@ -529,6 +566,7 @@
   <div class="sp-status" id="spStatus">initializing…</div>
 </div>
 
+<div id="sakuraBg"></div>
 <div class="safe-top"></div>
 <div class="header">
   <div>
@@ -2688,9 +2726,6 @@ function goTab(name, el) {
 
 // ── THEME ─────────────────────────────────────
 const THEME_LS = 'atd_theme';
-let petalTimer = null;
-
-const PETALS = ['🌸', '🌸', '🌸', '🌺', '🍃', '🍀', '🌿', '🌸', '🌸', '🌼'];
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme || '');
@@ -2698,11 +2733,9 @@ function applyTheme(theme) {
   if (theme === 'sakura') {
     btn.textContent = '🌑';
     btn.title = 'Switch to dark theme';
-    startPetals();
   } else {
     btn.textContent = '🌸';
     btn.title = 'Switch to Sakura theme';
-    stopPetals();
   }
 }
 
@@ -2711,33 +2744,6 @@ function toggleTheme() {
   const next = current === 'sakura' ? '' : 'sakura';
   localStorage.setItem(THEME_LS, next);
   applyTheme(next);
-}
-
-function startPetals() {
-  stopPetals();
-  const container = document.getElementById('petalContainer');
-  container.innerHTML = '';
-  function spawnPetal() {
-    const el = document.createElement('div');
-    el.className = 'petal';
-    el.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
-    const left = Math.random() * 100;
-    const duration = 6 + Math.random() * 10;
-    const delay = Math.random() * 4;
-    const drift = (Math.random() - 0.5) * 160 + 'px';
-    const spin = (Math.random() * 720 - 360) + 'deg';
-    el.style.cssText = `left:${left}%;animation-duration:${duration}s;animation-delay:${delay}s;--drift:${drift};--spin:${spin};font-size:${12 + Math.random()*10}px`;
-    container.appendChild(el);
-    setTimeout(() => el.remove(), (duration + delay) * 1000);
-  }
-  for (let i = 0; i < 18; i++) spawnPetal();
-  petalTimer = setInterval(() => spawnPetal(), 1200);
-}
-
-function stopPetals() {
-  if (petalTimer) { clearInterval(petalTimer); petalTimer = null; }
-  const container = document.getElementById('petalContainer');
-  if (container) container.innerHTML = '';
 }
 
 // Apply saved theme on load
