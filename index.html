@@ -376,6 +376,22 @@
     .brief-output p:last-child { margin-bottom: 0; }
     .brief-hint { font-size: 11px; color: var(--text3); }
 
+    /* ── NEWS SUMMARY ── */
+    .news-summary-card { margin: 0 16px 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .news-summary-bullets { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .news-summary-bullets li { font-size: 14px; color: var(--text2); line-height: 1.55; padding-left: 18px; position: relative; }
+    .news-summary-bullets li::before { content: '•'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .news-summary-loading { font-size: 13px; color: var(--text3); }
+
+    /* ── BOOK / MOVIE ── */
+    .rec-cover { width: 56px; min-width: 56px; height: 80px; border-radius: 6px; object-fit: cover; background: var(--bg3); }
+    .rec-body { flex: 1; min-width: 0; }
+    .rec-title { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 3px; }
+    .rec-meta { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+    .rec-desc { font-size: 13px; color: var(--text2); line-height: 1.55; }
+    .rec-row { display: flex; gap: 14px; align-items: flex-start; }
+    .rec-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--orange); margin-top: 6px; }
+
     /* ── SPLASH SCREEN ── */
     #splash {
       position: fixed; inset: 0; z-index: 9999;
@@ -613,6 +629,8 @@
       <div class="card" id="wordsCard"><div class="card-title">Words of the day</div></div>
       <div class="card" id="factsCard"><div class="card-title">Did you know?</div></div>
       <div class="card" id="knowledgeCard"><div class="card-title">Worth Knowing</div></div>
+      <div class="card" id="bookCard"><div class="card-title">Book of the day</div><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      <div class="card" id="movieCard"><div class="card-title">Movie of the day</div><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
       <div class="card" id="jokeCard">
         <div class="card-title">Daily Joke</div>
         <div id="jokeContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
@@ -627,6 +645,10 @@
 
   <!-- ── BRIEF ── -->
   <div class="tab-pane" id="pane-brief">
+    <div class="news-summary-card" id="newsSummaryCard">
+      <div class="card-title">Today's Brief — AI Summary</div>
+      <div id="newsSummaryContent"><div class="news-summary-loading">Loading articles first…</div></div>
+    </div>
     <div class="daily-bar">
       <div class="daily-bar-text">
         <strong>Your Daily Brief</strong>
@@ -914,6 +936,7 @@ async function loadAll() {
   document.getElementById('errNote').style.display = anyErr ? 'block' : 'none';
   updateSummaryBar();
   renderBrief();
+  generateNewsSummary();
 }
 
 function updateSummaryBar() {
@@ -1024,6 +1047,8 @@ async function loadDaily() {
   renderWords();
   renderFacts();
   renderKnowledge();
+  loadBook();
+  loadMovie();
   loadGratitude();
   loadJoke();
 }
@@ -1422,6 +1447,155 @@ function buildBriefContext() {
   return parts.join('\n');
 }
 
+// ── NEWS SUMMARY ──────────────────────────────
+async function generateNewsSummary() {
+  const el = document.getElementById('newsSummaryContent');
+  if (!el) return;
+  const key = getClaudeKey();
+  if (!key) { el.innerHTML = '<div class="news-summary-loading">Add API key on Home to enable.</div>'; return; }
+
+  // Use cached summary if from today
+  const cached = getTodayData().newsSummary;
+  if (cached) { renderNewsSummary(cached); return; }
+
+  // Wait until articles are loaded
+  const allArticles = Object.values(data).flat();
+  if (!allArticles.length) { el.innerHTML = '<div class="news-summary-loading">Loading articles…</div>'; return; }
+
+  el.innerHTML = '<div class="news-summary-loading">Summarising with Claude…</div>';
+
+  const headlines = allArticles.slice(0, 12).map(a => `- ${strip(a.title)}`).join('\n');
+  const prompt = `Here are today's top news headlines:\n${headlines}\n\nWrite exactly 3 bullet points summarising the most important themes across these stories. Each bullet should be one sentence, direct and informative. No intro, no outro — just the 3 bullets starting with "•".`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: prompt }] })
+    });
+    const json = await res.json();
+    const text = json.content?.[0]?.text || '';
+    if (text) {
+      setTodayData({ newsSummary: text });
+      renderNewsSummary(text);
+    }
+  } catch {
+    el.innerHTML = '<div class="news-summary-loading" style="color:var(--red)">Could not summarise — try refreshing.</div>';
+  }
+}
+
+function renderNewsSummary(text) {
+  const el = document.getElementById('newsSummaryContent');
+  if (!el) return;
+  const bullets = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('•') || l.startsWith('-')).map(l => l.replace(/^[•\-]\s*/, ''));
+  if (!bullets.length) { el.innerHTML = `<div class="news-summary-loading">${esc(text)}</div>`; return; }
+  el.innerHTML = `<ul class="news-summary-bullets">${bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`;
+}
+
+// ── BOOK OF THE DAY ───────────────────────────
+async function loadBook() {
+  const el = document.getElementById('bookCard');
+  if (!el) return;
+  const cached = getTodayData().bookOfDay;
+  if (cached) { renderBook(el, cached); return; }
+  try {
+    // Open Library trending books — free, no key
+    const res = await fetch('https://openlibrary.org/trending/daily.json?limit=20', { signal: AbortSignal.timeout(8000) });
+    const json = await res.json();
+    const works = json.works || [];
+    if (!works.length) throw new Error('no works');
+    // Pick one based on day of year for consistency
+    const pick = works[dayOfYear() % works.length];
+    const key = pick.key; // e.g. /works/OL123W
+    // Fetch full work details
+    const detail = await fetch(`https://openlibrary.org${key}.json`, { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+    const title = detail.title || pick.title || 'Unknown';
+    const author = (pick.author_name || [])[0] || 'Unknown author';
+    const desc = typeof detail.description === 'string' ? detail.description : detail.description?.value || '';
+    const coverId = pick.cover_i || (detail.covers || [])[0];
+    const cover = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null;
+    const year = pick.first_publish_year || '';
+    const book = { title, author, desc: desc.slice(0, 220) + (desc.length > 220 ? '…' : ''), cover, year };
+    setTodayData({ bookOfDay: book });
+    renderBook(el, book);
+  } catch {
+    el.innerHTML = `<div class="card-title">Book of the day</div><div style="font-size:13px;color:var(--text3)">Could not load — try again later.</div>`;
+  }
+}
+
+function renderBook(el, b) {
+  el.innerHTML = `<div class="card-title">Book of the day</div>
+    <div class="rec-row">
+      ${b.cover ? `<img class="rec-cover" src="${esc(b.cover)}" alt="">` : `<div class="rec-cover"></div>`}
+      <div class="rec-body">
+        <div class="rec-title">${esc(b.title)}</div>
+        <div class="rec-meta">${esc(b.author)}${b.year ? ' · ' + b.year : ''}</div>
+        ${b.desc ? `<div class="rec-desc">${esc(b.desc)}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+// ── MOVIE OF THE DAY ──────────────────────────
+const TMDB_LS = 'atd_tmdb_key';
+function getTmdbKey() { return localStorage.getItem(TMDB_LS) || ''; }
+
+async function loadMovie() {
+  const el = document.getElementById('movieCard');
+  if (!el) return;
+  const cached = getTodayData().movieOfDay;
+  if (cached) { renderMovie(el, cached); return; }
+  const key = getTmdbKey();
+  if (!key) { renderMovieSetup(el); return; }
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${encodeURIComponent(key)}&language=en-US`, { signal: AbortSignal.timeout(8000) });
+    const json = await res.json();
+    if (json.status_code === 7) { renderMovieSetup(el); return; } // invalid key
+    const results = json.results || [];
+    if (!results.length) throw new Error('no results');
+    const pick = results[dayOfYear() % Math.min(results.length, 10)];
+    const movie = {
+      title: pick.title,
+      year: pick.release_date?.slice(0, 4) || '',
+      desc: (pick.overview || '').slice(0, 220) + ((pick.overview || '').length > 220 ? '…' : ''),
+      rating: pick.vote_average?.toFixed(1),
+      cover: pick.poster_path ? `https://image.tmdb.org/t/p/w154${pick.poster_path}` : null,
+    };
+    setTodayData({ movieOfDay: movie });
+    renderMovie(el, movie);
+  } catch {
+    el.innerHTML = `<div class="card-title">Movie of the day</div><div style="font-size:13px;color:var(--text3)">Could not load — check your TMDB key.</div>`;
+  }
+}
+
+function renderMovie(el, m) {
+  el.innerHTML = `<div class="card-title">Movie of the day</div>
+    <div class="rec-row">
+      ${m.cover ? `<img class="rec-cover" src="${esc(m.cover)}" alt="">` : `<div class="rec-cover"></div>`}
+      <div class="rec-body">
+        <div class="rec-title">${esc(m.title)}</div>
+        <div class="rec-meta">${m.year}</div>
+        ${m.desc ? `<div class="rec-desc">${esc(m.desc)}</div>` : ''}
+        ${m.rating ? `<div class="rec-rating">★ ${m.rating}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderMovieSetup(el) {
+  el.innerHTML = `<div class="card-title">Movie of the day</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Get a free API key at <strong>themoviedb.org</strong> → Settings → API.</p>
+    <div style="display:flex;gap:8px">
+      <input style="flex:1;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px" id="tmdbKeyInp" type="password" placeholder="Paste TMDB API key…">
+      <button style="background:var(--accent);border:none;border-radius:10px;padding:9px 14px;color:#fff;font-size:13px;font-weight:700;cursor:pointer" onclick="saveTmdbKey()">Save</button>
+    </div>`;
+}
+
+function saveTmdbKey() {
+  const v = document.getElementById('tmdbKeyInp')?.value.trim();
+  if (!v) return;
+  localStorage.setItem(TMDB_LS, v);
+  loadMovie();
+}
+
 // ── CLUB EVENTS ───────────────────────────────
 const CLUBS = [
   { id: 'icuzh',  name: 'IC UZH',  color: '#0A84FF', url: 'https://www.icuzh.ch/events',   api: 'https://www.icuzh.ch/api/events?page=1&limit=50' },
@@ -1642,9 +1816,9 @@ function renderSpTrack(el, track, isPlaying, progress, duration) {
       ${duration ? `<div class="sp-progress"><div class="sp-progress-fill" style="width:${pct}%"></div></div>` : ''}
     </div>
   </div>
-  ${isPlaying || duration ? `<div class="sp-controls">
+  ${isPlaying ? `<div class="sp-controls">
     <button class="sp-ctrl-btn" onclick="spControl('previous')" title="Previous">${prevIcon}</button>
-    <button class="sp-ctrl-btn play" onclick="spControl('${isPlaying ? 'pause' : 'play'}')" title="${isPlaying ? 'Pause' : 'Play'}">${playPauseIcon}</button>
+    <button class="sp-ctrl-btn play" onclick="spControl('pause')" title="Pause">${playPauseIcon}</button>
     <button class="sp-ctrl-btn" onclick="spControl('next')" title="Next">${nextIcon}</button>
   </div>` : ''}
   <button class="sp-disconnect" onclick="disconnectSpotify()">Disconnect</button>`;
@@ -2740,7 +2914,22 @@ function toggleTheme() {
 // Apply saved theme on load
 applyTheme(localStorage.getItem(THEME_LS) || '');
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newSW = reg.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'activated') location.reload();
+      });
+    });
+  }).catch(() => {});
+  // Check for updates every time the app becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      navigator.serviceWorker.getRegistration().then(reg => reg && reg.update());
+    }
+  });
+}
 </script>
 </body>
 </html>
