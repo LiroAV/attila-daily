@@ -19,6 +19,26 @@
       --accent: #0A84FF; --green: #30d158; --red: #ff453a; --orange: #ff9f0a; --purple: #bf5af2;
       --border: rgba(84,84,88,0.55); --card: #1c1c1e;
     }
+    [data-theme="sakura"] {
+      --bg: #1a0f14; --bg2: #2a1a22; --bg3: #3a2530;
+      --text: #fdf0f4; --text2: rgba(253,220,232,0.75); --text3: rgba(253,220,232,0.4);
+      --accent: #e8749a; --green: #7ec87e; --red: #e85555; --orange: #e8a44a; --purple: #c47ec8;
+      --border: rgba(220,140,170,0.25); --card: #2a1a22;
+    }
+
+    /* ── CHERRY BLOSSOM PETALS ── */
+    .petal {
+      position: fixed; top: -30px; pointer-events: none; z-index: 9990;
+      font-size: 16px; animation: petal-fall linear infinite;
+      opacity: 0;
+    }
+    @keyframes petal-fall {
+      0%   { transform: translateX(0) rotate(0deg);   opacity: 0; }
+      5%   { opacity: 0.85; }
+      90%  { opacity: 0.7; }
+      100% { transform: translateX(var(--drift)) rotate(var(--spin)); opacity: 0; top: 110vh; }
+    }
+    #petalContainer { position: fixed; inset: 0; pointer-events: none; z-index: 9990; overflow: hidden; }
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
     .safe-top { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
 
@@ -515,10 +535,12 @@
     <div class="date-line" id="dateLine">Wednesday</div>
   </div>
   <div class="header-right">
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌸</button>
     <button class="icon-btn" id="refreshBtn" onclick="refreshAll()">↻</button>
     <div class="avatar">A</div>
   </div>
 </div>
+<div id="petalContainer"></div>
 
 <div class="content" id="content">
 
@@ -2662,6 +2684,63 @@ function goTab(name, el) {
   if (name === 'daily' && !dailyLoaded) { dailyLoaded = true; loadDaily(); }
   if (name === 'learn' && !learnLoaded) { learnLoaded = true; loadLearn(); }
 }
+
+// ── THEME ─────────────────────────────────────
+const THEME_LS = 'atd_theme';
+let petalTimer = null;
+
+const PETALS = ['🌸', '🌸', '🌸', '🌺', '🍃', '🍀', '🌿', '🌸', '🌸', '🌼'];
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme || '');
+  const btn = document.getElementById('themeBtn');
+  if (theme === 'sakura') {
+    btn.textContent = '🌑';
+    btn.title = 'Switch to dark theme';
+    startPetals();
+  } else {
+    btn.textContent = '🌸';
+    btn.title = 'Switch to Sakura theme';
+    stopPetals();
+  }
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem(THEME_LS) || '';
+  const next = current === 'sakura' ? '' : 'sakura';
+  localStorage.setItem(THEME_LS, next);
+  applyTheme(next);
+}
+
+function startPetals() {
+  stopPetals();
+  const container = document.getElementById('petalContainer');
+  container.innerHTML = '';
+  function spawnPetal() {
+    const el = document.createElement('div');
+    el.className = 'petal';
+    el.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+    const left = Math.random() * 100;
+    const duration = 6 + Math.random() * 10;
+    const delay = Math.random() * 4;
+    const drift = (Math.random() - 0.5) * 160 + 'px';
+    const spin = (Math.random() * 720 - 360) + 'deg';
+    el.style.cssText = `left:${left}%;animation-duration:${duration}s;animation-delay:${delay}s;--drift:${drift};--spin:${spin};font-size:${12 + Math.random()*10}px`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), (duration + delay) * 1000);
+  }
+  for (let i = 0; i < 18; i++) spawnPetal();
+  petalTimer = setInterval(() => spawnPetal(), 1200);
+}
+
+function stopPetals() {
+  if (petalTimer) { clearInterval(petalTimer); petalTimer = null; }
+  const container = document.getElementById('petalContainer');
+  if (container) container.innerHTML = '';
+}
+
+// Apply saved theme on load
+applyTheme(localStorage.getItem(THEME_LS) || '');
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
