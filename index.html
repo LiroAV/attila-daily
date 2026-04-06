@@ -29,25 +29,7 @@
     .header-right { display: flex; gap: 8px; align-items: center; padding-bottom: 2px; }
     .icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .icon-btn:active { opacity: 0.6; }
-    .x-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: none; color: var(--text); font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
-    .x-btn.active { background: var(--text); color: var(--bg); }
-    .x-btn:active { opacity: 0.6; }
     .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#0A84FF,#BF5AF2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
-
-    /* ── X mode ── */
-    .x-banner { margin: 0 16px 14px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
-    .x-banner-label { font-size: 13px; font-weight: 700; }
-    .x-banner-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-    .x-topic-header { margin: 4px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
-    .x-topic-name { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
-    .x-topic-count { font-size: 12px; color: var(--text3); }
-    .x-card { margin: 0 16px 10px; background: var(--card); border-radius: 14px; border: 0.5px solid var(--border); padding: 14px 16px; }
-    .x-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .x-handle { font-size: 13px; font-weight: 700; color: var(--text2); }
-    .x-time { font-size: 12px; color: var(--text3); }
-    .x-text { font-size: 15px; line-height: 1.55; margin-bottom: 10px; }
-    .x-link { font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
-    .x-link:active { opacity: 0.6; }
 
     /* ── Tab bar ── */
     .tab-bar { display: flex; background: rgba(28,28,30,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); padding: 8px 0 calc(8px + env(safe-area-inset-bottom,16px)); flex-shrink: 0; }
@@ -165,10 +147,11 @@
     .tbadge-low { background: rgba(235,235,245,0.1); color: var(--text3); }
     .task-del { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,69,58,.12); border: none; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
+    /* ── CARD (shared by Home + Daily) ── */
+    .card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
     /* ── DAILY ── */
     .daily-section { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 12px; }
-    .daily-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
-    .daily-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
     .holiday-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
     .holiday-item:last-child { border-bottom: none; padding-bottom: 0; }
     .holiday-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
@@ -200,8 +183,8 @@
     .knowledge-item:last-child { border-bottom: none; padding-bottom: 0; }
 
     /* ── HOME ── */
-    .home-section { padding: 0 16px 16px; }
-    .weather-card { background: linear-gradient(145deg, #1a2a3a, #0d1f2d); border: 0.5px solid rgba(10,132,255,0.2); border-radius: 20px; padding: 22px 20px 18px; margin-bottom: 12px; }
+    .home-section { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 12px; }
+    .weather-card { background: linear-gradient(145deg, #1a2a3a, #0d1f2d); border: 0.5px solid rgba(10,132,255,0.2); border-radius: 20px; padding: 22px 20px 18px; }
     .weather-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
     .weather-temp { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -2px; color: #fff; }
     .weather-temp sup { font-size: 24px; font-weight: 600; vertical-align: super; }
@@ -214,20 +197,11 @@
     .weather-loading { color: rgba(255,255,255,0.4); font-size: 14px; padding: 20px 0; }
     .weather-error { font-size: 13px; color: var(--text3); padding: 10px 0; }
 
-    .home-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+    .home-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .stat-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 12px; }
     .stat-val { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
     .stat-lbl { font-size: 11px; color: var(--text3); font-weight: 500; }
 
-    .home-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-    .home-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
-    .market-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
-    .market-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .market-name { font-size: 15px; font-weight: 700; }
-    .market-ticker { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 1px; }
-    .market-right { text-align: right; }
-    .market-price { font-size: 15px; font-weight: 700; }
-    .market-change { font-size: 12px; font-weight: 600; margin-top: 1px; }
     .up { color: var(--green); }
     .down { color: var(--red); }
 
@@ -311,6 +285,21 @@
     .fin-loading { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 14px; }
     .fin-update-time { text-align: center; font-size: 11px; color: var(--text3); padding: 4px 16px 12px; }
 
+    /* ── MARKET PULSE ── */
+    .pulse-card { margin: 0 16px 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .pulse-movers { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .pulse-mover { display: flex; align-items: center; justify-content: space-between; }
+    .pulse-mover-left { display: flex; align-items: center; gap: 10px; }
+    .pulse-mover-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .pulse-mover-name { font-size: 14px; font-weight: 700; }
+    .pulse-mover-pct { font-size: 13px; font-weight: 700; }
+    .pulse-explanation { font-size: 14px; line-height: 1.55; color: var(--text2); }
+    .pulse-explanation p { margin: 0 0 8px; }
+    .pulse-explanation p:last-child { margin: 0; }
+    .pulse-btn { width: 100%; height: 40px; background: var(--bg3); border: 0.5px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 14px; }
+    .pulse-btn:active { opacity: 0.6; }
+    .pulse-spinner { font-size: 12px; color: var(--text3); text-align: center; padding: 8px 0; }
+
     /* ── MORNING BRIEF ── */
     .brief-api-row { display: flex; gap: 8px; margin-bottom: 10px; }
     .brief-key-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--text); font-family: inherit; outline: none; min-width: 0; }
@@ -322,9 +311,188 @@
     .brief-output p { margin-bottom: 6px; }
     .brief-output p:last-child { margin-bottom: 0; }
     .brief-hint { font-size: 11px; color: var(--text3); }
+
+    /* ── SPLASH SCREEN ── */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.55s ease;
+    }
+    #splash.hide {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Orbital ring */
+    .sp-orbit {
+      position: absolute;
+      width: 180px; height: 180px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 50%;
+      animation: sp-spin 5s linear infinite;
+    }
+    .sp-orbit-2 {
+      width: 248px; height: 248px;
+      border-color: rgba(10,132,255,0.12);
+      animation: sp-spin 9s linear infinite reverse;
+    }
+    @keyframes sp-spin { to { transform: rotate(360deg); } }
+
+    /* Center logo */
+    .sp-logo {
+      width: 92px; height: 92px; border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, #0A84FF, #BF5AF2);
+      box-shadow: 0 0 0 0 rgba(10,132,255,0.5), 0 0 30px rgba(10,132,255,0.2);
+      animation: sp-pulse 2s ease-in-out infinite;
+      position: relative; z-index: 2;
+      flex-shrink: 0;
+    }
+    .sp-logo img {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    @keyframes sp-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(10,132,255,0.45), 0 0 30px rgba(10,132,255,0.15); }
+      50%       { box-shadow: 0 0 0 14px rgba(10,132,255,0),  0 0 50px rgba(191,90,242,0.25); }
+    }
+
+    /* Orbital nodes */
+    .sp-nodes {
+      position: absolute;
+      width: 180px; height: 180px;
+      animation: sp-spin 5s linear infinite;
+    }
+    .sp-node {
+      position: absolute;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      /* counter-rotate so icons stay upright */
+      animation: sp-counter 5s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+    .sp-node.lit {
+      opacity: 1;
+      border-color: rgba(10,132,255,0.6);
+      background: rgba(10,132,255,0.12);
+    }
+    @keyframes sp-counter { to { transform: rotate(-360deg); } }
+
+    /* Position 4 nodes at top/right/bottom/left of the 160px orbit */
+    .sp-node:nth-child(1) { top: -16px;  left: calc(50% - 16px); }
+    .sp-node:nth-child(2) { right: -16px; top: calc(50% - 16px); }
+    .sp-node:nth-child(3) { bottom: -16px; left: calc(50% - 16px); }
+    .sp-node:nth-child(4) { left: -16px;  top: calc(50% - 16px); }
+
+    /* Status text */
+    .sp-status {
+      position: absolute;
+      bottom: -52px;
+      font-size: 12px; color: var(--text3);
+      letter-spacing: 0.5px;
+      min-height: 16px;
+      transition: opacity 0.2s;
+    }
+
+    /* Scan line */
+    .sp-scan {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(10,132,255,0.04) 50%,
+        transparent 100%);
+      background-size: 100% 80px;
+      animation: sp-scanline 2s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes sp-scanline {
+      0%   { background-position: 0 -80px; }
+      100% { background-position: 0 100vh; }
+    }
+
+    /* ── LEARN ── */
+    .learn-header { padding: 4px 16px 16px; display: flex; align-items: flex-start; justify-content: space-between; }
+    .learn-subjects { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 12px; }
+    .subject-card { border-radius: 16px; padding: 18px; cursor: pointer; border: 0.5px solid var(--border); }
+    .subject-card:active { opacity: 0.8; }
+    .subject-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .subject-title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 4px; }
+    .subject-meta { font-size: 12px; color: var(--text2); }
+    .subject-progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 12px; }
+    .subject-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+    .chapters-section { padding: 0 16px 28px; display: flex; flex-direction: column; gap: 10px; }
+    .chapter-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px 16px; cursor: pointer; }
+    .chapter-card:active { opacity: 0.8; }
+    .chapter-card.locked { opacity: 0.38; pointer-events: none; }
+    .chapter-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .chapter-num { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); }
+    .chapter-done-badge { font-size: 11px; font-weight: 700; color: var(--green); background: rgba(48,209,88,0.12); padding: 2px 8px; border-radius: 10px; }
+    .chapter-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+    .chapter-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg3); }
+    .chapter-dot.done { background: var(--green); }
+
+    .learn-back { display: flex; align-items: center; gap: 6px; padding: 4px 16px 14px; cursor: pointer; }
+    .learn-back:active { opacity: 0.6; }
+
+    .lesson-section { padding: 0 16px 100px; }
+    .lesson-body { font-size: 15px; color: var(--text2); line-height: 1.78; margin-bottom: 20px; }
+    .lesson-body p { margin-bottom: 14px; }
+    .lesson-body p:last-child { margin-bottom: 0; }
+
+    .quiz-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
+    .quiz-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 10px; }
+    .quiz-q { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 14px; }
+    .quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-opt { padding: 11px 14px; border-radius: 10px; background: var(--bg3); border: 1.5px solid transparent; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; color: var(--text); transition: border-color 0.15s; }
+    .quiz-opt:active { opacity: 0.7; }
+    .quiz-opt.correct { border-color: var(--green); background: rgba(48,209,88,0.1); color: var(--green); font-weight: 700; }
+    .quiz-opt.wrong { border-color: var(--red); background: rgba(255,69,58,0.08); color: var(--red); }
+    .quiz-result { text-align: center; padding: 16px 0 4px; }
+    .quiz-result-icon { font-size: 32px; margin-bottom: 8px; }
+    .quiz-result-text { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+    .quiz-next-btn { width: 100%; height: 48px; background: linear-gradient(135deg, var(--accent), var(--purple)); border: none; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .quiz-next-btn:active { opacity: 0.7; }
+    .quiz-retry-btn { width: 100%; height: 42px; background: var(--bg3); border: none; border-radius: 12px; color: var(--text2); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+
+    .chap-complete { text-align: center; padding: 28px 16px 8px; }
+    .chap-complete-icon { font-size: 60px; margin-bottom: 12px; animation: cc-pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+    @keyframes cc-pop { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+    .chap-complete-title { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .chap-complete-sub { font-size: 14px; color: var(--text2); margin-bottom: 10px; }
+    .chap-complete-xp { font-size: 32px; font-weight: 800; color: var(--orange); margin-bottom: 24px; }
+
+    .xp-pop { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--orange); color: #fff; font-size: 16px; font-weight: 800; padding: 8px 22px; border-radius: 22px; pointer-events: none; z-index: 9998; animation: xp-rise 1.4s ease-out forwards; }
+    @keyframes xp-rise { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-64px)} }
   </style>
 </head>
 <body>
+
+<!-- ── SPLASH ── -->
+<div id="splash">
+  <div class="sp-scan"></div>
+  <div class="sp-orbit sp-orbit-2"></div>
+  <div class="sp-orbit">
+    <div class="sp-nodes" id="spNodes">
+      <div class="sp-node" id="spN0">⛅</div>
+      <div class="sp-node" id="spN1">📰</div>
+      <div class="sp-node" id="spN2">📈</div>
+      <div class="sp-node" id="spN3">✓</div>
+    </div>
+  </div>
+  <div class="sp-logo"><img src="attila-logo.png" alt="Attila"></div>
+  <div class="sp-status" id="spStatus">initializing…</div>
+</div>
+
 <div class="safe-top"></div>
 <div class="header">
   <div>
@@ -333,7 +501,6 @@
   </div>
   <div class="header-right">
     <button class="icon-btn" id="refreshBtn" onclick="refreshAll()">↻</button>
-    <button class="x-btn" id="xModeBtn" onclick="toggleXMode()">X</button>
     <div class="avatar">A</div>
   </div>
 </div>
@@ -346,21 +513,8 @@
       <div class="weather-card" id="weatherCard">
         <div class="weather-loading">Locating…</div>
       </div>
-      <div class="home-stats" id="homeStats"></div>
-      <div class="home-card" id="clubEventsCard">
-        <div class="home-card-title">Upcoming Events</div>
-        <div id="clubEventsContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
-      </div>
-      <div class="home-card" id="spotifyCard">
-        <div class="home-card-title">Spotify</div>
-        <div id="spotifyContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
-      </div>
-      <div class="home-card" id="quoteCard">
-        <div class="home-card-title">Quote of the day</div>
-        <div style="font-size:13px;color:var(--text3)">Loading…</div>
-      </div>
-      <div class="home-card" id="morningBriefCard">
-        <div class="home-card-title">Morning Brief</div>
+      <div class="card" id="morningBriefCard">
+        <div class="card-title">Morning Brief</div>
         <div id="morningBriefContent">
           <div class="brief-api-row">
             <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="Paste Anthropic API key…">
@@ -369,19 +523,37 @@
           <div class="brief-hint">Key stored locally, sent only to Anthropic.</div>
         </div>
       </div>
-      <div class="daily-card" id="holidayCard"><div class="daily-card-title">Today's Days</div><div class="no-holidays">Loading…</div></div>
-      <div class="daily-card">
-        <div class="daily-card-title">Grateful for today</div>
+      <div class="card" id="clubEventsCard">
+        <div class="card-title">Upcoming Events</div>
+        <div id="clubEventsContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
+      <div class="card" id="spotifyCard">
+        <div class="card-title">Spotify</div>
+        <div id="spotifyContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAILY ── -->
+  <div class="tab-pane" id="pane-daily">
+    <div class="daily-section">
+      <div class="card" id="quoteCard">
+        <div class="card-title">Quote of the day</div>
+        <div style="font-size:13px;color:var(--text3)">Loading…</div>
+      </div>
+      <div class="card" id="holidayCard"><div class="card-title">Today's Days</div><div class="no-holidays">Loading…</div></div>
+      <div class="card" id="historyCard"><div class="card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div></div>
+      <div class="card" id="wordsCard"><div class="card-title">Words of the day</div></div>
+      <div class="card" id="factsCard"><div class="card-title">Did you know?</div></div>
+      <div class="card" id="knowledgeCard"><div class="card-title">Worth Knowing</div></div>
+      <div class="card" id="jokeCard">
+        <div class="card-title">Daily Joke</div>
+        <div id="jokeContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Grateful for today</div>
         <textarea class="gratitude-area" id="gratitudeArea" placeholder="What are you grateful for today?"></textarea>
         <div class="gratitude-saved" id="gratitudeSaved"></div>
-      </div>
-      <div class="daily-card" id="historyCard"><div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div></div>
-      <div class="daily-card" id="wordsCard"><div class="daily-card-title">Words of the day</div></div>
-      <div class="daily-card" id="factsCard"><div class="daily-card-title">Did you know?</div></div>
-      <div class="daily-card" id="knowledgeCard"><div class="daily-card-title">Worth Knowing</div></div>
-      <div class="home-card" id="jokeCard">
-        <div class="home-card-title">Daily Joke</div>
-        <div id="jokeContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
       </div>
     </div>
   </div>
@@ -433,6 +605,11 @@
     <div class="task-list" id="taskList"></div>
   </div>
 
+  <!-- ── LEARN ── -->
+  <div class="tab-pane" id="pane-learn">
+    <div id="learnRoot"></div>
+  </div>
+
   <!-- ── FINANCE ── -->
   <div class="tab-pane" id="pane-finance">
     <div class="fin-head">
@@ -452,6 +629,10 @@
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M5 10v9h4v-5h6v5h4v-9"/></svg>
     <div class="tab-label">Home</div>
   </div>
+  <div class="tab-item" onclick="goTab('daily',this)">
+    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <div class="tab-label">Daily</div>
+  </div>
   <div class="tab-item" onclick="goTab('brief',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
     <div class="tab-label">Brief</div>
@@ -463,6 +644,10 @@
   <div class="tab-item" onclick="goTab('finance',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <div class="tab-label">Finance</div>
+  </div>
+  <div class="tab-item" onclick="goTab('learn',this)">
+    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    <div class="tab-label">Learn</div>
   </div>
 </nav>
 
@@ -512,27 +697,47 @@ const WPM = 220;
 const TARGET_MIN = 10;
 const TARGET_MAX = 15;
 
-// ── X EMBED CONFIG ───────────────────────────
-const X_SEARCH = {
-  AI:         'AI OR OpenAI OR ChatGPT OR LLM',
-  Technology: 'technology OR "big tech" OR software',
-  Research:   'research OR science OR breakthrough',
-  Stocks:     'stocks OR market OR investing OR finance'
-};
-
 // ── STATE ────────────────────────────────────
 let data = {};
-let xData = {};
-let xMode = false;
 let activeFilter = 'all';
 
+// ── SPLASH ───────────────────────────────────
+const SPLASH_STEPS = [
+  { id: 'spN0', label: 'fetching weather…' },
+  { id: 'spN1', label: 'loading brief…' },
+  { id: 'spN2', label: 'syncing markets…' },
+  { id: 'spN3', label: 'building tasks…' },
+];
+function runSplash(onDone) {
+  const status = document.getElementById('spStatus');
+  let i = 0;
+  function step() {
+    if (i >= SPLASH_STEPS.length) {
+      status.style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('hide');
+        setTimeout(onDone, 560);
+      }, 220);
+      return;
+    }
+    const s = SPLASH_STEPS[i];
+    document.getElementById(s.id).classList.add('lit');
+    status.textContent = s.label;
+    i++;
+    setTimeout(step, 320);
+  }
+  setTimeout(step, 350); // brief pause before first step
+}
+
 // ── BOOT ─────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
-  await handleSpotifyCallback();
-  setHeader();
-  loadAll();
-  renderTasks();
-  loadHome();
+document.addEventListener('DOMContentLoaded', () => {
+  runSplash(async () => {
+    await handleSpotifyCallback();
+    setHeader();
+    loadAll();
+    renderTasks();
+    loadHome();
+  });
 });
 
 function setHeader() {
@@ -656,74 +861,15 @@ function updateSummaryBar() {
 }
 
 function refreshAll() {
-  if (xMode) { xData = {}; loadXMode(); } else { data = {}; loadAll(); }
-}
-
-
-// ── X EMBED MODE ─────────────────────────────
-function loadXMode() {
-  renderXMode();
-}
-
-function renderXMode() {
-  const topics = activeFilter === 'all' ? Object.keys(X_SEARCH) : [activeFilter];
-
-  let html = `<div class="x-banner">
-    <div>
-      <div class="x-banner-label">X — live posts</div>
-      <div class="x-banner-sub">Real-time posts from X (Twitter)</div>
-    </div>
-  </div>`;
-
-  topics.forEach((topic, tIdx) => {
-    const cfg = TOPICS[topic];
-    const query = X_SEARCH[topic];
-    if (tIdx > 0) html += '<div class="divider"></div>';
-    html += `<div class="x-topic-header">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="topic-dot" style="background:${cfg.color}"></div>
-        <span class="x-topic-name" style="color:${cfg.color}">${topic}</span>
-      </div>
-    </div>
-    <div style="margin:0 16px 16px">
-      <a class="twitter-timeline"
-         data-theme="dark"
-         data-tweet-limit="5"
-         data-chrome="noheader nofooter transparent"
-         data-dnt="true"
-         href="https://twitter.com/search?q=${encodeURIComponent(query)}&src=typed_query&f=live">
-        Loading X posts...
-      </a>
-    </div>`;
-  });
-
-  document.getElementById('briefContent').innerHTML = html;
-
-  if (window.twttr && window.twttr.widgets) {
-    window.twttr.widgets.load();
-  } else {
-    const s = document.createElement('script');
-    s.src = 'https://platform.twitter.com/widgets.js';
-    s.async = true;
-    document.head.appendChild(s);
-  }
-}
-
-function toggleXMode() {
-  xMode = !xMode;
-  document.getElementById('xModeBtn').classList.toggle('active', xMode);
-  if (xMode) {
-    loadXMode();
-  } else {
-    if (Object.keys(data).length) renderBrief(); else loadAll();
-  }
+  data = {};
+  loadAll();
 }
 
 function filter(t, btn) {
   activeFilter = t;
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-  if (xMode) { xData = {}; loadXMode(); } else renderBrief();
+  renderBrief();
 }
 
 
@@ -804,16 +950,15 @@ function dayOfYear() { const n = new Date(), s = new Date(n.getFullYear(),0,1); 
 
 
 
-
-
-
 async function loadDaily() {
+  fetchQuote();
   renderHolidays();
   renderHistory();
   renderWords();
   renderFacts();
   renderKnowledge();
   loadGratitude();
+  loadJoke();
 }
 
 async function renderHolidays() {
@@ -860,10 +1005,10 @@ async function renderHolidays() {
 
 function renderHolidayHTML(el, all) {
   if (!all.length) {
-    el.innerHTML = `<div class="daily-card-title">Today's Days</div><div class="no-holidays">No special days today — make your own.</div>`;
+    el.innerHTML = `<div class="card-title">Today's Days</div><div class="no-holidays">No special days today — make your own.</div>`;
     return;
   }
-  el.innerHTML = `<div class="daily-card-title">Today's Days</div>` +
+  el.innerHTML = `<div class="card-title">Today's Days</div>` +
     all.map(h => `<div class="holiday-item">
       <div class="holiday-dot ${h.fun ? 'fun' : ''}"></div>
       <div><div class="holiday-name">${esc(h.name)}</div><div class="holiday-type">${h.type}</div></div>
@@ -883,12 +1028,56 @@ const DEU_WORDS_MINI = [
   {w:'Ohrwurm',            d:'Earworm; a tune that gets stuck in your head and won\'t leave.',                  e:'"That jingle is such an Ohrwurm — I\'ve been humming it for three days."'},
 ];
 
+async function fetchDeuWordOfDay() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+
+  // Try today then yesterday (Wiktionary sometimes publishes slightly late)
+  for (const offset of [0, -1]) {
+    const d = new Date(now); d.setDate(d.getDate() + offset);
+    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    try {
+      const url = `https://de.wiktionary.org/w/api.php?action=parse&page=${encodeURIComponent('Wiktionary:Wort des Tages/'+ds)}&prop=wikitext&format=json&origin=*`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
+      const data = await r.json();
+      if (data.error) continue;
+
+      const wikitext = data.parse?.wikitext?.['*'] || '';
+
+      // Extract named template fields
+      const get = key => { const m = wikitext.match(new RegExp(`\\|\\s*${key}\\s*=\\s*([^|}\n]+)`)); return m ? m[1].trim() : null; };
+
+      // Strip wikitext markup: [[link|text]] → text, [[link]] → link, bold/italic
+      const clean = s => s ? s.replace(/\[\[(?:[^\]|]+\|)?([^\]]+)\]\]/g,'$1').replace(/'{2,3}/g,'').replace(/<[^>]+>/g,'').trim() : null;
+
+      const word = clean(get('Wort'));
+      const def  = clean(get('Bedeutung') || get('Kurzbedeutung') || get('Definition'));
+      const ex   = clean(get('Verwendungsbeispiel') || get('Beispiel'));
+
+      if (word && def) return { w: word, d: def, e: ex ? `"${ex}"` : null };
+    } catch {}
+  }
+  throw new Error('Wiktionary WOTD unavailable');
+}
+
 async function renderWords() {
   const el = document.getElementById('wordsCard');
-  el.innerHTML = `<div class="daily-card-title">Words of the day</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+  el.innerHTML = `<div class="card-title">Words of the day</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
 
   const td = getTodayData();
-  const deu = DEU_WORDS_MINI[dayOfYear() % DEU_WORDS_MINI.length];
+
+  // German — fetch from Wiktionary, cache daily, fallback to local list
+  let deu = td.deuWord || null;
+  if (!deu) {
+    try {
+      deu = await fetchDeuWordOfDay();
+      setTodayData({ deuWord: deu });
+    } catch {
+      deu = DEU_WORDS_MINI[dayOfYear() % DEU_WORDS_MINI.length];
+    }
+  }
 
   let engWord = td.engWord || null;
   if (!engWord) {
@@ -908,7 +1097,7 @@ async function renderWords() {
   }
   if (!engWord) engWord = { w: 'Serendipity', d: 'Finding something good without looking for it.', e: '"Meeting his co-founder at that random conference was pure serendipity."' };
 
-  el.innerHTML = `<div class="daily-card-title">Words of the day</div>` +
+  el.innerHTML = `<div class="card-title">Words of the day</div>` +
     [
       { lang: 'English', color: '#0A84FF', word: engWord, key: 'usedEng' },
       { lang: 'German',  color: '#bf5af2', word: deu,     key: 'usedDeu' }
@@ -937,11 +1126,11 @@ function toggleWord(key) {
 
 async function renderFacts() {
   const el = document.getElementById('factsCard');
-  el.innerHTML = `<div class="daily-card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+  el.innerHTML = `<div class="card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
 
   const td = getTodayData();
   if (td.facts && td.facts.length >= 3) {
-    el.innerHTML = `<div class="daily-card-title">Did you know?</div>` +
+    el.innerHTML = `<div class="card-title">Did you know?</div>` +
       td.facts.map((f, i) => `<div class="fact-item"><div class="fact-num">${i+1}</div><div class="fact-text">${esc(f)}</div></div>`).join('');
     return;
   }
@@ -956,22 +1145,22 @@ async function renderFacts() {
     const facts = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
     if (facts.length >= 3) {
       setTodayData({ facts });
-      el.innerHTML = `<div class="daily-card-title">Did you know?</div>` +
+      el.innerHTML = `<div class="card-title">Did you know?</div>` +
         facts.map((f, i) => `<div class="fact-item"><div class="fact-num">${i+1}</div><div class="fact-text">${esc(f)}</div></div>`).join('');
       return;
     }
   } catch {}
 
-  el.innerHTML = `<div class="daily-card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Could not load facts — check your connection.</div>`;
+  el.innerHTML = `<div class="card-title">Did you know?</div><div style="font-size:13px;color:var(--text3)">Could not load facts — check your connection.</div>`;
 }
 
 async function renderHistory() {
   const el = document.getElementById('historyCard');
-  el.innerHTML = `<div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div>`;
+  el.innerHTML = `<div class="card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Loading…</div>`;
 
   const td = getTodayData();
   if (td.historyEvent) {
-    el.innerHTML = `<div class="daily-card-title">This Day in History</div>
+    el.innerHTML = `<div class="card-title">This Day in History</div>
       <div class="history-year">${esc(String(td.historyEvent.year))}</div>
       <div class="history-text">${esc(td.historyEvent.text)}</div>`;
     return;
@@ -989,23 +1178,23 @@ async function renderHistory() {
       const evt = events[Math.floor(Math.random() * Math.min(events.length, 10))];
       const historyEvent = { year: String(evt.year), text: evt.text };
       setTodayData({ historyEvent });
-      el.innerHTML = `<div class="daily-card-title">This Day in History</div>
+      el.innerHTML = `<div class="card-title">This Day in History</div>
         <div class="history-year">${esc(historyEvent.year)}</div>
         <div class="history-text">${esc(historyEvent.text)}</div>`;
       return;
     }
   } catch {}
 
-  el.innerHTML = `<div class="daily-card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Could not load history — check your connection.</div>`;
+  el.innerHTML = `<div class="card-title">This Day in History</div><div class="history-text" style="color:var(--text3)">Could not load history — check your connection.</div>`;
 }
 
 async function renderKnowledge() {
   const el = document.getElementById('knowledgeCard');
-  el.innerHTML = `<div class="daily-card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
+  el.innerHTML = `<div class="card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Loading…</div>`;
 
   const td = getTodayData();
   if (td.knowledge && td.knowledge.length >= 2) {
-    el.innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
+    el.innerHTML = `<div class="card-title">Worth Knowing</div>` +
       td.knowledge.map((k, i) => `<div class="knowledge-item">
         <div class="fact-num">${i+1}</div>
         <div class="fact-text">${esc(k)}</div>
@@ -1028,7 +1217,7 @@ async function renderKnowledge() {
     if (items.length >= 1) {
       while (items.length < 2) items.push(items[0]);
       setTodayData({ knowledge: items });
-      el.innerHTML = `<div class="daily-card-title">Worth Knowing</div>` +
+      el.innerHTML = `<div class="card-title">Worth Knowing</div>` +
         items.map((k, i) => `<div class="knowledge-item">
           <div class="fact-num">${i+1}</div>
           <div class="fact-text">${esc(k)}</div>
@@ -1037,7 +1226,7 @@ async function renderKnowledge() {
     }
   } catch {}
 
-  el.innerHTML = `<div class="daily-card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Could not load content — check your connection.</div>`;
+  el.innerHTML = `<div class="card-title">Worth Knowing</div><div style="font-size:13px;color:var(--text3)">Could not load content — check your connection.</div>`;
 }
 
 function loadGratitude() {
@@ -1063,10 +1252,34 @@ function getClaudeKey() { return localStorage.getItem(CLAUDE_KEY_LS) || ''; }
 function initMorningBrief() {
   const key = getClaudeKey();
   const inp = document.getElementById('claudeKeyInp');
-  if (inp && key) inp.placeholder = 'API key saved ✓';
+  if (inp) {
+    if (key) inp.placeholder = 'API key saved ✓';
+    const saveKey = () => {
+      const v = inp.value.trim();
+      if (v.startsWith('sk-ant-')) {
+        localStorage.setItem(CLAUDE_KEY_LS, v);
+        inp.placeholder = 'API key saved ✓';
+        inp.value = '';
+      }
+    };
+    inp.addEventListener('input', saveKey);
+    inp.addEventListener('paste', () => setTimeout(saveKey, 50));
+  }
+  if (key) generateMorningBrief();
 }
 
-async function generateMorningBrief() {
+function renderBriefText(text, isRefresh) {
+  const container = document.getElementById('morningBriefContent');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="brief-api-row">
+      <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="API key saved ✓">
+      <button class="brief-generate-btn" id="briefGenBtn" onclick="generateMorningBrief(true)">↻ Refresh</button>
+    </div>
+    <div class="brief-output">${text.split(/\n+/).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
+}
+
+async function generateMorningBrief(force) {
   const inp = document.getElementById('claudeKeyInp');
   const btn = document.getElementById('briefGenBtn');
   const container = document.getElementById('morningBriefContent');
@@ -1080,6 +1293,13 @@ async function generateMorningBrief() {
     if (inp) { inp.focus(); inp.placeholder = 'Enter your Anthropic API key…'; }
     return;
   }
+
+  // Use cached brief unless forced refresh
+  if (!force) {
+    const cached = getTodayData().morningBrief;
+    if (cached) { renderBriefText(cached); return; }
+  }
+
   if (btn) { btn.disabled = true; btn.textContent = '…'; }
   const context = buildBriefContext();
   try {
@@ -1101,12 +1321,8 @@ async function generateMorningBrief() {
     const d = await res.json();
     if (d.content && d.content[0]) {
       const text = d.content[0].text;
-      if (container) container.innerHTML = `
-        <div class="brief-api-row">
-          <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="API key saved ✓">
-          <button class="brief-generate-btn" id="briefGenBtn" onclick="generateMorningBrief()">Refresh</button>
-        </div>
-        <div class="brief-output">${text.split(/\n+/).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
+      setTodayData({ morningBrief: text });
+      renderBriefText(text);
       return;
     }
     throw new Error(d.error?.message || 'Empty response');
@@ -1390,10 +1606,6 @@ function weatherSVG(c, size) {
 }
 
 async function loadHome() {
-  renderHomeStats();
-  fetchQuote();
-  loadDaily();
-  loadJoke();
   loadClubEvents();
   loadSpotify();
   initMorningBrief();
@@ -1435,34 +1647,12 @@ async function fetchWeather(lat, lon) {
   }
 }
 
-async function fetchCrypto() {
-  try {
-    const d = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true').then(r => r.json());
-    const rows = [
-      { name: 'Bitcoin', ticker: 'BTC', price: d.bitcoin.usd, change: d.bitcoin.usd_24h_change },
-      { name: 'Ethereum', ticker: 'ETH', price: d.ethereum.usd, change: d.ethereum.usd_24h_change }
-    ];
-    document.getElementById('marketsCard').innerHTML = `<div class="home-card-title">Markets</div>` +
-      rows.map(r => {
-        const up = r.change >= 0;
-        return `<div class="market-row">
-          <div><div class="market-name">${r.name}</div><div class="market-ticker">${r.ticker}</div></div>
-          <div class="market-right">
-            <div class="market-price">$${r.price.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
-            <div class="market-change ${up ? 'up' : 'down'}">${up ? '+' : ''}${r.change.toFixed(2)}%</div>
-          </div>
-        </div>`;
-      }).join('');
-  } catch {
-    document.getElementById('marketsCard').innerHTML = `<div class="home-card-title">Markets</div><div style="font-size:13px;color:var(--text3)">Could not load market data.</div>`;
-  }
-}
 
 async function fetchQuote() {
   const td = getTodayData();
   if (td.quote) {
     document.getElementById('quoteCard').innerHTML = `
-      <div class="home-card-title">Quote of the day</div>
+      <div class="card-title">Quote of the day</div>
       <div class="quote-text">"${esc(td.quote.text)}"</div>
       <div class="quote-author">— ${esc(td.quote.author)}</div>`;
     return;
@@ -1473,7 +1663,7 @@ async function fetchQuote() {
       const quote = { text: d[0].q, author: d[0].a };
       setTodayData({ quote });
       document.getElementById('quoteCard').innerHTML = `
-        <div class="home-card-title">Quote of the day</div>
+        <div class="card-title">Quote of the day</div>
         <div class="quote-text">"${esc(quote.text)}"</div>
         <div class="quote-author">— ${esc(quote.author)}</div>`;
       return;
@@ -1485,29 +1675,18 @@ async function fetchQuote() {
       const quote = { text: d.quote, author: d.author };
       setTodayData({ quote });
       document.getElementById('quoteCard').innerHTML = `
-        <div class="home-card-title">Quote of the day</div>
+        <div class="card-title">Quote of the day</div>
         <div class="quote-text">"${esc(quote.text)}"</div>
         <div class="quote-author">— ${esc(quote.author)}</div>`;
       return;
     }
   } catch {}
   document.getElementById('quoteCard').innerHTML = `
-    <div class="home-card-title">Quote of the day</div>
+    <div class="card-title">Quote of the day</div>
     <div class="quote-text">"The secret of getting ahead is getting started."</div>
     <div class="quote-author">— Mark Twain</div>`;
 }
 
-function renderHomeStats() {
-  const tasks = getTasks().filter(t => !t.done).length;
-  const articles = Object.values(data).reduce((s, a) => s + a.length, 0);
-  document.getElementById('homeStats').innerHTML = [
-    { val: tasks,           lbl: 'Tasks left',    color: tasks === 0 ? 'var(--green)' : 'var(--text)' },
-    { val: articles || '–', lbl: 'Stories today', color: 'var(--purple)' }
-  ].map(s => `<div class="stat-card">
-    <div class="stat-val" style="color:${s.color}">${s.val}</div>
-    <div class="stat-lbl">${s.lbl}</div>
-  </div>`).join('');
-}
 
 // ── TASKS ─────────────────────────────────────
 const LS = 'atd_tasks_v2';
@@ -1700,7 +1879,6 @@ function cleanTaskText(text) {
 
 // ── FINANCE ───────────────────────────────────
 const FINNHUB_KEY = 'd75r099r01qk56kdq300d75r099r01qk56kdq30g';
-function getFinnhubKey() { return FINNHUB_KEY; }
 
 const MARKET_OVERVIEW = [
   { symbol: '^GSPC',   label: 'S&P 500'  },
@@ -1735,7 +1913,8 @@ const FIN_LS = 'atd_finance_v2';
 function getFinCache() { try { return JSON.parse(localStorage.getItem(FIN_LS) || 'null'); } catch { return null; } }
 function setFinCache(d) { localStorage.setItem(FIN_LS, JSON.stringify({ ts: Date.now(), quotes: d })); }
 
-async function fetchFinnhubBatch(symbols, token) {
+async function fetchFinnhubBatch(symbols) {
+  const token = FINNHUB_KEY;
   const results = await Promise.allSettled(
     symbols.map(sym =>
       fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${token}`, { signal: AbortSignal.timeout(10000) })
@@ -1753,11 +1932,10 @@ async function fetchFinnhubBatch(symbols, token) {
 }
 
 async function fetchAllFinancePrices() {
-  const token = getFinnhubKey();
   const stockSymbols = ['^GSPC', '^IXIC', ...TRACKED_STOCKS.map(s => s.ticker)];
 
   const [fhResult, cgRes] = await Promise.allSettled([
-    fetchFinnhubBatch(stockSymbols, token),
+    fetchFinnhubBatch(stockSymbols),
     fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&order=market_cap_desc&per_page=2&page=1&sparkline=false', { signal: AbortSignal.timeout(10000) }).then(r => r.json())
   ]);
 
@@ -1865,7 +2043,7 @@ function renderFinance(quotes) {
     const note = stockNote(q);
 
     // 52-week bar position (0–100%)
-    let barPct = 50, dotPct = 50;
+    let dotPct = 50;
     if (q && q.wkHigh && q.wkLow && q.wkHigh > q.wkLow) {
       dotPct = Math.min(100, Math.max(0, ((q.price - q.wkLow) / (q.wkHigh - q.wkLow)) * 100));
     }
@@ -1899,9 +2077,431 @@ function renderFinance(quotes) {
   const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   html += `<div class="fin-update-time">Updated ${ts}</div>`;
   el.innerHTML = html;
+
+  renderMarketPulse(quotes);
+}
+
+function renderMarketPulse(quotes) {
+  // Pick top 3 movers from watchlist by absolute % change
+  const movers = TRACKED_STOCKS
+    .map(s => ({ ...s, q: quotes[s.ticker] }))
+    .filter(s => s.q && s.q.changePct != null)
+    .sort((a, b) => Math.abs(b.q.changePct) - Math.abs(a.q.changePct))
+    .slice(0, 3);
+
+  if (!movers.length) return;
+
+  const existing = document.getElementById('marketPulseCard');
+  if (existing) existing.remove();
+
+  const card = document.createElement('div');
+  card.id = 'marketPulseCard';
+  card.className = 'pulse-card';
+
+  const moversHTML = movers.map(s => {
+    const up = s.q.changePct >= 0;
+    const color = up ? 'var(--green)' : 'var(--red)';
+    const sign = up ? '+' : '';
+    return `<div class="pulse-mover">
+      <div class="pulse-mover-left">
+        <div class="pulse-mover-dot" style="background:${color}"></div>
+        <div>
+          <div class="pulse-mover-name">${esc(s.ticker)} <span style="font-size:11px;color:var(--text3);font-weight:500">${esc(s.name)}</span></div>
+        </div>
+      </div>
+      <div class="pulse-mover-pct" style="color:${color}">${sign}${s.q.changePct.toFixed(2)}%</div>
+    </div>`;
+  }).join('');
+
+  // Cache key: today's date + top mover tickers (refreshes if movers change)
+  const pulseKey = today() + ':' + movers.map(s => s.ticker).join(',');
+  window._pulseMovers = movers;
+  window._pulseKey = pulseKey;
+
+  // Check cache
+  const cached = getTodayData().marketPulse;
+  const hasKey = !!getClaudeKey();
+
+  const explanationHTML = (cached && cached.key === pulseKey)
+    ? '<div class="pulse-explanation">' + cached.text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>'
+    : '';
+  const btnLabel = cached && cached.key === pulseKey ? '↻ Refresh explanation' : (hasKey ? '✦ Explain with AI' : '✦ Add API key on Home to explain');
+
+  card.innerHTML = `
+    <div class="card-title">Market Pulse</div>
+    <div class="pulse-movers">${moversHTML}</div>
+    <div id="pulseExplanation">${explanationHTML}</div>
+    <button class="pulse-btn" id="pulseBtn" onclick="generateMarketPulse()">${btnLabel}</button>
+  `;
+  if (!hasKey) card.querySelector('#pulseBtn').disabled = true;
+
+  // Insert before the Markets label (first child of financeContent)
+  const fc = document.getElementById('financeContent');
+  fc.insertBefore(card, fc.firstChild);
+}
+
+async function generateMarketPulse() {
+  const key = getClaudeKey();
+  if (!key) return;
+  const movers = window._pulseMovers;
+  if (!movers?.length) return;
+
+  const btn = document.getElementById('pulseBtn');
+  const expEl = document.getElementById('pulseExplanation');
+  btn.disabled = true;
+  expEl.innerHTML = '<div class="pulse-spinner">Asking Claude…</div>';
+
+  const moverLines = movers.map(s => {
+    const dir = s.q.changePct >= 0 ? 'up' : 'down';
+    return `${s.ticker} (${s.name}): ${dir} ${Math.abs(s.q.changePct).toFixed(2)}% today, price $${s.q.price.toFixed(2)}, open $${s.q.open?.toFixed(2) ?? '?'}`;
+  }).join('\n');
+
+  const prompt = `I hold these stocks in my personal portfolio and they are today's biggest movers:\n\n${moverLines}\n\nGive me a very short, plain-English explanation (2-3 sentences per stock) of why each is likely moving today. Be direct and specific — mention macro factors, sector news, or company events if relevant. No disclaimers, no financial advice boilerplate.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const json = await res.json();
+    const text = json.content?.[0]?.text || 'No response.';
+    setTodayData({ marketPulse: { key: window._pulseKey, text } });
+    expEl.innerHTML = '<div class="pulse-explanation">' + text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>';
+    btn.textContent = '↻ Refresh explanation';
+  } catch {
+    expEl.innerHTML = '<div class="pulse-spinner" style="color:var(--red)">Failed — tap to retry.</div>';
+    btn.textContent = '✦ Explain with AI';
+  }
+  btn.disabled = false;
+}
+
+// ── LEARN ────────────────────────────────────
+const LEARN_LS = 'atd_learn_v1';
+const CURRICULUM = [
+  {
+    id: 'hungarian', title: 'Hungarian History', icon: '🇭🇺', color: '#ff453a',
+    chapters: [
+      { title: 'Origins of the Magyars', lessons: [
+        { title: 'Finno-Ugric Roots', body: ['The Hungarian language belongs to the Finno-Ugric family, making it a distant relative of Finnish and Estonian. This linguistic kinship traces back to ancient peoples who lived around the Ural Mountains some 5,000–6,000 years ago, long before modern Hungary existed.', 'The Magyar tribes gradually separated from their Finno-Ugric cousins and moved westward across the Eurasian steppe. Over centuries they absorbed influences from Turkic, Iranian, and Slavic neighbours while retaining the core grammar that still defines Hungarian today — a language famously unlike any other in Central Europe.'], quiz: { q: 'Which language family does Hungarian belong to?', opts: ['Slavic','Finno-Ugric','Germanic','Turkic'], correct: 1 } },
+        { title: 'Life on the Eurasian Steppe', body: ['Before settling in Europe, the Magyar tribes were semi-nomadic horsemen roaming the grasslands north of the Black Sea. They were skilled cavalry fighters and herders, moving seasonally with their livestock and raiding neighbouring settlements when resources were scarce.', 'Their society was organised into seven clans (törzsek) bound by blood oaths. They practised shamanism and held a cosmology centred on the sky god Isten. This mobile tribal lifestyle would be radically transformed when they entered the Carpathian Basin in 895 AD.'], quiz: { q: 'How many clans formed the original Magyar tribal federation?', opts: ['Three','Five','Seven','Ten'], correct: 2 } },
+        { title: 'The Conquest of 895', body: ['Led by Prince Árpád, the seven Magyar tribes crossed the Carpathian Mountains in 895 AD in what Hungarians call the "Honfoglalás" (land-taking). The Carpathian Basin — modern Hungary — was a fertile, largely depopulated plain ideal for semi-nomadic life.', 'The conquest was swift. The Magyars defeated existing Slavic and Avar populations within years. For the next five decades they launched devastating raids deep into Western Europe — reaching Spain and Italy — before being stopped at the Battle of Lechfeld in 955.'], quiz: { q: 'What is the Hungarian term for the 895 conquest?', opts: ['Honfoglalás','Árpádkor','Mohács','Trianon'], correct: 0 } },
+      ]},
+      { title: 'The Christian Kingdom', lessons: [
+        { title: 'Stephen I — The First King', body: ['Prince Géza\'s son Vajk was baptised as Stephen and crowned King of Hungary on Christmas Day 1000 AD, with a crown sent by Pope Sylvester II. By accepting Christianity and Papal recognition, Stephen transformed Hungary from a pagan tribal confederacy into a European kingdom.', 'Stephen reorganised the country into counties administered by royal officials, founded bishoprics and monasteries, and issued laws modelled on Frankish practice. His achievements were so foundational that he was canonised in 1083 and remains Hungary\'s patron saint.'], quiz: { q: 'On what date was Stephen I crowned King of Hungary?', opts: ['25 December 1000','1 January 896','15 June 1215','29 August 1526'], correct: 0 } },
+        { title: 'The Golden Bull of 1222', body: ['Under King Andrew II, the Hungarian nobility forced the king to issue the Golden Bull (Aranybulla) in 1222. Often compared to Magna Carta (1215), this document guaranteed noble privileges — including freedom from arbitrary imprisonment and taxation — and allowed resistance to an unlawful king without committing treason.', 'The Golden Bull marked the beginning of Hungary\'s tradition of constitutionalism. It established a legal framework that constrained royal power and protected noble rights for centuries, shaping the country\'s political culture long before modern democracy emerged.'], quiz: { q: 'The Golden Bull of 1222 is often compared to which English document?', opts: ['Bill of Rights','Magna Carta','Habeas Corpus Act','Act of Settlement'], correct: 1 } },
+        { title: 'Matthias Corvinus', body: ['Matthias Corvinus (1458–1490) is considered Hungary\'s greatest medieval king. He built a professional "Black Army," reformed the administration, and made Hungary a centre of Renaissance culture. His court in Buda rivalled those of Florence and Rome.', 'Matthias established the famous Bibliotheca Corviniana, one of Europe\'s greatest Renaissance libraries. He is celebrated in folklore as "Matthias the Just" — a king who disguised himself to hear the problems of ordinary people. His death in 1490 left Hungary without an heir, opening the door to future disaster.'], quiz: { q: 'What was the Renaissance library built by Matthias Corvinus called?', opts: ['Bibliotheca Corvina','Bibliotheca Corviniana','Corvina Hungarica','Buda Scriptorium'], correct: 1 } },
+      ]},
+      { title: 'Ottoman Occupation', lessons: [
+        { title: 'The Battle of Mohács (1526)', body: ['The Battle of Mohács on 29 August 1526 was one of the most catastrophic defeats in Hungarian history. A Hungarian-Bohemian army faced the vastly superior Ottoman forces of Sultan Suleiman the Magnificent. The battle lasted under two hours; the Hungarians were annihilated and King Louis II drowned fleeing.', 'Mohács marked the end of medieval Hungary. The country was split into three: the Ottoman-controlled central plain, Habsburg-ruled "Royal Hungary" in the north-west, and the semi-autonomous Principality of Transylvania in the east — a fragmentation lasting over 150 years.'], quiz: { q: 'What happened to King Louis II at the Battle of Mohács?', opts: ['He was captured','He drowned fleeing','He was killed in battle','He escaped to Vienna'], correct: 1 } },
+        { title: 'Divided Hungary (1541–1686)', body: ['For 150 years Hungary existed as three distinct territories. The Ottomans controlled the fertile central plain including Buda from 1541, transforming it with mosques and baths. Habsburg-controlled Royal Hungary preserved Hungarian institutions. Transylvania maintained relative autonomy and became a refuge for Hungarian culture and Protestantism.', 'The long occupation had devastating demographic consequences. Repeated wars, famines and plague depopulated large swathes of the Hungarian Plain. Areas that had been ethnically Hungarian were resettled by Serbs, Romanians, and Germans — reshaping the ethnic composition that would fuel conflicts centuries later.'], quiz: { q: 'Which city did the Ottomans capture in 1541, making it their Hungarian capital?', opts: ['Pozsony','Eger','Buda','Debrecen'], correct: 2 } },
+        { title: 'Liberation & Habsburg Rule', body: ['The Great Turkish War (1683–1699) drove the Ottomans out of Hungary. Buda was liberated in 1686 after 145 years of Ottoman rule. However, the Habsburgs treated Hungary as conquered territory, imposing heavy taxation and attempting to suppress Protestantism.', 'This sparked the Rákóczi War of Independence (1703–1711). Though it ultimately failed, it established the Hungarian resistance tradition and eventually forced the Habsburgs into a compromise preserving Hungary\'s legal autonomy — a pattern that would recur in 1867.'], quiz: { q: 'In what year was Buda liberated from Ottoman rule?', opts: ['1683','1686','1699','1711'], correct: 1 } },
+      ]},
+      { title: 'Reform & Revolution', lessons: [
+        { title: 'The Age of Reform', body: ['The early 19th century was Hungary\'s "Reform Era," dominated by Count István Széchenyi. He donated a year\'s income to found the Hungarian Academy of Sciences, promoted the Chain Bridge (first permanent Danube crossing), and championed railways and modern agriculture.', 'Széchenyi advocated gradual legal reform within the Habsburg framework. His great rival, Lajos Kossuth, demanded full parliamentary government and abolition of noble privileges. This tension between reform and revolution defined the era and culminated explosively in 1848.'], quiz: { q: 'Which institution did Széchenyi found by donating a year\'s income?', opts: ['Budapest University','The Parliament','The Hungarian Academy of Sciences','The National Museum'], correct: 2 } },
+        { title: '1848 — Revolution!', body: ['On 15 March 1848, poet Sándor Petőfi read his "National Song" to a crowd in Pest and the revolution began. A Hungarian government formed under Count Batthyány enacted sweeping reforms within weeks: abolishing serfdom, ending noble tax exemptions, establishing a free press.', 'The Habsburgs counter-attacked with Austrian and Croatian armies. Hungary declared independence in April 1849, but Tsar Nicholas I sent 200,000 Russian troops to help crush it. Kossuth fled into exile; 13 Hungarian generals were executed at Arad on 6 October 1849 — still commemorated annually.'], quiz: { q: 'Which poet recited the "National Song" to launch the 1848 revolution?', opts: ['János Arany','Sándor Petőfi','Mihály Vörösmarty','Imre Madách'], correct: 1 } },
+        { title: 'The Compromise of 1867', body: ['After Austria\'s defeat by Prussia in 1866, Emperor Franz Joseph needed Hungarian support. The Austro-Hungarian Compromise (Ausgleich) of 1867, negotiated by Ferenc Deák, gave Hungary full internal autonomy with its own parliament and government — sharing only foreign policy and defence with Austria.', 'The "Dual Monarchy" era (1867–1918) was Hungary\'s golden age. Budapest was transformed into a grand European capital — the Parliament, Opera House, and Heroes\' Square were built in this period. The economy boomed and Hungary hosted its Millennial Exhibition in 1896.'], quiz: { q: 'Which statesman is most credited with negotiating the 1867 Compromise?', opts: ['Lajos Kossuth','István Tisza','Ferenc Deák','Gyula Andrássy'], correct: 2 } },
+      ]},
+      { title: 'The 20th Century', lessons: [
+        { title: 'Trianon — The Trauma of 1920', body: ['Hungary entered WWI on the side of Austria-Germany and suffered defeat. The Treaty of Trianon (4 June 1920) was devastating: Hungary lost 72% of its territory and 64% of its population. Millions of ethnic Hungarians suddenly found themselves in Romania, Czechoslovakia, and Yugoslavia.', 'Trianon became the defining trauma of 20th-century Hungarian identity. "Nem, nem, soha!" ("No, no, never!") became a national rallying cry. The obsession with revising Trianon pulled Hungary toward Nazi Germany in WWII — with catastrophic consequences. June 4 is still observed as National Cohesion Day.'], quiz: { q: 'What percentage of its territory did Hungary lose under the Treaty of Trianon?', opts: ['42%','58%','72%','85%'], correct: 2 } },
+        { title: '1956 — The Revolution', body: ['On 23 October 1956, Hungarians rose up against Soviet-backed communist rule. Protesters tore down Stalin\'s statue in Budapest. Reform communist Imre Nagy became prime minister and announced Hungary\'s withdrawal from the Warsaw Pact.', 'The Soviet Union responded with a massive military invasion on 4 November 1956. Some 2,500 Hungarians died fighting tanks with rifles; 200,000 fled to the West as refugees. Nagy was later executed. Though crushed, 1956 made Hungary a symbol of anti-communist resistance throughout the Cold War.'], quiz: { q: 'On what date did the 1956 Hungarian Revolution begin?', opts: ['4 November 1956','23 October 1956','15 March 1956','1 January 1956'], correct: 1 } },
+        { title: 'From Communism to Democracy', body: ['After 1956, Hungary developed "goulash communism" under János Kádár — a softer socialism with limited market reforms and more personal freedoms than other Eastern Bloc countries. By the 1980s, economic stagnation and Gorbachev\'s reforms created space for change.', 'In May 1989, Hungary opened its border with Austria — allowing East Germans to flee West, a key domino in the Berlin Wall\'s fall. On 23 October 1989 — the 1956 anniversary — Hungary peacefully proclaimed itself a republic. The first free elections were held in 1990.'], quiz: { q: 'What did Hungary do in May 1989 that helped topple the Iron Curtain?', opts: ['It declared neutrality','It opened its border with Austria','It expelled Soviet troops','It joined NATO early'], correct: 1 } },
+      ]},
+    ]
+  },
+  {
+    id: 'music', title: 'Classical Music & Piano', icon: '🎹', color: '#bf5af2',
+    chapters: [
+      { title: 'What is Classical Music?', lessons: [
+        { title: 'Defining Classical Music', body: ['Classical music broadly refers to Western art music composed from the Medieval period to the present. More specifically, "Classical" can mean the Classical era (roughly 1750–1820). The music is written in musical notation and performed by trained musicians following the composer\'s score — unlike folk or pop, which are largely oral traditions.', 'Classical music encompasses enormous variety — from intimate solo piano pieces to thundering symphonies with 100 musicians. What unites it is the tradition of precise notation, formal structures, and a canon of masterworks passed down through conservatories and concert halls over centuries.'], quiz: { q: 'What approximate period does the "Classical era" specifically refer to?', opts: ['1600–1700','1750–1820','1820–1900','1900–1950'], correct: 1 } },
+        { title: 'Why Piano?', body: ['Piano is often called the ideal first instrument because all of music theory can be visualised on its keyboard. The piano\'s range spans the full orchestra; you can play melody, harmony, and bass simultaneously. And the piano repertoire — from Bach to Chopin to Debussy — is the richest in all of music.', 'Studying classical piano develops discipline, ear training, pattern recognition, and emotional intelligence. Research consistently shows music education improves cognitive function — particularly spatial reasoning, language processing, and working memory. Even as a listener, understanding structure transforms passive hearing into active, deeply satisfying engagement.'], quiz: { q: 'Why is piano often considered the ideal first instrument?', opts: ['It\'s the easiest','It\'s the most popular','All music theory is visible on its keyboard','It\'s the loudest'], correct: 2 } },
+        { title: 'How Music Is Structured', body: ['Music is built from rhythm (when notes happen), melody (the tune), harmony (chords — notes played together), and dynamics (loud/soft). Form describes how these elements are organised over time. A sonata has three or four movements; a fugue has a specific structure where melodic lines chase each other.', 'Understanding even basic form dramatically enhances listening. When you recognise the exposition (introduction of themes), development (their transformation), and recapitulation (their return) in a sonata movement, the music tells a story. This architectural understanding is what separates an engaged listener from someone merely enduring background noise.'], quiz: { q: 'In music, what does "dynamics" refer to?', opts: ['The speed','Loud and soft variations','The key signature','The time signature'], correct: 1 } },
+      ]},
+      { title: 'The Baroque Era (1600–1750)', lessons: [
+        { title: 'Johann Sebastian Bach', body: ['Johann Sebastian Bach (1685–1750) is arguably the greatest composer in Western musical history. Working in Germany as a church musician, he composed over 1,100 works — including the Brandenburg Concertos, St Matthew Passion, the Well-Tempered Clavier, and the Goldberg Variations. His music combines intellectual rigour with profound emotional depth.', 'Bach represents the pinnacle of Baroque polyphony — weaving multiple independent melodic lines into a coherent whole. His fugues are masterclasses in logic and beauty. He was not especially famous in his lifetime; his music was largely rediscovered by Felix Mendelssohn in 1829, after which it became the foundation of the entire classical canon.'], quiz: { q: 'Who rediscovered Bach\'s music and brought it back to public attention in 1829?', opts: ['Beethoven','Mozart','Mendelssohn','Chopin'], correct: 2 } },
+        { title: 'The Well-Tempered Clavier', body: ['The Well-Tempered Clavier (1722, 1742) is Bach\'s defining keyboard work — two collections of preludes and fugues in all 24 major and minor keys. By demonstrating a keyboard could play equally well in any key, Bach helped standardise equal temperament — the tuning system all modern pianos use.', 'Each prelude-fugue pair has a distinctive character. The C major prelude (BWV 846) — perhaps the most recognised piano piece in all music — is pure flowing arpeggios of deceptive simplicity. The subsequent fugue is austere and complex. All 48 pieces form the most important self-teaching course in Baroque counterpoint.'], quiz: { q: 'What tuning system did the Well-Tempered Clavier help standardise?', opts: ['Just intonation','Pythagorean tuning','Equal temperament','Mean-tone temperament'], correct: 2 } },
+        { title: 'The Baroque Sound', body: ['Baroque music (1600–1750) is characterised by elaborate ornamentation (trills, mordents), terraced dynamics (sudden shifts rather than gradual swells), and a rhythmically precise, energetic character. On piano, Baroque music requires clarity of individual voices — the ornamentation is structural, not decorative excess.', 'Key Baroque figures beyond Bach include Handel (Messiah, Water Music), Vivaldi (The Four Seasons), and Domenico Scarlatti, who wrote 555 single-movement keyboard sonatas of astonishing variety. When approaching Baroque piano music, transparency of individual lines matters more than expressive timing flexibility.'], quiz: { q: 'Which famous choral work by Handel is performed every Christmas?', opts: ['The Creation','Elijah','Messiah','Israel in Egypt'], correct: 2 } },
+      ]},
+      { title: 'Classical & Early Romantic', lessons: [
+        { title: 'Haydn & Mozart', body: ['The Classical era moved toward clarity, balance, and formal elegance. Joseph Haydn (1732–1809) is the "Father of the Symphony" — he invented the form as we know it, composing 104 symphonies. Wolfgang Amadeus Mozart (1756–1791) composed over 600 works in 35 years — symphonies, operas, concertos, and piano sonatas of matchless perfection.', 'Mozart\'s music has a luminous clarity that conceals enormous craft. What sounds effortless was achieved through intensive compositional discipline. His piano sonatas — from the simple K. 545 to the turbulent A minor K. 310 — are essential repertoire teaching articulation, voice balance, and Classical phrasing.'], quiz: { q: 'How many symphonies did Haydn compose?', opts: ['41','9','104','32'], correct: 2 } },
+        { title: 'Beethoven — The Bridge', body: ['Ludwig van Beethoven (1770–1827) stands at the hinge of Classical and Romantic eras. His early works are firmly Classical; his middle "Heroic" period — the Eroica Symphony, Fifth Symphony, "Waldstein" and "Appassionata" sonatas — expands the form with unprecedented emotional intensity.', 'Beethoven\'s late period is visionary: the last five piano sonatas (Op. 101–111) and string quartets look toward the 20th century in their harmonic daring. He composed most of his greatest works while profoundly deaf — a biographical fact that adds extraordinary weight to music that already stands as civilisation\'s highest achievement.'], quiz: { q: 'What term describes Beethoven\'s heroic middle period?', opts: ['Baroque','Impressionist','Heroic','Late Romantic'], correct: 2 } },
+        { title: 'Frédéric Chopin', body: ['Frédéric Chopin (1810–1849) is the poet of the piano. Born in Poland, living in Paris, he composed almost exclusively for solo piano — nocturnes, études, preludes, mazurkas, polonaises, and ballades that form the core of the Romantic piano repertoire.', 'Chopin invented a new piano technique exploiting the instrument\'s unique sustain, with the left hand providing harmonic colour while the right sings like an operatic voice. His use of rubato (expressive flexibility in timing) is essential — his music cannot be played metronomically. The 24 Études Op. 10 and 25 are both concert pieces and the finest piano technical method ever devised.'], quiz: { q: 'In Chopin\'s piano style, what does "rubato" mean?', opts: ['Playing very quietly','Expressive flexibility in timing','Repeating the melody','Loud dramatic playing'], correct: 1 } },
+      ]},
+      { title: 'The Great Romantics', lessons: [
+        { title: 'Franz Liszt', body: ['Franz Liszt (1811–1886) was the most technically brilliant pianist of the 19th century — possibly of all time. His Transcendental Études and Hungarian Rhapsodies pushed the piano\'s limits. Liszt essentially invented the modern piano recital format and performed with showmanship that drove audiences to hysteria.', 'But Liszt was more than a virtuoso. His late works — composed after he took minor holy orders — are austere, visionary pieces of spiritual depth. Harmonically ambiguous and prophetic, they point toward Debussy and Schoenberg. The Années de Pèlerinage (Years of Pilgrimage) is perhaps his greatest achievement.'], quiz: { q: 'What concert format did Franz Liszt essentially invent?', opts: ['The symphony','The chamber concert','The solo piano recital','The opera'], correct: 2 } },
+        { title: 'Brahms & Schumann', body: ['Robert Schumann (1810–1856) gave Romantic piano music its most intimate voice. His piano collections — Kinderszenen (Scenes from Childhood), Kreisleriana, Carnaval — are character pieces of extraordinary poetic imagination. Schumann suffered severe mental illness and spent his last years in an asylum, making his music doubly poignant.', 'Johannes Brahms (1833–1897) was the great Classical-Romantic. His two piano concertos are monuments of the repertoire. The late Intermezzi Op. 116–119 are autumnal, introspective masterpieces. Brahms and Schumann were close friends — complicated by Brahms\'s lifelong love for Clara Schumann — one of music\'s great human dramas.'], quiz: { q: 'Which Schumann piano collection is subtitled "Scenes from Childhood"?', opts: ['Kreisleriana','Carnaval','Kinderszenen','Waldszenen'], correct: 2 } },
+        { title: 'Debussy & Bartók', body: ['Claude Debussy (1862–1918) liberated music from German Romanticism. Influenced by Impressionist painters and Symbolist poets, he created piano music of shimmering colour and ambiguity — Clair de Lune, Préludes, Images. Debussy broke traditional harmonic rules: instead of tension-resolution, his music floats in atmosphere and sensation.', 'Béla Bartók (1881–1945) is the greatest Hungarian composer. He collected thousands of Hungarian, Romanian, and Bulgarian folk songs and wove them into a completely original language merging modernist harmony with ancient melody. His Mikrokosmos (6 volumes) and Piano Concertos are demanding but revelatory works.'], quiz: { q: 'Which famous Debussy piece is from the Suite bergamasque?', opts: ['Gymnopédies','Clair de Lune','Arabesque','La Campanella'], correct: 1 } },
+      ]},
+      { title: 'Learning to Listen & Play', lessons: [
+        { title: 'An Ideal Listening Journey', body: ['The ideal entry sequence for a new listener: start with Mozart Piano Sonata No. 16 (K. 545) for pure Classical elegance. Then Beethoven\'s "Moonlight" Sonata Op. 27 No. 2 for emotional depth. Move to Chopin\'s Nocturne Op. 9 No. 2 for Romantic lyricism. Then Bach\'s Prelude in C (WTC Book I) for Baroque clarity. Finally, Debussy\'s Clair de Lune for Impressionism.', 'As you listen, pay attention to when themes return and transform, when the music is in tension versus resolution, and how the composer uses silence. Active listening — following the score if possible — turns passive enjoyment into genuine musical understanding. Great recordings: Glenn Gould (Bach), Murray Perahia (Mozart), Maurizio Pollini (Beethoven/Chopin).'], quiz: { q: 'Which Beethoven sonata is nicknamed "Moonlight"?', opts: ['Op. 13 "Pathétique"','Op. 27 No. 2','Op. 57 "Appassionata"','Op. 81a "Les Adieux"'], correct: 1 } },
+        { title: 'Starting to Play Piano', body: ['For aspiring players: start with scales and simple five-finger exercises. Learn sight-reading from day one — don\'t rely on YouTube tabs. A teacher for at least the first six months is invaluable for posture and technique. Bad habits formed early are very hard to break.', 'The most important practice habit: slow, hands-separate learning. Every piano master — Horowitz, Pollini, Argerich — learned pieces hands separately before combining them. Practice a difficult passage at 50% speed until it\'s perfect, then gradually increase tempo. Ten minutes of focused, slow practice beats an hour of playing through mistakes at full speed.'], quiz: { q: 'What is the most recommended practice technique for learning a new piano piece?', opts: ['Always play at full speed','Slow, hands-separate practice','Listen to recordings first','Memorise by repetition'], correct: 1 } },
+        { title: 'Building Your Musical Ear', body: ['Ear training (aural training) is the practice of recognising musical elements by sound alone — intervals, chords, scales, rhythms. It is as important as reading music or technique, yet often neglected. Apps like Teoria, EarMaster, or Functional Ear Trainer provide structured ear training exercises.', 'The goal of ear training is "audiation" — the ability to hear music in your inner ear without a physical instrument. A musician who can audiate can learn a piece by reading the score, compose music away from the piano, and identify and correct their own mistakes without needing to hear them played back. This inner hearing separates amateurs from professionals.'], quiz: { q: 'What is the term for hearing music in your inner ear without a physical instrument?', opts: ['Pitch recognition','Audiation','Absolute pitch','Sight-singing'], correct: 1 } },
+      ]},
+    ]
+  },
+  {
+    id: 'ai', title: 'Artificial Intelligence', icon: '🤖', color: '#0A84FF',
+    chapters: [
+      { title: 'Foundations of AI', lessons: [
+        { title: 'What is AI?', body: ['Artificial intelligence is the field of computer science dedicated to creating systems that perform tasks which, if done by a human, would require intelligence. This includes recognising speech, understanding language, identifying images, playing games, making decisions, and generating creative content.', 'AI is not magic — it\'s mathematics and statistics applied at massive scale. Most modern AI systems are trained on vast datasets, learning patterns through repeated exposure rather than following explicit rules. This "learning from data" paradigm (machine learning) has produced systems that outperform humans at chess, medical diagnosis, protein structure prediction, and many other tasks.'], quiz: { q: 'What is the main paradigm behind most modern AI systems?', opts: ['Rule-based programming','Machine learning from data','Symbolic logic','Hard-coded instructions'], correct: 1 } },
+        { title: 'A Brief History of AI', body: ['The field of AI was formally founded at the Dartmouth Conference in 1956, where John McCarthy coined the term "artificial intelligence." Early AI focused on symbolic reasoning and rule-based systems. The 1980s saw the rise of "expert systems" encoding human expertise as rules. Several "AI winters" followed when progress stalled and funding dried up.', 'The modern era began around 2012 when deep learning achieved breakthrough results in image recognition. Since then, progress has been exponential: GPT-1 in 2018, GPT-3 in 2020, ChatGPT in 2022, Claude and GPT-4 in 2023. The gap between AI and human performance has narrowed dramatically across nearly every domain.'], quiz: { q: 'In what year was the term "artificial intelligence" coined at the Dartmouth Conference?', opts: ['1945','1950','1956','1969'], correct: 2 } },
+        { title: 'Types of AI', body: ['Narrow AI (Weak AI) performs one specific task: a chess engine plays chess, a recommendation system suggests movies, a language model generates text. All AI systems that exist today are narrow AI. They can be superhuman at their specific task but cannot transfer that ability to anything else.', 'Artificial General Intelligence (AGI) would have human-like flexible intelligence — able to learn and apply skills across domains. No one has built AGI. Artificial Superintelligence (ASI) would exceed human intelligence across all domains. Whether AGI or ASI are achievable, and what risks they pose, are among the most important open questions in technology.'], quiz: { q: 'Which type of AI can currently outperform humans at chess?', opts: ['Narrow AI','Artificial General Intelligence','Artificial Superintelligence','Strong AI'], correct: 0 } },
+      ]},
+      { title: 'Machine Learning', lessons: [
+        { title: 'How Machines Learn', body: ['Machine learning is the practice of training a computer system to improve at a task through exposure to data, rather than by programming explicit rules. A spam filter is an example: instead of listing spam rules, you show the system millions of labelled emails and it learns the patterns itself.', 'The core supervised ML workflow: collect labelled data → choose a model → train (adjust parameters to minimise prediction errors) → evaluate on held-out test data → deploy. The "parameters" (weights) are numbers defining how the model transforms inputs to outputs; training finds their optimal values.'], quiz: { q: 'In supervised machine learning, what are the data "labels"?', opts: ['The input features','The correct answers/categories','The model parameters','The training algorithms'], correct: 1 } },
+        { title: 'Classical Algorithms', body: ['Classical ML algorithms include Linear Regression (predicting a continuous value), Logistic Regression (binary classification), Decision Trees (branching rules), Random Forests (ensembles of trees), and Support Vector Machines (finding the best boundary between classes). These are interpretable, efficient, and work well with small datasets.', 'k-Nearest Neighbours classifies a new point by majority vote of its k closest training examples. k-Means Clustering groups unlabelled data into k clusters. Principal Component Analysis reduces high-dimensional data to its most informative dimensions. These foundational algorithms remain widely used where interpretability or speed makes deep learning impractical.'], quiz: { q: 'What does a Decision Tree do?', opts: ['Clusters data into groups','Makes predictions using branching rules','Finds boundaries between classes','Reduces data dimensions'], correct: 1 } },
+        { title: 'Overfitting & Generalisation', body: ['Overfitting occurs when a model learns the training data too well — including its noise — and fails to generalise to new data. A model that memorises rather than learns will score perfectly on training data but poorly on real-world inputs. It is machine learning\'s most fundamental challenge.', 'Solutions include: collecting more data, regularisation (penalising complexity), dropout (randomly disabling neurons during training), and early stopping. The bias-variance tradeoff captures this: simple models underfit (high bias), complex models overfit (high variance). The goal is always the sweet spot between them.'], quiz: { q: 'What is "overfitting" in machine learning?', opts: ['Training for too few epochs','Using too little data','Learning training data too well, failing to generalise','Using too many features'], correct: 2 } },
+      ]},
+      { title: 'Neural Networks & Deep Learning', lessons: [
+        { title: 'What is a Neural Network?', body: ['A neural network is a computational model loosely inspired by the brain. It consists of layers of units called neurons. An input layer receives data (e.g., pixel values). Hidden layers transform the data through weighted connections. An output layer produces the final prediction (e.g., "cat" or "dog").', 'Each neuron computes a weighted sum of its inputs, passes it through an activation function (such as ReLU: max(0, x)), and sends the result forward. The weights are parameters learned during training. Stacking many layers creates a "deep" neural network. Depth allows progressively abstract feature learning.'], quiz: { q: 'What determines whether a neuron "fires" in a neural network?', opts: ['Loss function','Activation function','Weight matrix','Gradient function'], correct: 1 } },
+        { title: 'Training Neural Networks', body: ['Neural networks learn by minimising a loss function — a measure of how wrong predictions are. The algorithm is gradient descent: compute the gradient (direction of steepest increase) of the loss with respect to each weight, then move weights in the opposite direction. Repeat millions of times.', 'Backpropagation efficiently computes these gradients by propagating error backwards through the network layers. In practice, we use mini-batch stochastic gradient descent — computing gradients on small random subsets of training data at each step, making training feasible at massive scale.'], quiz: { q: 'What algorithm efficiently computes gradients through a neural network?', opts: ['Forward propagation','Gradient descent','Backpropagation','Dropout'], correct: 2 } },
+        { title: 'CNNs & Computer Vision', body: ['Convolutional Neural Networks (CNNs) dominate image processing. Instead of connecting every neuron to every other — which would require billions of parameters — CNNs use small filters that slide across the image detecting local patterns: edges, textures, and shapes. Deeper layers detect progressively complex features.', 'CNNs achieved a breakthrough in 2012 when AlexNet won the ImageNet competition by a huge margin, triggering the deep learning revolution. Modern CNNs power face recognition, medical image diagnosis, and self-driving car vision. Architectures like ResNet and EfficientNet have improved image classification accuracy to above-human levels.'], quiz: { q: 'What neural network architecture primarily handles image recognition?', opts: ['Recurrent Neural Networks','Transformers','Convolutional Neural Networks','Autoencoders'], correct: 2 } },
+      ]},
+      { title: 'Large Language Models', lessons: [
+        { title: 'The Transformer Architecture', body: ['The Transformer, introduced in Google\'s 2017 paper "Attention Is All You Need," is the foundation of all modern large language models. Its key innovation is the attention mechanism, which allows every part of a sequence to attend to every other part simultaneously — vastly more efficient than older sequential RNNs.', 'Self-attention computes three vectors for each token: Query (what am I looking for?), Key (what do I contain?), Value (what do I contribute?). The attention score between two tokens measures their relevance to each other. This allows the model to capture long-range dependencies across entire documents.'], quiz: { q: 'What 2017 paper introduced the Transformer architecture?', opts: ['Deep Residual Learning','Attention Is All You Need','ImageNet Classification with Deep CNNs','Playing Atari with DRL'], correct: 1 } },
+        { title: 'How GPT & Claude Work', body: ['GPT models are trained in two stages. First, pre-training: the model predicts the next word in billions of text documents, implicitly learning language, facts, and reasoning. Second, fine-tuning with RLHF (Reinforcement Learning from Human Feedback): human raters compare outputs and the model learns to produce responses humans prefer.', 'Claude, built by Anthropic, uses Constitutional AI (CAI). Instead of only human feedback, Claude is trained with a set of principles and AI-generated feedback aligned with those principles. Both GPT and Claude are autoregressive: they generate text one token at a time, each token conditioned on all previous tokens.'], quiz: { q: 'What does RLHF stand for?', opts: ['Recurrent Learning from Human Functions','Reinforcement Learning from Human Feedback','Recursive Language from Historical Facts','Robust Language Filtering and Handling'], correct: 1 } },
+        { title: 'Prompt Engineering', body: ['Prompt engineering is the art of designing inputs to language models to elicit better outputs. Small changes in phrasing can dramatically affect quality. Key techniques: chain-of-thought (asking the model to "think step by step"), few-shot prompting (providing examples), role prompting ("you are an expert in..."), and specifying output format.', 'A vague prompt like "summarise this" produces a vague output. A specific prompt — "summarise the key contributions of this paper in 3 bullet points for a computer science graduate" — produces a targeted, useful result. The model\'s capability is fixed; the quality of your prompt determines how much of that capability you access.'], quiz: { q: 'What is "few-shot prompting"?', opts: ['Asking the model to be brief','Providing examples in the prompt','Using a small model','Limiting token output'], correct: 1 } },
+      ]},
+      { title: 'AI in the World', lessons: [
+        { title: 'AI Ethics & Bias', body: ['AI systems learn from human-generated data, and humans are biased. A facial recognition system trained predominantly on white male faces performs worse on darker-skinned and female faces — a well-documented real-world problem. Hiring algorithms trained on historical data perpetuate historical discrimination.', 'Beyond bias, AI raises questions of accountability: when an AI system makes a decision (granting a loan, diagnosing a disease), who is responsible for errors? Explainability — making AI decisions interpretable — is both a technical challenge and a legal requirement. The EU AI Act (2024) is the world\'s first comprehensive AI regulation.'], quiz: { q: 'What is the primary source of bias in AI systems?', opts: ['Bugs in the code','Human-generated training data','Computational errors','Model architecture choices'], correct: 1 } },
+        { title: 'AI Safety & Alignment', body: ['AI alignment is the problem of ensuring AI systems do what humans actually want — not just what they\'re told. A classic example: an AI trained to maximise "time on platform" might serve outrage-inducing content, not because it\'s malicious but because that maximises its objective.', 'Anthropic, DeepMind, and OpenAI all have dedicated safety research teams. Key areas include interpretability (understanding what happens inside neural networks), robustness (consistent behaviour under adversarial inputs), and scalable oversight (ensuring humans can supervise increasingly capable AI). Whether superintelligent AI poses existential risk is one of the most consequential scientific debates of our time.'], quiz: { q: 'What is the core goal of AI "alignment" research?', opts: ['Making AI faster','Making AI cheaper','Ensuring AI does what humans actually want','Making AI more accurate'], correct: 2 } },
+        { title: 'The Future of AI', body: ['The pace of AI progress has surprised even experts. In 2020, few predicted that by 2024 AI systems would generate photorealistic images, write publishable code, pass bar exams, and discover novel scientific results. Current trends: multimodal models combining text, image, audio, and video; AI agents taking actions in the world; and models with ever-longer context windows.', 'Whether AGI arrives in years or decades is genuinely uncertain. What is certain is that AI is already transforming knowledge work, creative fields, scientific research, and education. The most important skill in the AI era is deep domain expertise — AI amplifies deep knowledge while displacing shallow, procedural tasks.'], quiz: { q: 'What is a key trend in modern AI development?', opts: ['Moving to smaller, simpler models','Multimodal models combining different data types','Reducing computational costs','Removing neural networks entirely'], correct: 1 } },
+      ]},
+    ]
+  },
+  {
+    id: 'swiss', title: 'Swiss History & Politics', icon: '🇨🇭', color: '#30d158',
+    chapters: [
+      { title: 'Ancient & Medieval Switzerland', lessons: [
+        { title: 'The Helvetii & Roman Rule', body: ['The ancestors of the Swiss were the Helvetii, a Celtic tribal confederation occupying the Swiss plateau from around 400 BC. In 58 BC, Julius Caesar defeated the Helvetii at the Battle of Bibracte as they attempted a mass migration — an episode Caesar described in the opening of his Gallic Wars.', 'Under Roman rule (1st century BC–5th century AD), the Swiss plateau was fully integrated into the Empire. Roman towns were established at Augusta Raurica (near Basel), Vindonissa, and Aventicum. Latin became the administrative language, Christianity spread in the 4th century, and Roman roads transformed the landscape.'], quiz: { q: 'Who defeated the Helvetii in 58 BC?', opts: ['Augustus','Pompey','Julius Caesar','Trajan'], correct: 2 } },
+        { title: 'The Federal Charter of 1291', body: ['On 1 August 1291, the forest cantons of Uri, Schwyz, and Unterwalden signed the Federal Charter — a mutual defence pact committing them to aid each other against external threats. This document, rediscovered in 1891, was declared the founding act of the Swiss Confederation. 1 August became Switzerland\'s National Day.', 'The legendary story of William Tell — the marksman forced to shoot an apple off his son\'s head by a Habsburg bailiff — encapsulates this early Confederation\'s spirit: ordinary people in the mountains refusing tyranny. Whether historically accurate or not, the legend remains one of Switzerland\'s most powerful national myths.'], quiz: { q: 'What date is celebrated as Switzerland\'s National Day?', opts: ['1 August','14 July','17 September','25 December'], correct: 0 } },
+        { title: 'The Confederacy Grows', body: ['The original three cantons were joined by Lucerne (1332), Zürich (1351), Glarus and Zug (1352), and Bern (1353), forming the Eight Cantons. Swiss infantry became the most feared military force in Europe — their pikemen defeated armoured Burgundian knights at Murten and Grandson (1476) against Charles the Bold.', 'Swiss mercenaries were in enormous demand across Europe; the Pope\'s Swiss Guard (established 1506 and still serving today) is the living legacy of this tradition. The Confederation officially gained independence from the Holy Roman Empire in the Peace of Westphalia in 1648.'], quiz: { q: 'When did Switzerland formally gain independence from the Holy Roman Empire?', opts: ['1291','1386','1499','1648'], correct: 3 } },
+      ]},
+      { title: 'Reformation & Early Modernity', lessons: [
+        { title: 'Zwingli & the Swiss Reformation', body: ['The Protestant Reformation came to Switzerland through Huldrych Zwingli (1484–1531) in Zürich, independent of Luther\'s movement in Germany. Zwingli was more radical than Luther — he rejected religious images, relics, and the Mass itself, turning Swiss Reformed worship into austere scripture-centred services. Zürich\'s churches were whitewashed.', 'The Reformation split Switzerland along religious lines that persisted for centuries. Bern, Basel, and Zürich became Protestant; the forest cantons remained Catholic. This split produced war: Zwingli died at the Battle of Kappel (1531) fighting alongside Zürich\'s troops. John Calvin subsequently transformed Geneva into the "Protestant Rome."'], quiz: { q: 'Which reformer brought Protestantism to Zürich?', opts: ['Martin Luther','John Calvin','Huldrych Zwingli','Erasmus'], correct: 2 } },
+        { title: 'Neutrality Emerges', body: ['Swiss neutrality was not a founding principle but an evolving practice. After the defeat at Marignano (1515) — where French forces crushed a Swiss army in Italy — the Confederation recognised the limits of military expansion and retreated toward non-aggression. The Thirty Years\' War (1618–1648) confirmed this: Switzerland sat out one of Europe\'s most destructive conflicts.', 'The Peace of Westphalia (1648) formally recognised Swiss independence and effectively acknowledged Swiss neutrality in European power politics. The 18th century saw Switzerland as a peaceful hub — exporting mercenary soldiers (paradoxically), watches, textiles, and Enlightenment ideas. Voltaire lived near Geneva; Rousseau was born there.'], quiz: { q: 'After which defeat did Switzerland move toward a policy of neutrality?', opts: ['Battle of Morgarten','Battle of Marignano','Battle of Kappel','Battle of Grandson'], correct: 1 } },
+        { title: 'Napoleon & the Helvetic Republic', body: ['Napoleon invaded Switzerland in 1798, abolished the old Confederation, and imposed the Helvetic Republic — a centralised, French-style unitary state. It was a disaster. Swiss identity was deeply bound to cantonal autonomy; the new system provoked immediate revolts and civil war.', 'After Napoleon\'s defeat (1815), the Congress of Vienna guaranteed Swiss neutrality internationally — a guarantee that has held ever since. The Great Powers preferred a neutral buffer zone to any single power controlling the Alpine passes. Switzerland\'s permanent neutrality was recognised as a pillar of European stability.'], quiz: { q: 'Who imposed the Helvetic Republic on Switzerland in 1798?', opts: ['Kaiser Wilhelm II','Napoleon Bonaparte','Metternich','The Austrian Emperor'], correct: 1 } },
+      ]},
+      { title: 'The Modern Federal State', lessons: [
+        { title: 'The Constitution of 1848', body: ['Switzerland\'s modern political system was born in the Federal Constitution of 1848 — enacted the same year revolution swept Europe, but achieved peacefully (after a brief civil war, the Sonderbund War of 1847, between Catholic and Protestant cantons). The constitution created a federal state balancing central authority with cantonal autonomy.', 'The 1848 constitution was revolutionary: it guaranteed civil liberties, abolished internal customs barriers (creating a single market), established a common currency, and unified the postal and military systems. The capital was placed in Bern as a compromise. Switzerland became a model of peaceful reform while the rest of Europe burned.'], quiz: { q: 'What was Switzerland\'s brief civil war before the 1848 constitution called?', opts: ['The Reformation War','The Sonderbund War','The Alpine Conflict','The Canton Wars'], correct: 1 } },
+        { title: 'Neutrality in WWI & WWII', body: ['Switzerland\'s position in WWI was enormously delicate: surrounded by belligerents, with French-speaking Swiss sympathising with France and German-speaking Swiss with cultural ties to Germany. The Swiss army mobilised 220,000 men, maintaining neutrality through constant negotiation. Food shortages caused serious hardship.', 'In WWII, after France\'s fall in 1940, Switzerland was encircled by Axis powers. General Henri Guisan galvanised the nation, and the Swiss prepared the "Réduit" — a fortified Alpine stronghold where the army would fight to the last if invaded. Economic utility (Swiss banking and precision industry) ultimately made invasion more costly than accommodation.'], quiz: { q: 'What was the Swiss "Réduit" in WWII?', opts: ['A diplomatic agreement','A trade deal with Germany','A fortified Alpine defensive position','A neutral zone for prisoners'], correct: 2 } },
+        { title: 'The Red Cross & Geneva', body: ['Geneva is home to the International Red Cross — founded by Swiss businessman Henry Dunant after witnessing the carnage of the Battle of Solferino (1859). Dunant organised care for wounded soldiers, then campaigned for an international treaty protecting war casualties. The result was the First Geneva Convention (1864), signed by 12 nations.', 'The Red Cross and the Geneva Conventions made Geneva the world capital of international diplomacy. The UN European headquarters, WHO, WTO, UNHCR, and dozens of other international organisations are based there. Switzerland\'s role as permanent neutral ground for diplomacy has been one of its most valuable contributions to world order.'], quiz: { q: 'Who founded the International Red Cross?', opts: ['Florence Nightingale','Henri Dunant','Clara Barton','Albert Schweitzer'], correct: 1 } },
+      ]},
+      { title: 'The Swiss Political System', lessons: [
+        { title: 'The Federal Council', body: ['Switzerland\'s executive is uniquely collective: the Federal Council consists of seven equal members, each heading a department, making decisions by consensus. There is no single head of government — the Presidency rotates annually among the seven, a largely ceremonial role. No individual can dominate Swiss politics by design.', 'The seven seats are distributed by the "magic formula" — a convention ensuring representation across major parties and linguistic regions. Coalition building is baked in. The result is extraordinary political stability: Switzerland has not had a government crisis in the modern era, and policy changes very gradually by European standards.'], quiz: { q: 'How often does the Swiss Presidency rotate?', opts: ['Every 4 years','Every 2 years','Annually','Every term'], correct: 2 } },
+        { title: 'Parliament & the Cantons', body: ['The Swiss Parliament is bicameral. The National Council (200 seats, proportional representation) represents the population. The Council of States (46 seats, 2 per full canton) represents the cantons — analogous to the US Senate. Both chambers must agree on all legislation.', 'Switzerland has 26 cantons, each with its own constitution, parliament, and government. Cantons have substantial autonomy — determining their own tax rates, school systems, and many social policies. Tax competition between cantons is fierce; Zug attracts global companies with low taxes while Geneva hosts international organisations.'], quiz: { q: 'How many seats does the Swiss National Council have?', opts: ['46','100','200','246'], correct: 2 } },
+        { title: 'Four Languages, One Nation', body: ['Switzerland has four national languages: German (~63% of the population), French (~23%, in the "Röstigraben" — the cultural divide along the Alps\' western edge), Italian (~8%, in Ticino), and Romansh (~0.5%, in Graubünden). All four are official at the federal level.', 'This multilingualism is not merely symbolic — it reflects genuinely distinct cultural communities with different political instincts. German-speaking Swiss tend to be more Eurosceptic and attached to direct democracy. French-speaking Swiss tend to be more pro-European and socially liberal. These differences regularly appear in referendum results, making Swiss politics a fascinating laboratory for managing diversity within unity.'], quiz: { q: 'What percentage of Switzerland\'s population speaks German?', opts: ['~23%','~8%','~63%','~50%'], correct: 2 } },
+      ]},
+      { title: 'Direct Democracy & Today', lessons: [
+        { title: 'Referendums & Initiatives', body: ['Switzerland is the world\'s leading practitioner of direct democracy. Citizens can trigger a popular referendum on any federal law by collecting 50,000 signatures within 90 days. They can launch a popular initiative — proposing a constitutional amendment — by collecting 100,000 signatures within 18 months. Switzerland holds 3–4 national votes per year.', 'This system has produced landmark decisions: banning minarets (2009), rejecting a minimum wage increase, approving same-sex marriage (2021). Voter fatigue is real — turnout is typically 40–50% — but the system forces politicians to craft legislation that can survive popular challenge.'], quiz: { q: 'How many signatures are needed to trigger a popular referendum on a Swiss federal law?', opts: ['10,000','50,000','100,000','500,000'], correct: 1 } },
+        { title: 'Switzerland & the EU', body: ['Switzerland is surrounded by EU member states but is not a member. Instead, it has negotiated over 120 bilateral agreements giving access to EU markets and the Schengen travel zone in exchange for adopting EU regulations in specific areas — without voting rights on those regulations. This "bilaterals" model is unique in Europe.', 'The relationship is increasingly strained. The EU wants a single "framework agreement" replacing the patchwork bilaterals; Switzerland rejected such an agreement in 2021. Switzerland\'s financial sector, pharmaceutical industry, and research universities (ETH Zürich is consistently ranked among Europe\'s best) depend heavily on EU access.'], quiz: { q: 'What is Switzerland\'s unique relationship model with the EU called?', opts: ['Full membership','Associate membership','Bilaterals','EEA membership'], correct: 2 } },
+        { title: 'Switzerland Today', body: ['Swiss banking secrecy, enshrined in the Banking Act of 1934, made Switzerland a magnet for foreign capital. The 2008 financial crisis and US pressure forced major changes; subsequent OECD pressure has largely ended banking secrecy for foreign clients. The era of anonymous Swiss banking is over.', 'Modern Switzerland faces challenges: housing costs in Zürich and Geneva are among Europe\'s highest; immigration (foreign-born residents represent ~27% of the population) generates political tension; the collapse of Credit Suisse in 2023 was a reputational blow. Yet Switzerland remains among the world\'s wealthiest, most innovative, and most stable nations — a remarkable achievement for a mountainous country of 8.7 million with no natural resources.'], quiz: { q: 'What major Swiss banking event occurred in 2023?', opts: ['UBS went bankrupt','Switzerland joined the EU','Credit Suisse collapsed and was merged with UBS','Banking secrecy was abolished'], correct: 2 } },
+      ]},
+    ]
+  },
+];
+
+// ── LEARN STORAGE ─────────────────────────────
+function getLearnData() { try { return JSON.parse(localStorage.getItem(LEARN_LS) || '{}'); } catch { return {}; } }
+function setLearnData(patch) { localStorage.setItem(LEARN_LS, JSON.stringify({ ...getLearnData(), ...patch })); }
+
+function markLesson(sid, ci, li) {
+  const d = getLearnData();
+  const key = `${sid}.${ci}.${li}`;
+  const done = new Set(d.done || []);
+  if (done.has(key)) return 'already_done';
+  done.add(key);
+  let xp = (d.xp || 0) + 10;
+  const todayStr = new Date().toISOString().slice(0,10);
+  let streak = d.streak || { date: todayStr, count: 0 };
+  if (streak.date !== todayStr) {
+    const yest = new Date(); yest.setDate(yest.getDate()-1);
+    const yStr = yest.toISOString().slice(0,10);
+    streak = { date: todayStr, count: streak.date === yStr ? streak.count + 1 : 1 };
+  }
+  setLearnData({ done: [...done], xp, streak });
+  const subj = CURRICULUM.find(s => s.id === sid);
+  if (subj && subj.chapters[ci].lessons.every((_, i) => done.has(`${sid}.${ci}.${i}`))) {
+    setLearnData({ xp: getLearnData().xp + 25 });
+    return 'chapter_complete';
+  }
+  return 'lesson_complete';
+}
+
+function isLessonDone(sid, ci, li) { return new Set(getLearnData().done || []).has(`${sid}.${ci}.${li}`); }
+function isChapterDone(sid, ci) { const s = CURRICULUM.find(x => x.id === sid); return s ? s.chapters[ci].lessons.every((_, i) => isLessonDone(sid, ci, i)) : false; }
+function isChapterUnlocked(sid, ci) { return ci === 0 || isChapterDone(sid, ci - 1); }
+function subjectProgress(sid) {
+  const s = CURRICULUM.find(x => x.id === sid); if (!s) return { done: 0, total: 0, pct: 0 };
+  let done = 0, total = 0;
+  s.chapters.forEach((ch, ci) => ch.lessons.forEach((_, li) => { total++; if (isLessonDone(sid, ci, li)) done++; }));
+  return { done, total, pct: total ? Math.round(done/total*100) : 0 };
+}
+
+// ── LEARN NAV STATE ───────────────────────────
+let learnView = 'subjects'; // 'subjects' | 'chapters' | 'lesson'
+let learnSid = null, learnCi = null, learnLi = null;
+let learnQuizState = null; // null | 'correct' | 'wrong'
+let learnChapComplete = false;
+let _learnSelOpt = null;
+
+function loadLearn() { renderLearn(); }
+
+function renderLearn() {
+  const root = document.getElementById('learnRoot');
+  if (!root) return;
+  if (learnView === 'subjects') root.innerHTML = buildLearnSubjectsHTML();
+  else if (learnView === 'chapters') root.innerHTML = buildLearnChaptersHTML();
+  else root.innerHTML = buildLearnLessonHTML();
+}
+
+function buildLearnSubjectsHTML() {
+  const d = getLearnData(), xp = d.xp || 0, level = Math.floor(xp/100)+1, streak = d.streak?.count||0;
+  let html = `<div class="learn-header">
+    <div>
+      <div style="font-size:22px;font-weight:700">Learn</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px">Continue where you left off</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      ${streak>1?`<div style="background:rgba(255,159,10,0.15);border:0.5px solid rgba(255,159,10,0.3);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--orange)">🔥 ${streak}</div>`:''}
+      <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:6px 14px;text-align:center">
+        <div style="font-size:14px;font-weight:800;color:var(--orange)">${xp} XP</div>
+        <div style="font-size:10px;color:var(--text3)">Level ${level}</div>
+      </div>
+    </div>
+  </div><div class="learn-subjects">`;
+  CURRICULUM.forEach(s => {
+    const p = subjectProgress(s.id);
+    html += `<div class="subject-card" style="background:linear-gradient(135deg,${s.color}18,${s.color}08);border-color:${s.color}28" onclick="learnOpenSubject('${s.id}')">
+      <div class="subject-card-top">
+        <div><div style="font-size:32px;margin-bottom:8px">${s.icon}</div><div class="subject-title">${esc(s.title)}</div><div class="subject-meta">${s.chapters.length} chapters · ${p.total} lessons</div></div>
+        <div style="text-align:right"><div style="font-size:28px;font-weight:800;color:${s.color}">${p.pct}%</div><div style="font-size:11px;color:var(--text3)">${p.done}/${p.total} done</div></div>
+      </div>
+      <div class="subject-progress-bar"><div class="subject-progress-fill" style="width:${p.pct}%;background:${s.color}"></div></div>
+    </div>`;
+  });
+  return html + '</div>';
+}
+
+function buildLearnChaptersHTML() {
+  const s = CURRICULUM.find(x => x.id === learnSid); if (!s) return '';
+  const p = subjectProgress(learnSid);
+  let html = `<div class="learn-back" onclick="learnBack()"><span style="font-size:20px;color:var(--accent)">‹</span><span style="font-size:15px;font-weight:600;color:var(--accent)">All subjects</span></div>
+  <div style="padding:0 16px 16px">
+    <div style="font-size:22px;font-weight:800">${s.icon} ${esc(s.title)}</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:4px">${p.done}/${p.total} lessons · ${p.pct}% complete</div>
+    <div class="subject-progress-bar" style="margin-top:10px"><div class="subject-progress-fill" style="width:${p.pct}%;background:${s.color}"></div></div>
+  </div><div class="chapters-section">`;
+  s.chapters.forEach((ch, ci) => {
+    const unlocked = isChapterUnlocked(learnSid, ci), done = isChapterDone(learnSid, ci);
+    const dots = ch.lessons.map((_, li) => `<div class="chapter-dot ${isLessonDone(learnSid,ci,li)?'done':''}"></div>`).join('');
+    html += `<div class="chapter-card ${!unlocked?'locked':''}" onclick="${unlocked?`learnOpenChapter(${ci})`:''}">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter ${ci+1}</span>
+        ${done?'<span class="chapter-done-badge">✓ Complete</span>':!unlocked?'<span style="font-size:14px">🔒</span>':''}
+      </div>
+      <div class="chapter-title">${esc(ch.title)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:5px">${dots}</div>
+        <div style="font-size:12px;color:var(--text3)">${ch.lessons.length} lessons</div>
+      </div>
+    </div>`;
+  });
+  return html + '</div>';
+}
+
+function buildLearnLessonHTML() {
+  const s = CURRICULUM.find(x => x.id === learnSid);
+  const ch = s?.chapters[learnCi], lesson = ch?.lessons[learnLi]; if (!lesson) return '';
+  const done = isLessonDone(learnSid, learnCi, learnLi);
+  const nextLesson = ch.lessons[learnLi+1], nextChap = s.chapters[learnCi+1];
+  let html = `<div class="learn-back" onclick="learnBack()"><span style="font-size:20px;color:var(--accent)">‹</span><span style="font-size:15px;font-weight:600;color:var(--accent)">${esc(ch.title)}</span></div>
+  <div class="lesson-section">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Lesson ${learnLi+1} of ${ch.lessons.length}</div>
+    <div style="font-size:22px;font-weight:800;letter-spacing:-0.4px;line-height:1.2;margin-bottom:18px">${esc(lesson.title)}</div>
+    <div class="lesson-body">${lesson.body.map(p=>`<p>${esc(p)}</p>`).join('')}</div>`;
+
+  if (learnChapComplete) {
+    html += `<div class="chap-complete">
+      <div class="chap-complete-icon">🏆</div>
+      <div class="chap-complete-title">Chapter Complete!</div>
+      <div class="chap-complete-sub">${esc(ch.title)}</div>
+      <div class="chap-complete-xp">+35 XP</div>
+      ${nextChap?`<button class="quiz-next-btn" onclick="learnOpenChapter(${learnCi+1})">Next: ${esc(nextChap.title)} →</button>`:`<button class="quiz-next-btn" onclick="learnBack()">Back to ${esc(s.title)}</button>`}
+    </div>`;
+  } else if (learnQuizState === 'correct') {
+    html += `<div class="quiz-card"><div class="quiz-result">
+      <div class="quiz-result-icon">✅</div>
+      <div class="quiz-result-text" style="color:var(--green)">Correct! +10 XP</div>
+      ${nextLesson?`<button class="quiz-next-btn" onclick="learnNextLesson()">Next: ${esc(nextLesson.title)} →</button>`:`<button class="quiz-next-btn" onclick="learnNextLesson()">Finish Chapter →</button>`}
+    </div></div>`;
+  } else if (learnQuizState === 'wrong') {
+    html += `<div class="quiz-card"><div class="quiz-label">Quick check</div><div class="quiz-q">${esc(lesson.quiz.q)}</div><div class="quiz-opts">`;
+    lesson.quiz.opts.forEach((opt,i) => { const cls = i===lesson.quiz.correct?'correct':i===_learnSelOpt?'wrong':''; html += `<button class="quiz-opt ${cls}" disabled>${esc(opt)}</button>`; });
+    html += `</div><div class="quiz-result" style="padding-top:12px"><div class="quiz-result-icon">❌</div><div class="quiz-result-text" style="color:var(--red)">Not quite — try again!</div><button class="quiz-retry-btn" onclick="learnRetry()">Try again</button></div></div>`;
+  } else if (done) {
+    html += `<div class="quiz-card"><div class="quiz-result"><div class="quiz-result-icon">✅</div><div class="quiz-result-text" style="color:var(--text2)">Already completed</div>${nextLesson?`<button class="quiz-next-btn" onclick="learnNextLesson()">Next: ${esc(nextLesson.title)} →</button>`:''}</div></div>`;
+  } else {
+    html += `<div class="quiz-card"><div class="quiz-label">Quick check</div><div class="quiz-q">${esc(lesson.quiz.q)}</div><div class="quiz-opts">`;
+    lesson.quiz.opts.forEach((opt,i) => { html += `<button class="quiz-opt" onclick="learnSelectOpt(${i})">${esc(opt)}</button>`; });
+    html += '</div></div>';
+  }
+  return html + '</div>';
+}
+
+function learnOpenSubject(sid) { learnSid=sid; learnView='chapters'; learnCi=null; learnLi=null; renderLearn(); document.getElementById('content').scrollTop=0; }
+
+function learnOpenChapter(ci) {
+  learnCi=ci; learnQuizState=null; learnChapComplete=false;
+  const ch = CURRICULUM.find(s=>s.id===learnSid)?.chapters[ci];
+  let first=0; if (ch) { for(let i=0;i<ch.lessons.length;i++){if(!isLessonDone(learnSid,ci,i)){first=i;break;} first=ch.lessons.length-1;} }
+  learnLi=first; learnView='lesson'; renderLearn(); document.getElementById('content').scrollTop=0;
+}
+
+function learnSelectOpt(i) {
+  const lesson = CURRICULUM.find(s=>s.id===learnSid)?.chapters[learnCi]?.lessons[learnLi]; if (!lesson) return;
+  _learnSelOpt=i;
+  if (i===lesson.quiz.correct) {
+    const result = markLesson(learnSid, learnCi, learnLi);
+    learnChapComplete = result==='chapter_complete';
+    learnQuizState='correct';
+    showXPPop(learnChapComplete?'+35 XP':'+ 10 XP');
+  } else { learnQuizState='wrong'; }
+  renderLearn();
+}
+
+function learnRetry() { learnQuizState=null; _learnSelOpt=null; renderLearn(); }
+
+function learnNextLesson() {
+  const s = CURRICULUM.find(x=>x.id===learnSid), ch = s?.chapters[learnCi];
+  if (learnChapComplete) { learnView='chapters'; learnCi=null; learnLi=null; }
+  else if (ch && learnLi < ch.lessons.length-1) { learnLi++; learnQuizState=null; learnChapComplete=false; }
+  else { learnView='chapters'; }
+  renderLearn(); document.getElementById('content').scrollTop=0;
+}
+
+function learnBack() {
+  if (learnView==='lesson') { learnView='chapters'; learnLi=null; learnQuizState=null; learnChapComplete=false; }
+  else if (learnView==='chapters') { learnView='subjects'; learnSid=null; learnCi=null; }
+  renderLearn(); document.getElementById('content').scrollTop=0;
+}
+
+function showXPPop(text) {
+  const el=document.createElement('div'); el.className='xp-pop'; el.textContent=text;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),1500);
 }
 
 // ── NAV ───────────────────────────────────────
+let dailyLoaded = false, learnLoaded = false;
 function goTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -1909,6 +2509,8 @@ function goTab(name, el) {
   el.classList.add('active');
   document.getElementById('content').scrollTop = 0;
   if (name === 'finance') loadFinance();
+  if (name === 'daily' && !dailyLoaded) { dailyLoaded = true; loadDaily(); }
+  if (name === 'learn' && !learnLoaded) { learnLoaded = true; loadLearn(); }
 }
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
