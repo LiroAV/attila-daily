@@ -31,17 +31,13 @@ The service worker registers on `localhost` separately from the live site, so lo
 
 ## Deploying to production
 
-The app is hosted on **GitHub Pages** from the `main` branch.
-
-> **Important:** always push to `main`, not `master`. The repo has both branches — `main` is what GitHub Pages serves.
+The app is hosted on **GitHub Pages** from the `master` branch.
 
 ```bash
-# Stage and commit
+# Stage, commit, and push — one command deploys to production
 git add index.html sw.js
 git commit -m "Your message"
-
-# Push to main (GitHub Pages branch)
-git push origin master:main
+git push origin master
 ```
 
 GitHub Pages deploys automatically within ~60 seconds after the push. You can verify the live version is updated by checking the cache version in `sw.js`:
