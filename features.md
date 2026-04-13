@@ -53,7 +53,7 @@ Tracks three UZH-area clubs:
 | FVOEC | `/api/events` → `GET https://api.fvoec.ch/v1/events?lang=de` |
 | UZHack | `/api/events` → schedule page bundle, with a Spring 2026 fallback |
 
-Events are fetched server-side, filtered to future entries, and the next upcoming event per club is shown with date/time/location. Cache TTL: 4 hours (`atd_club_events_v1` in localStorage).
+Events are fetched server-side, filtered to future entries, and the next upcoming event per club is shown with date/time/location. Cache TTL: 4 hours (`atd_club_events_v2` in localStorage).
 
 ---
 
@@ -273,7 +273,7 @@ Each stock card shows:
 
 **Manifest** (`manifest.json`): `display: standalone`, portrait orientation, black theme, icons at 192 and 512px.
 
-**Service Worker** (`sw.js`, cache `attila-daily-v31`):
+**Service Worker** (`sw.js`, cache `attila-daily-v32`):
 - On install: `skipWaiting()` to take over immediately
 - On activate: deletes old caches, calls `client.navigate()` to force-reload all open tabs
 - Fetch strategy: Vercel API routes and external APIs → network only (fail with 503); app shell → network-first with cache fallback
@@ -312,7 +312,7 @@ Each stock card shows:
 | `atd_tasks_v2` | Task list array |
 | `atd_country` | Detected country code from geolocation |
 | `atd_finance_v2` | Finance quote cache with timestamp |
-| `atd_club_events_v1` | Club events with timestamp |
+| `atd_club_events_v2` | Club events with timestamp |
 | `spotify_*` | Spotify OAuth tokens and Client ID |
 
 ## IndexedDB Stores

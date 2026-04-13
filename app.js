@@ -821,7 +821,7 @@ const CLUBS = [
   { id: 'fvoec',  name: 'FVOEC',   color: '#30d158', url: 'https://fvoec.ch/events' },
   { id: 'uzhack', name: 'UZHack',  color: '#bf5af2', url: 'https://uzhack.com/schedule' },
 ];
-const EVENTS_LS = 'atd_club_events_v1';
+const EVENTS_LS = 'atd_club_events_v2';
 const EVENTS_TTL = 4 * 60 * 60 * 1000;
 
 async function loadClubEvents() {

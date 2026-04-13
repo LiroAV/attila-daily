@@ -114,7 +114,7 @@ If it still doesn't update:
 Every time you deploy a meaningful change, bump the cache version in `sw.js`:
 
 ```js
-const CACHE = 'attila-daily-v31'; // increment this
+const CACHE = 'attila-daily-v32'; // increment this
 ```
 
 This tells the browser a new service worker is available and triggers the update flow.
@@ -217,7 +217,7 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 
 ## PWA / Service Worker
 
-- **Cache name:** `attila-daily-v31` — bump this in `sw.js` on every deploy
+- **Cache name:** `attila-daily-v32` — bump this in `sw.js` on every deploy
 - **Strategy:** Network-first for app shell (HTML), always network for `/api/*` and external APIs
 - **On activate:** Deletes old caches, forces all open clients to reload (`client.navigate`)
 - **`skipWaiting`:** New service worker takes over immediately on install
