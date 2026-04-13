@@ -608,7 +608,13 @@ async function callGemini(prompt, maxTokens) {
     body: JSON.stringify({ prompt, maxTokens: maxTokens || 300 }),
     signal: AbortSignal.timeout(20000)
   });
-  const d = await res.json();
+  const raw = await res.text();
+  let d;
+  try {
+    d = JSON.parse(raw);
+  } catch {
+    throw new Error(`AI route returned ${res.status}. Open the Vercel URL, not GitHub Pages or the static Python server.`);
+  }
   if (!res.ok || d.error) throw new Error(d.error || 'Gemini API error');
   if (!d.text) throw new Error('Empty response from Gemini');
   return d.text;
@@ -645,7 +651,7 @@ async function generateMorningBrief(force) {
     renderBriefText(text);
   } catch (e) {
     if (container) container.innerHTML = `
-      <div style="font-size:13px;color:var(--red)">Could not generate brief.</div>
+      <div style="font-size:13px;color:var(--red);line-height:1.45">Could not generate brief.<br>${esc(e.message || 'Unknown AI error')}</div>
       <button class="brief-generate-btn" onclick="generateMorningBrief(true)" style="margin-top:8px;width:100%">↻ Try again</button>`;
   }
 }
@@ -692,8 +698,8 @@ async function generateNewsSummary() {
       setTodayData({ newsSummary: text });
       renderNewsSummary(text);
     }
-  } catch {
-    el.innerHTML = '<div class="news-summary-loading" style="color:var(--red)">Could not summarise — try refreshing.</div>';
+  } catch (e) {
+    el.innerHTML = `<div class="news-summary-loading" style="color:var(--red)">Could not summarise — ${esc(e.message || 'try refreshing')}.</div>`;
   }
 }
 
@@ -2436,8 +2442,8 @@ async function generateMarketPulse() {
     setTodayData({ marketPulse: { key: window._pulseKey, text } });
     expEl.innerHTML = '<div class="pulse-explanation">' + text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>';
     btn.textContent = '↻ Refresh explanation';
-  } catch {
-    expEl.innerHTML = '<div class="pulse-spinner" style="color:var(--red)">Failed — tap to retry.</div>';
+  } catch (e) {
+    expEl.innerHTML = `<div class="pulse-spinner" style="color:var(--red);line-height:1.45">Failed — ${esc(e.message || 'tap to retry')}.</div>`;
     btn.textContent = '✦ Explain with AI';
   }
   btn.disabled = false;
