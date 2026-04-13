@@ -273,7 +273,7 @@ Each stock card shows:
 
 **Manifest** (`manifest.json`): `display: standalone`, portrait orientation, black theme, icons at 192 and 512px.
 
-**Service Worker** (`sw.js`, cache `attila-daily-v29`):
+**Service Worker** (`sw.js`, cache `attila-daily-v30`):
 - On install: `skipWaiting()` to take over immediately
 - On activate: deletes old caches, calls `client.navigate()` to force-reload all open tabs
 - Fetch strategy: Vercel API routes and external APIs → network only (fail with 503); app shell → network-first with cache fallback
