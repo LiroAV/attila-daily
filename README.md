@@ -15,6 +15,7 @@ app.js       — app behavior, API calls, local persistence
 api/ai.js    — Vercel function that calls Gemini with a server-side key
 api/finnhub.js — Vercel function that calls Finnhub with a server-side key
 api/events.js — Vercel function that normalizes upcoming club events
+api/config.js — Vercel function that exposes public browser config
 sw.js        — service worker (PWA caching + offline support)
 manifest.json — PWA manifest (name, icons, display mode)
 icon-192.png / icon-512.png — app icons
@@ -24,7 +25,7 @@ icon-192.png / icon-512.png — app icons
 
 ## Running locally
 
-Use Vercel locally when testing AI, finance, or club events, because `/api/ai`, `/api/finnhub`, and `/api/events` are Vercel functions:
+Use Vercel locally when testing AI, finance, club events, or automatic Spotify setup, because `/api/ai`, `/api/finnhub`, `/api/events`, and `/api/config` are Vercel functions:
 
 ```bash
 cd /Users/attila/Documents/03_Projects/attila-daily
@@ -47,15 +48,16 @@ The service worker registers on `localhost` separately from the live site, so lo
 
 ## Deploying to production
 
-The app should be hosted on **Vercel** so `/api/ai` and `/api/finnhub` can call paid/keyed APIs without exposing secrets in browser code.
+The app should be hosted on **Vercel** so `/api/ai` and `/api/finnhub` can call paid/keyed APIs without exposing secrets in browser code, and `/api/config` can provide public browser config.
 
 ### One-time Vercel setup
 
 1. Import the GitHub repo `LiroAV/attila-daily` in Vercel.
 2. Add Environment Variable `GEMINI_API_KEY` with your Google AI Studio key.
 3. Add Environment Variable `FINNHUB_API_KEY` with your Finnhub key.
-4. Optionally add `GEMINI_MODEL=gemini-2.5-flash-lite`.
-5. Check the Vercel production branch. This project currently deploys **Production** from `main`.
+4. Add Environment Variable `SPOTIFY_CLIENT_ID` with your Spotify app Client ID.
+5. Optionally add `GEMINI_MODEL=gemini-2.5-flash-lite`.
+6. Check the Vercel production branch. This project currently deploys **Production** from `main`.
 
 ### Branch setup
 
@@ -66,7 +68,7 @@ That means a normal push to `master` creates a Vercel **Preview** deployment, no
 Commit the app files before deploying:
 
 ```bash
-git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.js api/events.js sw.js
+git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.js api/events.js api/config.js sw.js
 git commit -m "Your message"
 git push origin master
 ```
@@ -95,6 +97,7 @@ If Vercel's production branch is changed to `master` later, remove the `git push
 |---|---|---|
 | `GEMINI_API_KEY` | `/api/ai` | Gemini key from Google AI Studio |
 | `FINNHUB_API_KEY` | `/api/finnhub` | Finnhub API token for stock/index quotes |
+| `SPOTIFY_CLIENT_ID` | `/api/config` | Public Spotify Client ID so users do not paste it manually |
 | `GEMINI_MODEL` | `/api/ai` | Optional. Defaults to `gemini-2.5-flash-lite`, with fallback to `gemini-2.5-flash` |
 
 After adding or changing env vars, redeploy the latest production deployment.
@@ -114,7 +117,7 @@ If it still doesn't update:
 Every time you deploy a meaningful change, bump the cache version in `sw.js`:
 
 ```js
-const CACHE = 'attila-daily-v32'; // increment this
+const CACHE = 'attila-daily-v33'; // increment this
 ```
 
 This tells the browser a new service worker is available and triggers the update flow.
@@ -161,17 +164,18 @@ Uses **PKCE OAuth** (no backend, no client secret needed).
 1. Go to [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 2. Create an app
 3. Add your Vercel app URL as a Redirect URI (e.g. `https://your-app.vercel.app/`)
-4. Copy the Client ID
-5. Paste into the Spotify card in the app and tap Connect
+4. Copy the Client ID into Vercel as `SPOTIFY_CLIENT_ID`
+5. Each user taps Connect Spotify and signs in with their own Spotify account
 
 **How it works:**
+- Loads the public Spotify Client ID from `/api/config`
 - Generates a PKCE code verifier + challenge in the browser
 - Redirects to Spotify auth, comes back with a code
 - Exchanges the code for access + refresh tokens (stored in `localStorage`)
 - Access token auto-refreshes when expired (1 hour lifetime)
 - Shows currently playing track, or falls back to recently played
 
-**Scopes used:** `user-read-currently-playing`, `user-read-recently-played`
+**Scopes used:** `user-read-currently-playing`, `user-read-recently-played`, `user-modify-playback-state`
 
 **Relevant localStorage keys:**
 ```
@@ -217,7 +221,7 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 
 ## PWA / Service Worker
 
-- **Cache name:** `attila-daily-v32` — bump this in `sw.js` on every deploy
+- **Cache name:** `attila-daily-v33` — bump this in `sw.js` on every deploy
 - **Strategy:** Network-first for app shell (HTML), always network for `/api/*` and external APIs
 - **On activate:** Deletes old caches, forces all open clients to reload (`client.navigate`)
 - **`skipWaiting`:** New service worker takes over immediately on install

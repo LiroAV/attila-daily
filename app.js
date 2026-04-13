@@ -918,6 +918,19 @@ const SP_LS = {
 function spGet(k) { return localStorage.getItem(SP_LS[k]) || ''; }
 function spSet(k, v) { localStorage.setItem(SP_LS[k], v); }
 
+let spotifyConfigPromise = null;
+async function getSpotifyClientId() {
+  const stored = spGet('clientId');
+  if (stored) return stored;
+  if (!spotifyConfigPromise) {
+    spotifyConfigPromise = fetch('/api/config', { signal: AbortSignal.timeout(4000) })
+      .then(r => r.ok ? r.json() : {})
+      .then(d => typeof d.spotifyClientId === 'string' ? d.spotifyClientId.trim() : '')
+      .catch(() => '');
+  }
+  return spotifyConfigPromise;
+}
+
 function generateSpVerifier() {
   const arr = new Uint8Array(32);
   crypto.getRandomValues(arr);
@@ -931,7 +944,9 @@ async function generateSpChallenge(verifier) {
 }
 
 async function connectSpotify() {
-  const clientId = document.getElementById('spClientIdInp').value.trim();
+  let clientId = await getSpotifyClientId();
+  const manualInput = document.getElementById('spClientIdInp');
+  if (!clientId && manualInput) clientId = manualInput.value.trim();
   if (!clientId) return;
   spSet('clientId', clientId);
   const verifier = generateSpVerifier();
@@ -952,8 +967,9 @@ async function connectSpotify() {
 async function handleSpotifyCallback() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
-  const clientId = spGet('clientId');
+  const clientId = spGet('clientId') || await getSpotifyClientId();
   if (!code || !clientId) return;
+  spSet('clientId', clientId);
   window.history.replaceState({}, document.title, window.location.pathname);
   const verifier = spGet('verifier');
   const redirectUri = window.location.href.split('?')[0].split('#')[0];
@@ -975,7 +991,7 @@ async function handleSpotifyCallback() {
 async function getSpToken() {
   const expiresAt = parseInt(spGet('expiresAt') || '0');
   if (spGet('accessToken') && Date.now() < expiresAt - 60000) return spGet('accessToken');
-  const clientId = spGet('clientId');
+  const clientId = spGet('clientId') || await getSpotifyClientId();
   const refreshToken = spGet('refreshToken');
   if (!clientId || !refreshToken) return null;
   try {
@@ -1002,10 +1018,19 @@ function disconnectSpotify() {
 
 async function loadSpotify() {
   const el = document.getElementById('spotifyContent');
-  if (!spGet('clientId')) { renderSpConnect(el); return; }
+  const hasSpotifyAuth = !!(spGet('accessToken') || spGet('refreshToken'));
+  if (!hasSpotifyAuth) {
+    const clientId = await getSpotifyClientId();
+    renderSpConnect(el, !!clientId);
+    return;
+  }
   el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Loading…</div>`;
   const token = await getSpToken();
-  if (!token) { renderSpConnect(el); return; }
+  if (!token) {
+    const clientId = await getSpotifyClientId();
+    renderSpConnect(el, !!clientId);
+    return;
+  }
   try {
     // Try currently playing first
     const r1 = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -1071,12 +1096,12 @@ async function spControl(action) {
   } catch {}
 }
 
-function renderSpConnect(el) {
+function renderSpConnect(el, hasConfiguredClientId) {
   el.innerHTML = `<div class="sp-connect">
     <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Connect Spotify to see what you're playing.</p>
-    <input class="sp-inp" id="spClientIdInp" type="text" placeholder="Paste your Spotify Client ID…">
+    ${hasConfiguredClientId ? '' : `<input class="sp-inp" id="spClientIdInp" type="text" placeholder="Paste your Spotify Client ID…">`}
     <button class="sp-btn" onclick="connectSpotify()">Connect Spotify</button>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px">Get a free Client ID at <strong>developer.spotify.com</strong> → Create app</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">${hasConfiguredClientId ? 'Each user signs in with their own Spotify account.' : 'Add SPOTIFY_CLIENT_ID in Vercel to remove this setup step.'}</div>
   </div>`;
 }
 
@@ -2885,7 +2910,7 @@ async function renderSettings() {
   const el = document.getElementById('settingsContent');
   if (!el) return;
 
-  const spConnected = !!spGet('clientId');
+  const spConnected = !!(spGet('accessToken') || spGet('refreshToken'));
   const tmdbKey = !!getTmdbKey();
   const hidden = getHiddenCards();
   const theme = localStorage.getItem(THEME_LS) || '';

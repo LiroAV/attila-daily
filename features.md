@@ -1,6 +1,6 @@
 # Attila's Daily — Feature Reference
 
-A personal daily dashboard PWA. Static app (`index.html` + `app.css` + `app.js` + `sw.js`) plus Vercel API routes for Gemini and Finnhub.
+A personal daily dashboard PWA. Static app (`index.html` + `app.css` + `app.js` + `sw.js`) plus Vercel API routes for Gemini, Finnhub, club events, and browser config.
 
 ---
 
@@ -8,7 +8,7 @@ A personal daily dashboard PWA. Static app (`index.html` + `app.css` + `app.js` 
 
 - **Static vanilla app** with separate `index.html`, `app.css`, and `app.js`
 - **No framework** — vanilla JS, DOM manipulation via `innerHTML`
-- **Vercel serverless functions** proxy Gemini (`api/ai.js`), Finnhub (`api/finnhub.js`), and club events (`api/events.js`)
+- **Vercel serverless functions** proxy Gemini (`api/ai.js`), Finnhub (`api/finnhub.js`), club events (`api/events.js`), and public config (`api/config.js`)
 - **localStorage** for settings/tasks/cache, IndexedDB for photos
 - **Service Worker** (`sw.js`) for PWA install + offline shell
 - **Dark iOS-first design** — system fonts, safe-area insets, max-width 440px on desktop
@@ -60,13 +60,13 @@ Events are fetched server-side, filtered to future entries, and the next upcomin
 ### Spotify — Now Playing
 
 **Auth**: OAuth 2.0 PKCE flow (no backend, no client secret)
-1. User provides their Spotify Client ID from the Spotify Developer Dashboard
+1. App loads the public Spotify Client ID from `/api/config`
 2. App generates a 32-byte PKCE verifier → SHA-256 challenge
 3. Redirects to `https://accounts.spotify.com/authorize`
 4. On return, exchanges auth code for tokens at `https://accounts.spotify.com/api/token`
 5. Access token auto-refreshed using the refresh token when expired
 
-**Scopes**: `user-read-currently-playing`, `user-read-recently-played`
+**Scopes**: `user-read-currently-playing`, `user-read-recently-played`, `user-modify-playback-state`
 
 **Playback endpoint**: `GET https://api.spotify.com/v1/me/player/currently-playing`
 - Falls back to `recently-played?limit=1` if nothing is playing
@@ -273,7 +273,7 @@ Each stock card shows:
 
 **Manifest** (`manifest.json`): `display: standalone`, portrait orientation, black theme, icons at 192 and 512px.
 
-**Service Worker** (`sw.js`, cache `attila-daily-v32`):
+**Service Worker** (`sw.js`, cache `attila-daily-v33`):
 - On install: `skipWaiting()` to take over immediately
 - On activate: deletes old caches, calls `client.navigate()` to force-reload all open tabs
 - Fetch strategy: Vercel API routes and external APIs → network only (fail with 503); app shell → network-first with cache fallback
@@ -297,6 +297,7 @@ Each stock card shows:
 | JokeAPI | `/joke/Any?safe-mode` | None | Daily joke |
 | Google Gemini | `/api/ai` → Gemini `generateContent` | Vercel env var | Morning brief, AI summary, Market Pulse |
 | IC UZH / FVOEC / UZHack | `/api/events` | None | Club events |
+| App config | `/api/config` | Public env var | Spotify Client ID for automatic setup |
 | Spotify | `/authorize`, `/api/token`, `/v1/me/player/*` | OAuth PKCE | Now playing |
 | Finnhub | `/api/finnhub` → `/api/v1/quote` | Vercel env var | Stock quotes |
 | CoinGecko | `/api/v3/coins/markets` | None | Crypto prices |
