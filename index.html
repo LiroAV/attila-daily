@@ -54,9 +54,10 @@
     [data-theme="sakura"] .quiz-next-btn { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
     [data-theme="sakura"] .icon-btn { background: rgba(255,235,242,0.85); border: 0.5px solid rgba(200,130,155,0.4); }
     [data-theme="sakura"] .avatar { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
-    [data-theme="sakura"] .tab-item.active .tab-dot { background: #c0446e; }
     [data-theme="sakura"] .tab-item.active .tab-icon { color: #c0446e; }
+    [data-theme="sakura"] .tab-item.active .tab-label { color: #c0446e; }
     [data-theme="sakura"] .tab-icon { color: rgba(100,55,70,0.45); }
+    [data-theme="sakura"] .tab-label { color: rgba(100,55,70,0.45); }
     [data-theme="sakura"] #splash { background: #fce8f0; }
     [data-theme="sakura"] body { font-family: 'Zen Kaku Gothic New', -apple-system, sans-serif; }
     [data-theme="sakura"] .date-line { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 0.5px; }
@@ -85,9 +86,9 @@
     .tab-item:active { opacity: 0.6; }
     .tab-icon { width: 26px; height: 26px; color: var(--text3); flex-shrink: 0; transition: color 0.15s; }
     .tab-item.active .tab-icon { color: var(--accent); }
-    .tab-label { display: none; }
-    .tab-dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; transition: background 0.15s; }
-    .tab-item.active .tab-dot { background: var(--accent); }
+    .tab-label { display: block; font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.1px; line-height: 1; }
+    .tab-item.active .tab-label { color: var(--accent); }
+    .tab-dot { display: none; }
 
     /* ── Scroll area ── */
     .content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
@@ -243,15 +244,21 @@
     .card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; }
     .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 12px; }
     /* ── FOOTBALL ── */
-    .football-team { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .football-team { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
     .football-team:last-child { border-bottom: none; padding-bottom: 0; }
-    .football-team-name { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-    .football-badge { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
-    .football-match { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .football-team-name { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .football-team-logo { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
+    .football-match { display: flex; align-items: center; gap: 8px; }
     .football-match-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); width: 32px; flex-shrink: 0; }
+    .football-opp-logo { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
     .football-match-teams { font-size: 13px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .football-match-score { font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
-    .football-match-date { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+    .football-result { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; flex-shrink: 0; }
+    .football-result.W { background: rgba(48,209,88,0.15); color: var(--green); }
+    .football-result.L { background: rgba(255,69,58,0.12); color: var(--red); }
+    .football-result.D { background: rgba(235,235,245,0.1); color: var(--text3); }
+    .football-match-score { font-size: 13px; font-weight: 700; color: var(--text); flex-shrink: 0; }
+    .football-competition { font-size: 10px; color: var(--text3); flex-shrink: 0; background: var(--bg3); border-radius: 4px; padding: 1px 5px; }
+    .football-match-date { font-size: 11px; color: var(--text3); flex-shrink: 0; margin-left: auto; }
     .football-loading { font-size: 13px; color: var(--text3); }
 
     /* ── PHOTO A DAY ── */
@@ -628,6 +635,46 @@
 
     .xp-pop { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--orange); color: #fff; font-size: 16px; font-weight: 800; padding: 8px 22px; border-radius: 22px; pointer-events: none; z-index: 9998; animation: xp-rise 1.4s ease-out forwards; }
     @keyframes xp-rise { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-64px)} }
+
+    /* ── MORE SHEET ── */
+    .more-sheet { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+    .more-sheet.open { pointer-events: auto; opacity: 1; }
+    .more-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+    .more-content { position: relative; z-index: 1; background: var(--bg2); border-radius: 20px 20px 0 0; padding: 16px 20px calc(20px + env(safe-area-inset-bottom,16px)); transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.34,1.2,0.64,1); }
+    .more-sheet.open .more-content { transform: translateY(0); }
+    .more-sheet-title { font-size: 13px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+    .more-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .more-item { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 14px 6px 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; cursor: pointer; }
+    .more-item:active { opacity: 0.6; }
+    .more-item svg { width: 24px; height: 24px; color: var(--text2); }
+    .more-item span { font-size: 11px; font-weight: 600; color: var(--text2); }
+    .more-item.active-section svg, .more-item.active-section span { color: var(--accent); }
+    [data-theme="sakura"] .more-item.active-section svg, [data-theme="sakura"] .more-item.active-section span { color: #c0446e; }
+
+    /* ── SETTINGS ── */
+    .settings-head { padding: 4px 16px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .settings-title { font-size: 22px; font-weight: 700; }
+    .settings-wrap { padding: 0 16px 40px; }
+    .settings-section-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin: 20px 0 8px 4px; }
+    .settings-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 0.5px solid var(--border); gap: 12px; }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-left { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+    .settings-row-label { font-size: 15px; font-weight: 500; }
+    .settings-row-sub { font-size: 11px; color: var(--text3); line-height: 1.35; }
+    .settings-btn { font-size: 12px; font-weight: 600; color: var(--accent); background: rgba(10,132,255,0.1); border: none; border-radius: 8px; padding: 5px 11px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .settings-btn.danger { color: var(--red); background: rgba(255,69,58,0.1); }
+    .settings-btn:active { opacity: 0.6; }
+    .settings-meta { font-size: 12px; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
+    /* Toggle switch */
+    .tog { position: relative; display: inline-flex; align-items: center; width: 44px; height: 26px; cursor: pointer; flex-shrink: 0; }
+    .tog input { display: none; }
+    .tog-track { display: block; width: 44px; height: 26px; background: var(--bg3); border-radius: 13px; transition: background 0.2s; position: relative; }
+    .tog input:checked + .tog-track { background: var(--green); }
+    .tog-track::after { content: ''; position: absolute; left: 2px; top: 2px; width: 22px; height: 22px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.2s; }
+    .tog input:checked + .tog-track::after { transform: translateX(18px); }
+    /* Freshness */
+    .freshness { font-size: 10px; color: var(--text3); text-align: right; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -668,22 +715,18 @@
   <!-- ── HOME ── -->
   <div class="tab-pane active" id="pane-home">
     <div class="home-section">
-      <div class="weather-card" id="weatherCard">
-        <div class="weather-loading">Locating…</div>
-      </div>
       <div class="card" id="morningBriefCard">
         <div class="card-title">Morning Brief</div>
         <div id="morningBriefContent">
-          <div class="brief-api-row">
-            <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="Paste Anthropic API key…">
-            <button class="brief-generate-btn" id="briefGenBtn" onclick="generateMorningBrief()">Generate</button>
-          </div>
-          <div class="brief-hint">Key stored locally, sent only to Anthropic.</div>
+          <div style="font-size:13px;color:var(--text3)">Generating your brief…</div>
         </div>
+      </div>
+      <div class="weather-card" id="weatherCard">
+        <div class="weather-loading">Locating…</div>
       </div>
       <div class="card" id="clubEventsCard">
         <div class="card-title">Upcoming Events</div>
-        <div id="clubEventsContent"><div style="font-size:13px;color:var(--text3)">Loading…</div></div>
+        <div id="clubEventsContent"><div style="font-size:13px;color:var(--text3)">Checking schedule…</div></div>
       </div>
       <div class="card" id="spotifyCard">
         <div class="card-title">Spotify</div>
@@ -745,12 +788,12 @@
   <!-- ── BRIEF ── -->
   <div class="tab-pane" id="pane-brief">
     <div class="news-summary-card" id="newsSummaryCard">
-      <div class="card-title">Today's Brief — AI Summary</div>
+      <div class="card-title">AI Summary</div>
       <div id="newsSummaryContent"><div class="news-summary-loading">Loading articles first…</div></div>
     </div>
     <div class="daily-bar">
       <div class="daily-bar-text">
-        <strong>Your Daily Brief</strong>
+        <strong>Stories</strong>
         <span id="briefSub">Loading today's stories…</span>
       </div>
       <div class="daily-bar-mins">
@@ -822,37 +865,66 @@
     </div>
   </div>
 
+  <!-- ── SETTINGS ── -->
+  <div class="tab-pane" id="pane-settings">
+    <div class="settings-head">
+      <span class="settings-title">Settings</span>
+    </div>
+    <div id="settingsContent" class="settings-wrap"></div>
+  </div>
 
+</div>
+
+<!-- ── MORE SHEET ── -->
+<div id="moreSheet" class="more-sheet" role="dialog" aria-modal="true">
+  <div class="more-backdrop" onclick="closeMore()"></div>
+  <div class="more-content">
+    <div class="more-sheet-title">More</div>
+    <div class="more-grid">
+      <div class="more-item" id="moreItemDaily" onclick="goTabFromMore('daily')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span>Daily</span>
+      </div>
+      <div class="more-item" id="moreItemLearn" onclick="goTabFromMore('learn')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Learn</span>
+      </div>
+      <div class="more-item" id="moreItemPhotos" onclick="goTabFromMore('photos')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Photos</span>
+      </div>
+      <div class="more-item" id="moreItemSettings" onclick="goTabFromMore('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <nav class="tab-bar">
   <div class="tab-item active" onclick="goTab('home',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M5 10v9h4v-5h6v5h4v-9"/></svg>
-    <div class="tab-dot"></div>
-  </div>
-  <div class="tab-item" onclick="goTab('daily',this)">
-    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-    <div class="tab-dot"></div>
+    <span class="tab-label">Home</span>
   </div>
   <div class="tab-item" onclick="goTab('brief',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
-    <div class="tab-dot"></div>
+    <span class="tab-label">Brief</span>
   </div>
   <div class="tab-item" onclick="goTab('tasks',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    <div class="tab-dot"></div>
+    <span class="tab-label">Tasks</span>
   </div>
   <div class="tab-item" onclick="goTab('finance',this)">
     <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    <div class="tab-dot"></div>
+    <span class="tab-label">Finance</span>
   </div>
-  <div class="tab-item" onclick="goTab('learn',this)">
-    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-    <div class="tab-dot"></div>
-  </div>
-  <div class="tab-item" onclick="goTab('photos',this)">
-    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-    <div class="tab-dot"></div>
+  <div class="tab-item" id="moreTab" onclick="openMore()">
+    <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/>
+      <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
+      <circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/>
+    </svg>
+    <span class="tab-label">More</span>
   </div>
 </nav>
 
@@ -1455,94 +1527,67 @@ function loadGratitude() {
 }
 
 // ── MORNING BRIEF ─────────────────────────────
-const CLAUDE_KEY_LS = 'atd_claude_key';
-function getClaudeKey() { return localStorage.getItem(CLAUDE_KEY_LS) || ''; }
+const GEMINI_KEY_LS = 'atd_gemini_key';
+const DEFAULT_GEMINI_KEY = 'AIzaSyAxJoq5iOiDv-sNeJTIB_NSzHqc7Omh71U';
 
-function initMorningBrief() {
-  const key = getClaudeKey();
-  const inp = document.getElementById('claudeKeyInp');
-  if (inp) {
-    if (key) inp.placeholder = 'API key saved ✓';
-    const saveKey = () => {
-      const v = inp.value.trim();
-      if (v.startsWith('sk-ant-')) {
-        localStorage.setItem(CLAUDE_KEY_LS, v);
-        inp.placeholder = 'API key saved ✓';
-        inp.value = '';
-      }
-    };
-    inp.addEventListener('input', saveKey);
-    inp.addEventListener('paste', () => setTimeout(saveKey, 50));
-  }
-  if (key) generateMorningBrief();
+function getAiKey() { return localStorage.getItem(GEMINI_KEY_LS) || DEFAULT_GEMINI_KEY; }
+
+// ── GEMINI API ────────────────────────────────
+async function callGemini(prompt, maxTokens) {
+  const key = getAiKey();
+  if (!key) throw new Error('No API key set');
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: maxTokens || 300 }
+      }),
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+  const d = await res.json();
+  if (d.error) throw new Error(d.error.message || 'Gemini API error');
+  const text = d.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error('Empty response from Gemini');
+  return text;
 }
 
-function renderBriefText(text, isRefresh) {
+function initMorningBrief() {
+  generateMorningBrief();
+}
+
+function renderBriefText(text) {
   const container = document.getElementById('morningBriefContent');
   if (!container) return;
   container.innerHTML = `
-    <div class="brief-api-row">
-      <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="API key saved ✓">
-      <button class="brief-generate-btn" id="briefGenBtn" onclick="generateMorningBrief(true)">↻ Refresh</button>
-    </div>
-    <div class="brief-output">${text.split(/\n+/).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
+    <div class="brief-output">${text.split(/\n+/).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('')}</div>
+    <button class="brief-generate-btn" onclick="generateMorningBrief(true)" style="margin-top:10px;width:100%">↻ Refresh</button>`;
 }
 
 async function generateMorningBrief(force) {
-  const inp = document.getElementById('claudeKeyInp');
-  const btn = document.getElementById('briefGenBtn');
   const container = document.getElementById('morningBriefContent');
-  let key = getClaudeKey();
-  const inpVal = inp ? inp.value.trim() : '';
-  if (inpVal && inpVal !== '••••••••') {
-    key = inpVal;
-    localStorage.setItem(CLAUDE_KEY_LS, key);
-  }
-  if (!key) {
-    if (inp) { inp.focus(); inp.placeholder = 'Enter your Anthropic API key…'; }
-    return;
-  }
 
-  // Use cached brief unless forced refresh
   if (!force) {
     const cached = getTodayData().morningBrief;
     if (cached) { renderBriefText(cached); return; }
   }
 
-  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  if (container) container.innerHTML = `<div style="font-size:13px;color:var(--text3)">Generating your brief…</div>`;
   const context = buildBriefContext();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 280,
-        messages: [{ role: 'user', content: `Write a concise 3-sentence morning brief for Attila. Mention what matters today based on this context. Be warm and direct.\n\n${context}` }]
-      }),
-      signal: AbortSignal.timeout(20000)
-    });
-    const d = await res.json();
-    if (d.content && d.content[0]) {
-      const text = d.content[0].text;
-      setTodayData({ morningBrief: text });
-      renderBriefText(text);
-      return;
-    }
-    throw new Error(d.error?.message || 'Empty response');
+    const text = await callGemini(
+      `Write a concise 3-sentence morning brief for Attila. Mention what matters today based on this context. Be warm and direct.\n\n${context}`,
+      600
+    );
+    setTodayData({ morningBrief: text });
+    renderBriefText(text);
   } catch (e) {
     if (container) container.innerHTML = `
-      <div class="brief-api-row">
-        <input class="brief-key-inp" id="claudeKeyInp" type="password" placeholder="Paste Anthropic API key…">
-        <button class="brief-generate-btn" id="briefGenBtn" onclick="generateMorningBrief()">Generate</button>
-      </div>
-      <div style="font-size:12px;color:var(--red);margin-top:6px">Error: ${esc(String(e.message || e))}</div>
-      <div class="brief-hint">Key stored locally, sent only to Anthropic.</div>`;
+      <div style="font-size:13px;color:var(--red)">Could not generate brief.</div>
+      <button class="brief-generate-btn" onclick="generateMorningBrief(true)" style="margin-top:8px;width:100%">↻ Try again</button>`;
   }
 }
 
@@ -1568,8 +1613,8 @@ function buildBriefContext() {
 async function generateNewsSummary() {
   const el = document.getElementById('newsSummaryContent');
   if (!el) return;
-  const key = getClaudeKey();
-  if (!key) { el.innerHTML = '<div class="news-summary-loading">Add API key on Home to enable.</div>'; return; }
+  const key = getAiKey();
+  if (!key) { el.innerHTML = '<div class="news-summary-loading">AI summary unavailable.</div>'; return; }
 
   // Use cached summary if from today
   const cached = getTodayData().newsSummary;
@@ -1579,19 +1624,13 @@ async function generateNewsSummary() {
   const allArticles = Object.values(data).flat();
   if (!allArticles.length) { el.innerHTML = '<div class="news-summary-loading">Loading articles…</div>'; return; }
 
-  el.innerHTML = '<div class="news-summary-loading">Summarising with Claude…</div>';
+  el.innerHTML = '<div class="news-summary-loading">Summarising with AI…</div>';
 
   const headlines = allArticles.slice(0, 12).map(a => `- ${strip(a.title)}`).join('\n');
   const prompt = `Here are today's top news headlines:\n${headlines}\n\nWrite exactly 3 bullet points summarising the most important themes across these stories. Each bullet should be one sentence, direct and informative. No intro, no outro — just the 3 bullets starting with "•".`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: prompt }] })
-    });
-    const json = await res.json();
-    const text = json.content?.[0]?.text || '';
+    const text = await callGemini(prompt, 600);
     if (text) {
       setTodayData({ newsSummary: text });
       renderNewsSummary(text);
@@ -1744,6 +1783,11 @@ async function loadClubEvents() {
 }
 
 function renderClubEvents(el, events) {
+  let cacheAge = '';
+  try {
+    const ec = JSON.parse(localStorage.getItem(EVENTS_LS) || '{}');
+    if (ec.ts) { const a = Math.round((Date.now()-ec.ts)/60000); cacheAge = a<1?'Just now':a<60?`${a}m ago`:`${Math.floor(a/60)}h ago`; }
+  } catch {}
   el.innerHTML = CLUBS.map(club => {
     const e = events[club.id];
     if (e) {
@@ -1766,7 +1810,7 @@ function renderClubEvents(el, events) {
         <a class="club-event-visit" href="${esc(club.url)}" target="_blank" rel="noopener">View schedule →</a>
       </div>
     </div>`;
-  }).join('');
+  }).join('') + (cacheAge ? `<div class="freshness">Updated ${cacheAge}</div>` : '');
 }
 
 // ── JOKE ──────────────────────────────────────
@@ -1961,9 +2005,10 @@ async function spControl(action) {
 
 function renderSpConnect(el) {
   el.innerHTML = `<div class="sp-connect">
-    <p>Connect Spotify to see what you're playing. You'll need a free <strong>Spotify Developer</strong> app — Client ID only, no secret needed.</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Connect Spotify to see what you're playing.</p>
     <input class="sp-inp" id="spClientIdInp" type="text" placeholder="Paste your Spotify Client ID…">
     <button class="sp-btn" onclick="connectSpotify()">Connect Spotify</button>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">Get a free Client ID at <strong>developer.spotify.com</strong> → Create app</div>
   </div>`;
 }
 
@@ -1992,6 +2037,7 @@ function weatherSVG(c, size) {
 }
 
 async function loadHome() {
+  applyHomeVisibility();
   loadClubEvents();
   loadSpotify();
   initMorningBrief();
@@ -2390,9 +2436,10 @@ function renderHabits() {
 
 // ── FOOTBALL ──────────────────────────────────
 const FOOTBALL_TEAMS = [
-  { name: 'FC Barcelona', id: '83',  league: 'esp.1', badge: '🔵🔴' },
-  { name: 'Liverpool FC',  id: '364', league: 'eng.1', badge: '🔴' },
+  { name: 'FC Barcelona', id: '83',  leagues: ['esp.1', 'uefa.champions'] },
+  { name: 'Liverpool FC',  id: '364', leagues: ['eng.1', 'uefa.champions'] },
 ];
+const FOOTBALL_LEAGUE_LABELS = { 'esp.1': 'La Liga', 'eng.1': 'Premier League', 'uefa.champions': 'UCL' };
 const FOOTBALL_CACHE_KEY = 'atd_football_v2';
 const FOOTBALL_CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 
@@ -2410,32 +2457,56 @@ async function loadFootball() {
 
   try {
     const now = new Date();
+
+    const scoreVal = s => {
+      if (s == null) return '';
+      if (typeof s === 'object') return String(s.displayValue ?? s.value ?? '');
+      return String(s);
+    };
+
     const results = await Promise.all(FOOTBALL_TEAMS.map(async team => {
-      const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${team.league}/teams/${team.id}/schedule`;
-      const data = await fetch(url).then(r => r.json());
-      const events = data.events || [];
+      // Fetch all leagues in parallel and merge events
+      const allFetches = await Promise.all(team.leagues.map(async league => {
+        try {
+          const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/teams/${team.id}/schedule`;
+          const data = await fetch(url, { signal: AbortSignal.timeout(8000) }).then(r => r.json());
+          return (data.events || []).map(ev => ({ ...ev, _league: league }));
+        } catch { return []; }
+      }));
+      const events = allFetches.flat();
 
-      // Split into completed and upcoming
-      const completed = events.filter(e => e.competitions?.[0]?.status?.type?.completed);
-      const upcoming  = events.filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) >= now);
+      // Split and sort: completed newest-first, upcoming soonest-first
+      const completed = events
+        .filter(e => e.competitions?.[0]?.status?.type?.completed)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      const upcoming = events
+        .filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) >= now)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      const lastEv = completed[completed.length - 1] || null;
+      const lastEv = completed[0] || null;
       const nextEv = upcoming[0] || null;
 
       const parseMatch = (ev, isLast) => {
         if (!ev) return null;
         const comp = ev.competitions[0];
         const competitors = comp.competitors || [];
-        const mine = competitors.find(c => c.team?.id === team.id) || competitors.find(c => c.homeAway === 'home') || competitors[0];
+        const mine = competitors.find(c => String(c.team?.id) === String(team.id)) || competitors[0];
         const opp  = competitors.find(c => c !== mine);
-        const oppName = opp?.team?.displayName || opp?.team?.name || 'Unknown';
-        const myScore  = mine?.score ?? '';
-        const oppScore = opp?.score ?? '';
+        const oppName = opp?.team?.shortDisplayName || opp?.team?.displayName || opp?.team?.name || 'Unknown';
+        const oppLogoUrl = opp?.team?.logos?.[0]?.href || `https://a.espncdn.com/i/teamlogos/soccer/500/${opp?.team?.id}.png`;
+        const myScore  = scoreVal(mine?.score);
+        const oppScore = scoreVal(opp?.score);
         const score = isLast && myScore !== '' ? `${myScore}–${oppScore}` : null;
+        let result = null;
+        if (isLast && myScore !== '' && oppScore !== '') {
+          const ms = parseInt(myScore), os = parseInt(oppScore);
+          result = isNaN(ms) || isNaN(os) ? null : ms > os ? 'W' : ms < os ? 'L' : 'D';
+        }
         const date = new Date(ev.date);
         const dateStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const timeStr = !isLast ? date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
-        return { oppName, score, dateStr, timeStr };
+        const competition = FOOTBALL_LEAGUE_LABELS[ev._league] || '';
+        return { oppName, oppLogoUrl, score, result, dateStr, timeStr, competition };
       };
 
       return { team, last: parseMatch(lastEv, true), next: parseMatch(nextEv, false) };
@@ -2450,11 +2521,16 @@ async function loadFootball() {
 
 function renderFootball(el, results) {
   el.innerHTML = results.map(({ team, last, next }) => {
+    const teamLogoUrl = `https://a.espncdn.com/i/teamlogos/soccer/500/${team.id}.png`;
+
     const lastHTML = last
       ? `<div class="football-match">
           <span class="football-match-label">Last</span>
-          <span class="football-match-teams">vs ${esc(last.oppName)}</span>
-          <span class="football-match-score">${last.score || '–'}</span>
+          <img class="football-opp-logo" src="${esc(last.oppLogoUrl)}" onerror="this.style.display='none'" alt="">
+          <span class="football-match-teams">${esc(last.oppName)}</span>
+          ${last.competition ? `<span class="football-competition">${esc(last.competition)}</span>` : ''}
+          ${last.result ? `<span class="football-result ${last.result}">${last.result}</span>` : ''}
+          ${last.score ? `<span class="football-match-score">${last.score}</span>` : ''}
           <span class="football-match-date">${last.dateStr}</span>
         </div>`
       : `<div class="football-match"><span class="football-match-label">Last</span><span class="football-match-teams" style="color:var(--text3)">No data</span></div>`;
@@ -2462,14 +2538,16 @@ function renderFootball(el, results) {
     const nextHTML = next
       ? `<div class="football-match">
           <span class="football-match-label">Next</span>
-          <span class="football-match-teams">vs ${esc(next.oppName)}</span>
-          <span class="football-match-date">${next.dateStr}${next.timeStr ? ' ' + next.timeStr : ''}</span>
+          <img class="football-opp-logo" src="${esc(next.oppLogoUrl)}" onerror="this.style.display='none'" alt="">
+          <span class="football-match-teams">${esc(next.oppName)}</span>
+          ${next.competition ? `<span class="football-competition">${esc(next.competition)}</span>` : ''}
+          <span class="football-match-date">${next.dateStr}${next.timeStr ? ' · ' + next.timeStr : ''}</span>
         </div>`
       : `<div class="football-match"><span class="football-match-label">Next</span><span class="football-match-teams" style="color:var(--text3)">No data</span></div>`;
 
     return `<div class="football-team">
       <div class="football-team-name">
-        <span style="font-size:15px">${team.badge}</span>
+        <img class="football-team-logo" src="${esc(teamLogoUrl)}" onerror="this.style.display='none'" alt="${esc(team.name)}">
         ${esc(team.name)}
       </div>
       ${lastHTML}
@@ -3028,8 +3106,11 @@ function renderFinance(quotes) {
   });
   html += '</div>';
 
-  const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  html += `<div class="fin-update-time">Updated ${ts}</div>`;
+  const fc = getFinCache();
+  const fcTs = fc ? new Date(fc.ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const fcAge = fc ? Math.round((Date.now()-fc.ts)/60000) : 0;
+  const fcAgeStr = fcAge < 1 ? '' : fcAge < 60 ? ` · ${fcAge}m ago` : ` · ${Math.floor(fcAge/60)}h ago`;
+  html += `<div class="fin-update-time">Fetched ${fcTs}${fcAgeStr}</div>`;
   el.innerHTML = html;
 
   // Inject weekly summary after watchlist
@@ -3081,12 +3162,12 @@ function renderMarketPulse(quotes) {
 
   // Check cache
   const cached = getTodayData().marketPulse;
-  const hasKey = !!getClaudeKey();
+  const hasKey = !!getAiKey();
 
   const explanationHTML = (cached && cached.key === pulseKey)
     ? '<div class="pulse-explanation">' + cached.text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>'
     : '';
-  const btnLabel = cached && cached.key === pulseKey ? '↻ Refresh explanation' : (hasKey ? '✦ Explain with AI' : '✦ Add API key on Home to explain');
+  const btnLabel = cached && cached.key === pulseKey ? '↻ Refresh explanation' : (hasKey ? '✦ Explain with AI' : '✦ Add Gemini key on Home to explain');
 
   card.innerHTML = `
     <div class="card-title">Market Pulse</div>
@@ -3102,7 +3183,7 @@ function renderMarketPulse(quotes) {
 }
 
 async function generateMarketPulse() {
-  const key = getClaudeKey();
+  const key = getAiKey();
   if (!key) return;
   const movers = window._pulseMovers;
   if (!movers?.length) return;
@@ -3110,7 +3191,7 @@ async function generateMarketPulse() {
   const btn = document.getElementById('pulseBtn');
   const expEl = document.getElementById('pulseExplanation');
   btn.disabled = true;
-  expEl.innerHTML = '<div class="pulse-spinner">Asking Claude…</div>';
+  expEl.innerHTML = '<div class="pulse-spinner">Asking AI…</div>';
 
   const moverLines = movers.map(s => {
     const dir = s.q.changePct >= 0 ? 'up' : 'down';
@@ -3120,22 +3201,7 @@ async function generateMarketPulse() {
   const prompt = `I hold these stocks in my personal portfolio and they are today's biggest movers:\n\n${moverLines}\n\nGive me a very short, plain-English explanation (2-3 sentences per stock) of why each is likely moving today. Be direct and specific — mention macro factors, sector news, or company events if relevant. No disclaimers, no financial advice boilerplate.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 400,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const json = await res.json();
-    const text = json.content?.[0]?.text || 'No response.';
+    const text = await callGemini(prompt, 800);
     setTodayData({ marketPulse: { key: window._pulseKey, text } });
     expEl.innerHTML = '<div class="pulse-explanation">' + text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>';
     btn.textContent = '↻ Refresh explanation';
@@ -3465,24 +3531,256 @@ function showXPPop(text) {
 let dailyLoaded = false, learnLoaded = false;
 let currentTab = 'home';
 const tabScrollPos = {};
+const MORE_PANES = ['daily', 'learn', 'photos', 'settings'];
 
 function goTab(name, el) {
-  // Save scroll position of current tab
   tabScrollPos[currentTab] = document.getElementById('content').scrollTop;
 
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.getElementById('pane-' + name).classList.add('active');
-  el.classList.add('active');
-  currentTab = name;
 
-  // Restore scroll position for this tab (0 for first visit)
+  // More-sub-panes keep the More tab highlighted
+  if (MORE_PANES.includes(name)) {
+    document.getElementById('moreTab').classList.add('active');
+  } else {
+    el.classList.add('active');
+  }
+
+  currentTab = name;
   document.getElementById('content').scrollTop = tabScrollPos[name] || 0;
 
   if (name === 'finance') loadFinance();
   if (name === 'daily' && !dailyLoaded) { dailyLoaded = true; loadDaily(); }
   if (name === 'learn' && !learnLoaded) { learnLoaded = true; loadLearn(); }
   if (name === 'photos') renderPhotoTab();
+  if (name === 'settings') renderSettings();
+
+  // Highlight active item in More sheet
+  document.querySelectorAll('.more-item').forEach(i => i.classList.remove('active-section'));
+  const moreItemMap = { daily:'moreItemDaily', learn:'moreItemLearn', photos:'moreItemPhotos', settings:'moreItemSettings' };
+  if (moreItemMap[name]) document.getElementById(moreItemMap[name])?.classList.add('active-section');
+}
+
+// ── MORE SHEET ────────────────────────────────
+function openMore() {
+  document.getElementById('moreSheet').classList.add('open');
+}
+function closeMore() {
+  document.getElementById('moreSheet').classList.remove('open');
+}
+function goTabFromMore(name) {
+  closeMore();
+  goTab(name, document.getElementById('moreTab'));
+}
+
+// ── HOME CARD VISIBILITY ──────────────────────
+const HOME_HIDDEN_LS = 'atd_home_hidden';
+function getHiddenCards() {
+  const stored = localStorage.getItem(HOME_HIDDEN_LS);
+  if (stored === null) return ['footballCard'];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function applyHomeVisibility() {
+  const hidden = getHiddenCards();
+  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = hidden.includes(id) ? 'none' : '';
+  });
+}
+function settingsToggleHomeCard(cardId) {
+  const hidden = getHiddenCards();
+  const idx = hidden.indexOf(cardId);
+  if (idx === -1) hidden.push(cardId); else hidden.splice(idx, 1);
+  localStorage.setItem(HOME_HIDDEN_LS, JSON.stringify(hidden));
+  applyHomeVisibility();
+  renderSettings();
+}
+
+// ── SETTINGS ACTIONS ─────────────────────────
+function settingsClearAiKey() {
+  localStorage.removeItem(GEMINI_KEY_LS);
+  initMorningBrief();
+  renderSettings();
+}
+function settingsClearTmdbKey() {
+  localStorage.removeItem(TMDB_LS);
+  renderSettings();
+}
+function settingsClearDailyCache() {
+  const d = getDailyData(); delete d[today()]; setDailyData(d);
+  renderSettings();
+}
+function settingsClearFinanceCache() {
+  localStorage.removeItem(FIN_LS); localStorage.removeItem(WEEKLY_LS);
+  renderSettings();
+}
+function settingsClearEventsCache() {
+  localStorage.removeItem(EVENTS_LS);
+  renderSettings();
+}
+function settingsClearCompletedTasks() {
+  putTasks(getTasks().filter(t => !t.done));
+  renderTasks(); renderSettings();
+}
+function settingsResetLearn() {
+  if (!confirm('Reset all learning progress?')) return;
+  localStorage.removeItem(LEARN_LS);
+  learnLoaded = false;
+  renderSettings();
+}
+function settingsClearAll() {
+  if (!confirm('Clear ALL app data? This cannot be undone.')) return;
+  localStorage.clear(); location.reload();
+}
+
+// ── RENDER SETTINGS ──────────────────────────
+function renderSettings() {
+  const el = document.getElementById('settingsContent');
+  if (!el) return;
+
+  const geminiKey = !!getAiKey();
+  const spConnected = !!spGet('clientId');
+  const tmdbKey = !!getTmdbKey();
+  const hidden = getHiddenCards();
+  const theme = localStorage.getItem(THEME_LS) || '';
+  const tasks = getTasks();
+  const doneTasks = tasks.filter(t => t.done).length;
+  const photoCount = Object.keys(getPhotos()).length;
+
+  const finCache = getFinCache();
+  const finAge = finCache ? Math.round((Date.now() - finCache.ts) / 60000) : null;
+  const finAgeStr = finAge === null ? 'No data' : finAge < 1 ? 'Just now' : finAge < 60 ? `${finAge}m ago` : `${Math.floor(finAge/60)}h ago`;
+
+  let eventsAgeStr = 'No cache';
+  try {
+    const ec = JSON.parse(localStorage.getItem(EVENTS_LS) || '{}');
+    if (ec.ts) { const a = Math.round((Date.now()-ec.ts)/60000); eventsAgeStr = a<1?'Just now':a<60?`${a}m ago`:`${Math.floor(a/60)}h ago`; }
+  } catch {}
+
+  const td = getTodayData();
+  const dailyCached = Object.keys(td).length > 0;
+
+  let learnCount = 0;
+  try {
+    const ld = JSON.parse(localStorage.getItem(LEARN_LS) || '{}');
+    Object.values(ld).forEach(sub => Object.values(sub).forEach(ch => Object.values(ch).forEach(v => { if(v) learnCount++; })));
+  } catch {}
+
+  const homeCards = [
+    { id:'weatherCard', label:'Weather' },
+    { id:'morningBriefCard', label:'Morning Brief' },
+    { id:'clubEventsCard', label:'Upcoming Events' },
+    { id:'spotifyCard', label:'Spotify' },
+    { id:'footballCard', label:'Football' },
+  ];
+
+  const tog = (id, on) => `<label class="tog" onclick="event.stopPropagation()">
+    <input type="checkbox" ${on?'checked':''} onchange="settingsToggleHomeCard('${id}')">
+    <div class="tog-track"></div>
+  </label>`;
+
+  const btn = (label, fn, danger) =>
+    `<button class="settings-btn${danger?' danger':''}" onclick="${fn}">${label}</button>`;
+  const meta = t => `<span class="settings-meta">${t}</span>`;
+
+  el.innerHTML = `
+    <div class="settings-section-title">Appearance</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Theme</span>
+          <span class="settings-row-sub">${theme==='sakura'?'Sakura 🌸':'Dark 🌑'}</span>
+        </div>
+        ${btn('Switch','toggleTheme();renderSettings()')}
+      </div>
+    </div>
+
+    <div class="settings-section-title">Home Cards</div>
+    <div class="settings-card">
+      ${homeCards.map(c=>`<div class="settings-row">
+        <span class="settings-row-label">${c.label}</span>
+        ${tog(c.id,!hidden.includes(c.id))}
+      </div>`).join('')}
+    </div>
+
+    <div class="settings-section-title">AI & Integrations</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Gemini API key</span>
+          <span class="settings-row-sub">${geminiKey?'Saved — enables Morning Brief, News Summary, Market Pulse':'Not set — AI features disabled · free at aistudio.google.com'}</span>
+        </div>
+        ${geminiKey?btn('Remove','settingsClearAiKey()',true):meta('Not set')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Spotify</span>
+          <span class="settings-row-sub">${spConnected?'Connected':'Not connected'}</span>
+        </div>
+        ${spConnected?btn('Disconnect','disconnectSpotify();renderSettings()',true):meta('Not connected')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">TMDB (Movie of the day)</span>
+          <span class="settings-row-sub">${tmdbKey?'Key saved':'Not set'}</span>
+        </div>
+        ${tmdbKey?btn('Remove','settingsClearTmdbKey()',true):meta('Not set')}
+      </div>
+    </div>
+
+    <div class="settings-section-title">Data on this device</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;padding:0 2px;line-height:1.5">All data is stored on your device only. Nothing is uploaded to any server — live data (weather, news, prices) is fetched directly from public APIs.</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Daily content</span>
+          <span class="settings-row-sub">${dailyCached?'Cached for today':'Not loaded'}</span>
+        </div>
+        ${btn('Clear','settingsClearDailyCache()')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Finance data</span>
+          <span class="settings-row-sub">Updated ${finAgeStr}</span>
+        </div>
+        ${btn('Clear','settingsClearFinanceCache()')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Club events</span>
+          <span class="settings-row-sub">Updated ${eventsAgeStr}</span>
+        </div>
+        ${btn('Clear','settingsClearEventsCache()')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Tasks</span>
+          <span class="settings-row-sub">${tasks.length} total · ${doneTasks} completed</span>
+        </div>
+        ${doneTasks?btn('Clear done','settingsClearCompletedTasks()'):meta('None done')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Photos</span>
+          <span class="settings-row-sub">${photoCount} day${photoCount!==1?'s':''} captured — stored locally</span>
+        </div>
+        ${meta('On device')}
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left">
+          <span class="settings-row-label">Learn progress</span>
+          <span class="settings-row-sub">${learnCount} lesson${learnCount!==1?'s':''} completed</span>
+        </div>
+        ${learnCount?btn('Reset','settingsResetLearn()',true):meta('None yet')}
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <button style="width:100%;padding:14px;background:rgba(255,69,58,0.07);border:0.5px solid rgba(255,69,58,0.3);border-radius:12px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit" onclick="settingsClearAll()">Clear all app data</button>
+    </div>
+    <div style="text-align:center;margin-top:28px;font-size:12px;color:var(--text3)">Attila's Daily · All data stays on this device</div>
+  `;
 }
 
 // ── THEME ─────────────────────────────────────
