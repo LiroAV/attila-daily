@@ -2440,23 +2440,27 @@ const FOOTBALL_TEAMS = [
   { name: 'Liverpool FC',  id: '364', leagues: ['eng.1', 'uefa.champions'] },
 ];
 const FOOTBALL_LEAGUE_LABELS = { 'esp.1': 'La Liga', 'eng.1': 'Premier League', 'uefa.champions': 'UCL' };
-const FOOTBALL_CACHE_KEY = 'atd_football_v2';
-const FOOTBALL_CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+const FOOTBALL_CACHE_KEY = 'atd_football_v4';
+const FOOTBALL_CACHE_TTL = 3 * 60 * 60 * 1000;
 
 async function loadFootball() {
   const el = document.getElementById('footballContent');
 
-  // Try cache first
   try {
     const cached = JSON.parse(localStorage.getItem(FOOTBALL_CACHE_KEY) || 'null');
     if (cached && Date.now() - cached.ts < FOOTBALL_CACHE_TTL) {
-      renderFootball(el, cached.data);
-      return;
+      renderFootball(el, cached.data); return;
     }
   } catch(e) {}
 
   try {
     const now = new Date();
+
+    // Build date range string for scoreboard: today → +45 days
+    const pad = n => String(n).padStart(2,'0');
+    const fmtDate = d => `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+    const future = new Date(now); future.setDate(future.getDate() + 45);
+    const dateRange = `${fmtDate(now)}-${fmtDate(future)}`;
 
     const scoreVal = s => {
       if (s == null) return '';
@@ -2464,52 +2468,71 @@ async function loadFootball() {
       return String(s);
     };
 
+    const parseMatch = (ev, league, isLast) => {
+      if (!ev) return null;
+      const comp = ev.competitions[0];
+      const competitors = comp.competitors || [];
+      // Pick "my" competitor by team id, fallback to home team
+      const mine = competitors.find(c => String(c.team?.id) === String(ev._teamId)) || competitors[0];
+      const opp  = competitors.find(c => c !== mine);
+      const oppName = opp?.team?.shortDisplayName || opp?.team?.displayName || 'Unknown';
+      const oppLogoUrl = `https://a.espncdn.com/i/teamlogos/soccer/500/${opp?.team?.id}.png`;
+      const myScore  = scoreVal(mine?.score);
+      const oppScore = scoreVal(opp?.score);
+      const score = isLast && myScore !== '' ? `${myScore}–${oppScore}` : null;
+      let result = null;
+      if (isLast && myScore !== '' && oppScore !== '') {
+        const ms = parseInt(myScore), os = parseInt(oppScore);
+        result = isNaN(ms) || isNaN(os) ? null : ms > os ? 'W' : ms < os ? 'L' : 'D';
+      }
+      const date = new Date(ev.date);
+      const dateStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const timeStr = !isLast ? date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+      const competition = FOOTBALL_LEAGUE_LABELS[league] || '';
+      return { oppName, oppLogoUrl, score, result, dateStr, timeStr, competition };
+    };
+
     const results = await Promise.all(FOOTBALL_TEAMS.map(async team => {
-      // Fetch all leagues in parallel and merge events
-      const allFetches = await Promise.all(team.leagues.map(async league => {
+      // 1. Last game: fetch completed fixtures from /schedule across all leagues
+      const scheduleFetches = await Promise.all(team.leagues.map(async league => {
         try {
-          const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/teams/${team.id}/schedule`;
-          const data = await fetch(url, { signal: AbortSignal.timeout(8000) }).then(r => r.json());
-          return (data.events || []).map(ev => ({ ...ev, _league: league }));
+          const data = await fetch(
+            `https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/teams/${team.id}/schedule`,
+            { signal: AbortSignal.timeout(8000) }
+          ).then(r => r.json());
+          return (data.events || [])
+            .filter(e => e.competitions?.[0]?.status?.type?.completed)
+            .map(ev => ({ ev, league }));
         } catch { return []; }
       }));
-      const events = allFetches.flat();
+      const completedAll = scheduleFetches.flat()
+        .sort((a, b) => new Date(b.ev.date) - new Date(a.ev.date));
+      const lastMatch = completedAll[0] || null;
 
-      // Split and sort: completed newest-first, upcoming soonest-first
-      const completed = events
-        .filter(e => e.competitions?.[0]?.status?.type?.completed)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-      const upcoming = events
-        .filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) >= now)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      // 2. Next game: search scoreboard over next 45 days across all leagues
+      const scoreboardFetches = await Promise.all(team.leagues.map(async league => {
+        try {
+          const data = await fetch(
+            `https://site.api.espn.com/apis/site/v2/sports/soccer/${league}/scoreboard?dates=${dateRange}`,
+            { signal: AbortSignal.timeout(8000) }
+          ).then(r => r.json());
+          return (data.events || [])
+            .filter(e => {
+              const comps = e.competitions?.[0]?.competitors || [];
+              return comps.some(c => String(c.team?.id) === String(team.id));
+            })
+            .map(ev => ({ ev: { ...ev, _teamId: team.id }, league }));
+        } catch { return []; }
+      }));
+      const upcomingAll = scoreboardFetches.flat()
+        .sort((a, b) => new Date(a.ev.date) - new Date(b.ev.date));
+      const nextMatch = upcomingAll[0] || null;
 
-      const lastEv = completed[0] || null;
-      const nextEv = upcoming[0] || null;
-
-      const parseMatch = (ev, isLast) => {
-        if (!ev) return null;
-        const comp = ev.competitions[0];
-        const competitors = comp.competitors || [];
-        const mine = competitors.find(c => String(c.team?.id) === String(team.id)) || competitors[0];
-        const opp  = competitors.find(c => c !== mine);
-        const oppName = opp?.team?.shortDisplayName || opp?.team?.displayName || opp?.team?.name || 'Unknown';
-        const oppLogoUrl = opp?.team?.logos?.[0]?.href || `https://a.espncdn.com/i/teamlogos/soccer/500/${opp?.team?.id}.png`;
-        const myScore  = scoreVal(mine?.score);
-        const oppScore = scoreVal(opp?.score);
-        const score = isLast && myScore !== '' ? `${myScore}–${oppScore}` : null;
-        let result = null;
-        if (isLast && myScore !== '' && oppScore !== '') {
-          const ms = parseInt(myScore), os = parseInt(oppScore);
-          result = isNaN(ms) || isNaN(os) ? null : ms > os ? 'W' : ms < os ? 'L' : 'D';
-        }
-        const date = new Date(ev.date);
-        const dateStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        const timeStr = !isLast ? date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
-        const competition = FOOTBALL_LEAGUE_LABELS[ev._league] || '';
-        return { oppName, oppLogoUrl, score, result, dateStr, timeStr, competition };
+      return {
+        team,
+        last: lastMatch ? parseMatch({ ...lastMatch.ev, _teamId: team.id }, lastMatch.league, true) : null,
+        next: nextMatch ? parseMatch(nextMatch.ev, nextMatch.league, false) : null,
       };
-
-      return { team, last: parseMatch(lastEv, true), next: parseMatch(nextEv, false) };
     }));
 
     try { localStorage.setItem(FOOTBALL_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: results })); } catch(e) {}
