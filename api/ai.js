@@ -1,4 +1,5 @@
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
+const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -29,28 +30,37 @@ export default async function handler(req, res) {
   const maxTokens = Number.isFinite(Number(req.body?.maxTokens))
     ? Math.min(Math.max(Number(req.body.maxTokens), 1), 1200)
     : 300;
-  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const primaryModel = process.env.GEMINI_MODEL || DEFAULT_MODEL;
+  const models = [...new Set([primaryModel, ...FALLBACK_MODELS])];
 
   try {
-    const geminiRes = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: maxTokens }
-      })
-    });
+    let lastError = 'Gemini request failed';
 
-    const data = await geminiRes.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    for (const model of models) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      const geminiRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: maxTokens }
+        })
+      });
 
-    if (!geminiRes.ok || !text) {
-      res.status(502).json({ error: data.error?.message || 'Gemini request failed' });
-      return;
+      const data = await geminiRes.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (geminiRes.ok && text) {
+        res.status(200).json({ text, model });
+        return;
+      }
+
+      lastError = data.error?.message || `Gemini request failed for ${model}`;
+      const transient = geminiRes.status === 429 || geminiRes.status === 503 || /high demand|overloaded|try again/i.test(lastError);
+      if (!transient) break;
     }
 
-    res.status(200).json({ text });
+    res.status(502).json({ error: lastError });
   } catch {
     res.status(502).json({ error: 'Gemini request failed' });
   }

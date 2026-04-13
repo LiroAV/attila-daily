@@ -89,7 +89,7 @@ Cached daily in `atd_daily_v1`.
 
 ### Morning Brief (AI)
 
-**Model**: `gemini-2.5-flash` via the local Vercel `/api/ai` route
+**Model**: `gemini-2.5-flash-lite` via the local Vercel `/api/ai` route, with fallback to `gemini-2.5-flash`
 ```
 POST /api/ai
 Body: { prompt, maxTokens }

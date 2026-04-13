@@ -53,7 +53,7 @@ The app should be hosted on **Vercel** so `/api/ai` and `/api/finnhub` can call 
 1. Import the GitHub repo `LiroAV/attila-daily` in Vercel.
 2. Add Environment Variable `GEMINI_API_KEY` with your Google AI Studio key.
 3. Add Environment Variable `FINNHUB_API_KEY` with your Finnhub key.
-4. Optionally add `GEMINI_MODEL=gemini-2.5-flash`.
+4. Optionally add `GEMINI_MODEL=gemini-2.5-flash-lite`.
 5. Check the Vercel production branch. This project currently deploys **Production** from `main`.
 
 ### Branch setup
@@ -94,7 +94,7 @@ If Vercel's production branch is changed to `master` later, remove the `git push
 |---|---|---|
 | `GEMINI_API_KEY` | `/api/ai` | Gemini key from Google AI Studio |
 | `FINNHUB_API_KEY` | `/api/finnhub` | Finnhub API token for stock/index quotes |
-| `GEMINI_MODEL` | `/api/ai` | Optional. Defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | `/api/ai` | Optional. Defaults to `gemini-2.5-flash-lite`, with fallback to `gemini-2.5-flash` |
 
 After adding or changing env vars, redeploy the latest production deployment.
 
@@ -149,7 +149,7 @@ Most API calls are made directly from the browser. Gemini and Finnhub go through
 | Did You Know | [UselessFacts](https://uselessfacts.jsph.pl/api/v2/facts/random) | 5 random facts fetched in parallel. Cached daily |
 | Worth Knowing | [Wikipedia Random Summary](https://en.wikipedia.org/api/rest_v1/page/random/summary) | 2 random Wikipedia article summaries. Cached daily |
 | Daily Joke | [JokeAPI](https://v2.jokeapi.dev/joke/Any?safe-mode) | Safe mode, blacklists nsfw/racist/sexist. Cached daily |
-| Morning Brief | [Google Gemini API](https://ai.google.dev/) via `/api/ai` | Uses `gemini-2.5-flash`. Key is stored in Vercel env vars |
+| Morning Brief | [Google Gemini API](https://ai.google.dev/) via `/api/ai` | Uses `gemini-2.5-flash-lite` by default. Key is stored in Vercel env vars |
 
 ### Home tab — Spotify
 
