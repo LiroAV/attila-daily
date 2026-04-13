@@ -1,4 +1,4 @@
-const CACHE = 'attila-daily-v28';
+const CACHE = 'attila-daily-v29';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -17,6 +17,12 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
+
+  // Vercel API routes — always go to network
+  if (url.pathname.startsWith('/api/')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', { status: 503 })));
+    return;
+  }
 
   // External API calls — always go to network
   if (url.hostname !== location.hostname && url.hostname !== 'liroav.github.io') {

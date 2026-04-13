@@ -1,15 +1,19 @@
 # Attila's Daily
 
-Personal daily dashboard PWA — news brief, tasks, finance, Spotify, and daily content cards. Hosted on GitHub Pages, installable on iOS/Android as a home screen app.
+Personal daily dashboard PWA — news brief, tasks, finance, Spotify, and daily content cards. Deploy on Vercel for built-in AI API routes, installable on iOS/Android as a home screen app.
 
-**Live:** https://liroav.github.io/attila-daily/
+**Live:** Deploy the Vercel project URL after adding `GEMINI_API_KEY` and `FINNHUB_API_KEY`.
 
 ---
 
 ## Project structure
 
 ```
-index.html   — entire app (single file: HTML + CSS + JS)
+index.html   — app markup / shell
+app.css      — app styles
+app.js       — app behavior, API calls, local persistence
+api/ai.js    — Vercel function that calls Gemini with a server-side key
+api/finnhub.js — Vercel function that calls Finnhub with a server-side key
 sw.js        — service worker (PWA caching + offline support)
 manifest.json — PWA manifest (name, icons, display mode)
 icon-192.png / icon-512.png — app icons
@@ -18,6 +22,17 @@ icon-192.png / icon-512.png — app icons
 ---
 
 ## Running locally
+
+Use Vercel locally when testing AI or finance, because `/api/ai` and `/api/finnhub` are Vercel functions:
+
+```bash
+cd /Users/attila/Documents/03_Projects/attila-daily
+cp .env.example .env.local
+# edit .env.local with your real keys
+npx vercel dev
+```
+
+For UI-only testing, a static server is still fine:
 
 ```bash
 cd /Users/attila/Documents/03_Projects/attila-daily
@@ -31,19 +46,20 @@ The service worker registers on `localhost` separately from the live site, so lo
 
 ## Deploying to production
 
-The app is hosted on **GitHub Pages** from the `master` branch.
+The app should be hosted on **Vercel** so `/api/ai` and `/api/finnhub` can call paid/keyed APIs without exposing secrets in browser code.
+
+1. Import this repo in Vercel.
+2. Add Environment Variable `GEMINI_API_KEY` with your Google AI Studio key.
+3. Add Environment Variable `FINNHUB_API_KEY` with your Finnhub key.
+4. Optionally add `GEMINI_MODEL=gemini-2.5-flash`.
+5. Deploy.
+
+Commit the app files before deploying:
 
 ```bash
-# Stage, commit, and push — one command deploys to production
-git add index.html sw.js
+git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.js sw.js
 git commit -m "Your message"
 git push origin master
-```
-
-GitHub Pages deploys automatically within ~60 seconds after the push. You can verify the live version is updated by checking the cache version in `sw.js`:
-
-```bash
-curl -s https://liroav.github.io/attila-daily/sw.js | head -1
 ```
 
 ### Forcing a PWA update on mobile
@@ -61,7 +77,7 @@ If it still doesn't update:
 Every time you deploy a meaningful change, bump the cache version in `sw.js`:
 
 ```js
-const CACHE = 'attila-daily-v10'; // increment this
+const CACHE = 'attila-daily-v29'; // increment this
 ```
 
 This tells the browser a new service worker is available and triggers the update flow.
@@ -81,7 +97,7 @@ This tells the browser a new service worker is available and triggers the update
 
 ## APIs used
 
-All API calls are made directly from the browser (no backend). Results are cached in `localStorage` per day where noted.
+Most API calls are made directly from the browser. Gemini and Finnhub go through Vercel API routes so keys stay server-side. Results are cached in `localStorage` per day where noted.
 
 ### Home tab — daily cards
 
@@ -97,7 +113,7 @@ All API calls are made directly from the browser (no backend). Results are cache
 | Did You Know | [UselessFacts](https://uselessfacts.jsph.pl/api/v2/facts/random) | 5 random facts fetched in parallel. Cached daily |
 | Worth Knowing | [Wikipedia Random Summary](https://en.wikipedia.org/api/rest_v1/page/random/summary) | 2 random Wikipedia article summaries. Cached daily |
 | Daily Joke | [JokeAPI](https://v2.jokeapi.dev/joke/Any?safe-mode) | Safe mode, blacklists nsfw/racist/sexist. Cached daily |
-| Morning Brief | [Anthropic Claude API](https://api.anthropic.com/v1/messages) | Uses `claude-haiku-4-5`. User provides their own API key, stored locally |
+| Morning Brief | [Google Gemini API](https://ai.google.dev/) via `/api/ai` | Uses `gemini-2.5-flash`. Key is stored in Vercel env vars |
 
 ### Home tab — Spotify
 
@@ -143,9 +159,8 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 
 | Data | API |
 |---|---|
-| Stocks (AAPL, NVDA, MSFT, GOOGL, META, TSLA) | [Yahoo Finance via rss2json](https://query1.finance.yahoo.com/v8/finance/chart/) |
-| Market indices (S&P 500, Nasdaq, Gold) | Yahoo Finance |
-| Crypto (BTC, ETH) | [CoinGecko](https://api.coingecko.com/api/v3/simple/price) |
+| Stocks + market indices | [Finnhub](https://finnhub.io/) via `/api/finnhub` | Key is stored in Vercel env vars |
+| Crypto (BTC, ETH) | [CoinGecko](https://api.coingecko.com/api/v3/coins/markets) | No key |
 
 ---
 
@@ -155,16 +170,16 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 |---|---|
 | `atd_daily_v1` | All daily cached content keyed by date (`quote`, `facts`, `knowledge`, `historyEvent`, `holidays`, `engWord`, `joke`, `usedEng`, `usedDeu`, `gratitude`) |
 | `atd_tasks_v2` | Task list array |
-| `atd_claude_key` | Anthropic API key for Morning Brief |
 | `atd_country` | Detected country code (for holiday API) |
 | `spotify_*` | Spotify OAuth tokens (see above) |
-| `atd_fin_cache` | Finance data cache (expires after 5 min) |
+| `atd_finance_v2` | Finance data cache (expires after 15 min) |
+| IndexedDB `atd_photos_db_v1` | Photo-a-day archive |
 
 ---
 
 ## PWA / Service Worker
 
-- **Cache name:** `attila-daily-v10` — bump this in `sw.js` on every deploy
+- **Cache name:** `attila-daily-v29` — bump this in `sw.js` on every deploy
 - **Strategy:** Network-first for app shell (HTML), always network for external APIs
 - **On activate:** Deletes old caches, forces all open clients to reload (`client.navigate`)
 - **`skipWaiting`:** New service worker takes over immediately on install
@@ -175,6 +190,6 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 
 1. Add the HTML card in `index.html` inside `<div class="home-section">`
 2. Write an async load function — check `getTodayData()` for a cached value first, fetch if missing, call `setTodayData({...})` to cache
-3. Call your function from `loadHome()`
+3. Call your function from `loadHomeCard()` and add it to the visible-card list if it belongs on Home
 4. Bump the SW cache version in `sw.js`
-5. Push to `main`
+5. Push to `master`

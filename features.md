@@ -1,14 +1,15 @@
 # Attila's Daily — Feature Reference
 
-A personal daily dashboard PWA. Single-file app (`index.html` + `sw.js`) with no backend — everything runs client-side.
+A personal daily dashboard PWA. Static app (`index.html` + `app.css` + `app.js` + `sw.js`) plus Vercel API routes for Gemini and Finnhub.
 
 ---
 
 ## Architecture
 
-- **Single HTML file** (~1,900 lines) with embedded CSS and JavaScript
+- **Static vanilla app** with separate `index.html`, `app.css`, and `app.js`
 - **No framework** — vanilla JS, DOM manipulation via `innerHTML`
-- **localStorage** as primary persistence layer
+- **Vercel serverless functions** proxy Gemini (`api/ai.js`) and Finnhub (`api/finnhub.js`) with server-side env vars
+- **localStorage** for settings/tasks/cache, IndexedDB for photos
 - **Service Worker** (`sw.js`) for PWA install + offline shell
 - **Dark iOS-first design** — system fonts, safe-area insets, max-width 440px on desktop
 
@@ -88,11 +89,10 @@ Cached daily in `atd_daily_v1`.
 
 ### Morning Brief (AI)
 
-**Model**: `claude-haiku-4-5-20251001` via Anthropic Messages API
+**Model**: `gemini-2.5-flash` via the local Vercel `/api/ai` route
 ```
-POST https://api.anthropic.com/v1/messages
-Headers: x-api-key, anthropic-version, anthropic-dangerous-direct-browser-access: true
-Body: { model, max_tokens: 280, messages: [{ role: 'user', content: prompt }] }
+POST /api/ai
+Body: { prompt, maxTokens }
 ```
 
 **Context injected into the prompt**:
@@ -102,7 +102,7 @@ Body: { model, max_tokens: 280, messages: [{ role: 'user', content: prompt }] }
 
 **Prompt**: "Write a concise 3-sentence morning brief for Attila. Mention what matters today based on this context. Be warm and direct."
 
-User pastes their own Anthropic API key — stored in `atd_claude_key`, never sent anywhere except the Anthropic endpoint.
+The Gemini API key is stored as the Vercel environment variable `GEMINI_API_KEY`; users do not paste a key into the app.
 
 ---
 
@@ -246,15 +246,15 @@ META, COIN, MSFT, ELF, CAKE, AMZN, IONQ, SCHG, VT, QQQM, SOFI, TSM, GOOGL, VGT, 
 ### Data Sources
 
 **Stocks & Indices**: Finnhub API  
-`GET https://finnhub.io/api/v1/quote?symbol={symbol}&token={key}`  
+Browser calls `GET /api/finnhub?symbols={comma-separated-symbols}`; Vercel calls `https://finnhub.io/api/v1/quote?symbol={symbol}&token={key}`.  
 Response: `c` (price), `d` (change abs), `dp` (% change), `o` (open), `h` (high), `l` (low), `pc` (prev close)  
-API key is embedded in the source.
+Finnhub API key is stored as the Vercel environment variable `FINNHUB_API_KEY`; users do not paste a key into the app.
 
 **Crypto**: CoinGecko  
 `GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&...`  
 Response includes `current_price`, `price_change_24h`, `price_change_percentage_24h`, `high_24h`, `low_24h`, `ath`, `atl`.
 
-**Cache TTL**: 5 minutes (`atd_finance_v2` in localStorage). Force-refresh available.
+**Cache TTL**: 15 minutes (`atd_finance_v2` in localStorage). Force-refresh available.
 
 ---
 
@@ -273,10 +273,10 @@ Each stock card shows:
 
 **Manifest** (`manifest.json`): `display: standalone`, portrait orientation, black theme, icons at 192 and 512px.
 
-**Service Worker** (`sw.js`, cache `attila-daily-v13`):
+**Service Worker** (`sw.js`, cache `attila-daily-v29`):
 - On install: `skipWaiting()` to take over immediately
 - On activate: deletes old caches, calls `client.navigate()` to force-reload all open tabs
-- Fetch strategy: external APIs → network only (fail with 503); app shell → network-first with cache fallback
+- Fetch strategy: Vercel API routes and external APIs → network only (fail with 503); app shell → network-first with cache fallback
 
 ---
 
@@ -295,10 +295,10 @@ Each stock card shows:
 | Wikipedia (On This Day) | `/api/rest_v1/feed/onthisday/events/...` | None | Historical events |
 | Wikipedia (Random) | `/api/rest_v1/page/random/summary` | None | Worth knowing |
 | JokeAPI | `/joke/Any?safe-mode` | None | Daily joke |
-| Anthropic | `/v1/messages` | User API key | Morning brief |
+| Google Gemini | `/api/ai` → Gemini `generateContent` | Vercel env var | Morning brief, AI summary, Market Pulse |
 | IC UZH | `/api/events` | None | Club events |
 | Spotify | `/authorize`, `/api/token`, `/v1/me/player/*` | OAuth PKCE | Now playing |
-| Finnhub | `/api/v1/quote` | Embedded token | Stock quotes |
+| Finnhub | `/api/finnhub` → `/api/v1/quote` | Vercel env var | Stock quotes |
 | CoinGecko | `/api/v3/coins/markets` | None | Crypto prices |
 | rss2json | `/v1/api.json` | None | CORS proxy for all RSS feeds |
 
@@ -310,8 +310,13 @@ Each stock card shows:
 |-----|---------|
 | `atd_daily_v1` | All daily cached content (quote, facts, knowledge, history, holidays, words, joke, gratitude) |
 | `atd_tasks_v2` | Task list array |
-| `atd_claude_key` | Anthropic API key |
 | `atd_country` | Detected country code from geolocation |
 | `atd_finance_v2` | Finance quote cache with timestamp |
 | `atd_club_events_v1` | Club events with timestamp |
 | `spotify_*` | Spotify OAuth tokens and Client ID |
+
+## IndexedDB Stores
+
+| Database | Content |
+|----------|---------|
+| `atd_photos_db_v1` | Photo-a-day archive, migrated from legacy `atd_photos_v1` localStorage data |
