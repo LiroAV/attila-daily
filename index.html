@@ -258,6 +258,7 @@
     .football-result.D { background: rgba(235,235,245,0.1); color: var(--text3); }
     .football-match-score { font-size: 13px; font-weight: 700; color: var(--text); flex-shrink: 0; }
     .football-competition { font-size: 10px; color: var(--text3); flex-shrink: 0; background: var(--bg3); border-radius: 4px; padding: 1px 5px; }
+    .football-winpct { font-size: 11px; font-weight: 700; color: var(--green); flex-shrink: 0; }
     .football-match-date { font-size: 11px; color: var(--text3); flex-shrink: 0; margin-left: auto; }
     .football-loading { font-size: 13px; color: var(--text3); }
 
@@ -2468,11 +2469,30 @@ async function loadFootball() {
       return String(s);
     };
 
+    // Convert American moneyline odds to implied probability (%), normalized for overround
+    const moneylineToProb = odds => {
+      const n = parseFloat(odds);
+      if (isNaN(n)) return 0;
+      return n < 0 ? (-n) / (-n + 100) : 100 / (n + 100);
+    };
+    const calcWinPct = (comp, isHome) => {
+      const ml = comp.odds?.[0]?.moneyline;
+      if (!ml) return null;
+      const hOdds = ml.home?.close?.odds ?? ml.home?.open?.odds;
+      const aOdds = ml.away?.close?.odds ?? ml.away?.open?.odds;
+      const dOdds = ml.draw?.close?.odds ?? ml.draw?.open?.odds;
+      const hP = moneylineToProb(hOdds);
+      const aP = moneylineToProb(aOdds);
+      const dP = dOdds ? moneylineToProb(dOdds) : 0;
+      const total = hP + aP + dP;
+      if (!total) return null;
+      return Math.round(((isHome ? hP : aP) / total) * 100);
+    };
+
     const parseMatch = (ev, league, isLast) => {
       if (!ev) return null;
       const comp = ev.competitions[0];
       const competitors = comp.competitors || [];
-      // Pick "my" competitor by team id, fallback to home team
       const mine = competitors.find(c => String(c.team?.id) === String(ev._teamId)) || competitors[0];
       const opp  = competitors.find(c => c !== mine);
       const oppName = opp?.team?.shortDisplayName || opp?.team?.displayName || 'Unknown';
@@ -2489,7 +2509,8 @@ async function loadFootball() {
       const dateStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
       const timeStr = !isLast ? date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
       const competition = FOOTBALL_LEAGUE_LABELS[league] || '';
-      return { oppName, oppLogoUrl, score, result, dateStr, timeStr, competition };
+      const winPct = !isLast ? calcWinPct(comp, mine?.homeAway === 'home') : null;
+      return { oppName, oppLogoUrl, score, result, dateStr, timeStr, competition, winPct };
     };
 
     const results = await Promise.all(FOOTBALL_TEAMS.map(async team => {
@@ -2564,6 +2585,7 @@ function renderFootball(el, results) {
           <img class="football-opp-logo" src="${esc(next.oppLogoUrl)}" onerror="this.style.display='none'" alt="">
           <span class="football-match-teams">${esc(next.oppName)}</span>
           ${next.competition ? `<span class="football-competition">${esc(next.competition)}</span>` : ''}
+          ${next.winPct !== null ? `<span class="football-winpct">${next.winPct}%</span>` : ''}
           <span class="football-match-date">${next.dateStr}${next.timeStr ? ' · ' + next.timeStr : ''}</span>
         </div>`
       : `<div class="football-match"><span class="football-match-label">Next</span><span class="football-match-teams" style="color:var(--text3)">No data</span></div>`;
