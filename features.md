@@ -8,7 +8,7 @@ A personal daily dashboard PWA. Static app (`index.html` + `app.css` + `app.js` 
 
 - **Static vanilla app** with separate `index.html`, `app.css`, and `app.js`
 - **No framework** — vanilla JS, DOM manipulation via `innerHTML`
-- **Vercel serverless functions** proxy Gemini (`api/ai.js`) and Finnhub (`api/finnhub.js`) with server-side env vars
+- **Vercel serverless functions** proxy Gemini (`api/ai.js`), Finnhub (`api/finnhub.js`), and club events (`api/events.js`)
 - **localStorage** for settings/tasks/cache, IndexedDB for photos
 - **Service Worker** (`sw.js`) for PWA install + offline shell
 - **Dark iOS-first design** — system fonts, safe-area insets, max-width 440px on desktop
@@ -49,11 +49,11 @@ Tracks three UZH-area clubs:
 
 | Club | Data source |
 |------|-------------|
-| IC UZH | `GET https://www.icuzh.ch/api/events?page=1&limit=50` (JSON) |
-| FVOEC | Manual link card (no public API) |
-| UZHack | Manual link card (no public API) |
+| IC UZH | `/api/events` → `GET https://www.icuzh.ch/api/events?page=1&limit=50` |
+| FVOEC | `/api/events` → `GET https://api.fvoec.ch/v1/events?lang=de` |
+| UZHack | `/api/events` → schedule page bundle, with a Spring 2026 fallback |
 
-IC UZH events are fetched, filtered to future + published entries, and the next upcoming event per club is shown with date/time/location. Cache TTL: 4 hours (`atd_club_events_v1` in localStorage).
+Events are fetched server-side, filtered to future entries, and the next upcoming event per club is shown with date/time/location. Cache TTL: 4 hours (`atd_club_events_v1` in localStorage).
 
 ---
 
@@ -273,7 +273,7 @@ Each stock card shows:
 
 **Manifest** (`manifest.json`): `display: standalone`, portrait orientation, black theme, icons at 192 and 512px.
 
-**Service Worker** (`sw.js`, cache `attila-daily-v30`):
+**Service Worker** (`sw.js`, cache `attila-daily-v31`):
 - On install: `skipWaiting()` to take over immediately
 - On activate: deletes old caches, calls `client.navigate()` to force-reload all open tabs
 - Fetch strategy: Vercel API routes and external APIs → network only (fail with 503); app shell → network-first with cache fallback
@@ -296,7 +296,7 @@ Each stock card shows:
 | Wikipedia (Random) | `/api/rest_v1/page/random/summary` | None | Worth knowing |
 | JokeAPI | `/joke/Any?safe-mode` | None | Daily joke |
 | Google Gemini | `/api/ai` → Gemini `generateContent` | Vercel env var | Morning brief, AI summary, Market Pulse |
-| IC UZH | `/api/events` | None | Club events |
+| IC UZH / FVOEC / UZHack | `/api/events` | None | Club events |
 | Spotify | `/authorize`, `/api/token`, `/v1/me/player/*` | OAuth PKCE | Now playing |
 | Finnhub | `/api/finnhub` → `/api/v1/quote` | Vercel env var | Stock quotes |
 | CoinGecko | `/api/v3/coins/markets` | None | Crypto prices |

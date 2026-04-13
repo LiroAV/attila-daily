@@ -14,6 +14,7 @@ app.css      — app styles
 app.js       — app behavior, API calls, local persistence
 api/ai.js    — Vercel function that calls Gemini with a server-side key
 api/finnhub.js — Vercel function that calls Finnhub with a server-side key
+api/events.js — Vercel function that normalizes upcoming club events
 sw.js        — service worker (PWA caching + offline support)
 manifest.json — PWA manifest (name, icons, display mode)
 icon-192.png / icon-512.png — app icons
@@ -23,7 +24,7 @@ icon-192.png / icon-512.png — app icons
 
 ## Running locally
 
-Use Vercel locally when testing AI or finance, because `/api/ai` and `/api/finnhub` are Vercel functions:
+Use Vercel locally when testing AI, finance, or club events, because `/api/ai`, `/api/finnhub`, and `/api/events` are Vercel functions:
 
 ```bash
 cd /Users/attila/Documents/03_Projects/attila-daily
@@ -65,7 +66,7 @@ That means a normal push to `master` creates a Vercel **Preview** deployment, no
 Commit the app files before deploying:
 
 ```bash
-git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.js sw.js
+git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.js api/events.js sw.js
 git commit -m "Your message"
 git push origin master
 ```
@@ -113,7 +114,7 @@ If it still doesn't update:
 Every time you deploy a meaningful change, bump the cache version in `sw.js`:
 
 ```js
-const CACHE = 'attila-daily-v30'; // increment this
+const CACHE = 'attila-daily-v31'; // increment this
 ```
 
 This tells the browser a new service worker is available and triggers the update flow.
@@ -150,6 +151,7 @@ Most API calls are made directly from the browser. Gemini and Finnhub go through
 | Worth Knowing | [Wikipedia Random Summary](https://en.wikipedia.org/api/rest_v1/page/random/summary) | 2 random Wikipedia article summaries. Cached daily |
 | Daily Joke | [JokeAPI](https://v2.jokeapi.dev/joke/Any?safe-mode) | Safe mode, blacklists nsfw/racist/sexist. Cached daily |
 | Morning Brief | [Google Gemini API](https://ai.google.dev/) via `/api/ai` | Uses `gemini-2.5-flash-lite` by default. Key is stored in Vercel env vars |
+| Upcoming Events | IC UZH + FVOEC + UZHack via `/api/events` | Shows the next event from each club. Cached for 4 hours |
 
 ### Home tab — Spotify
 
@@ -215,7 +217,7 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 
 ## PWA / Service Worker
 
-- **Cache name:** `attila-daily-v30` — bump this in `sw.js` on every deploy
+- **Cache name:** `attila-daily-v31` — bump this in `sw.js` on every deploy
 - **Strategy:** Network-first for app shell (HTML), always network for `/api/*` and external APIs
 - **On activate:** Deletes old caches, forces all open clients to reload (`client.navigate`)
 - **`skipWaiting`:** New service worker takes over immediately on install

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app.css?v=30">
+  <link rel="stylesheet" href="app.css?v=31">
 </head>
 <body>
 
@@ -54,14 +54,14 @@
   <!-- ── HOME ── -->
   <div class="tab-pane active" id="pane-home">
     <div class="home-section">
+      <div class="weather-card" id="weatherCard">
+        <div class="weather-loading">Locating…</div>
+      </div>
       <div class="card" id="morningBriefCard">
         <div class="card-title">Morning Brief</div>
         <div id="morningBriefContent">
           <div style="font-size:13px;color:var(--text3)">Generating your brief…</div>
         </div>
-      </div>
-      <div class="weather-card" id="weatherCard">
-        <div class="weather-loading">Locating…</div>
       </div>
       <div class="card" id="clubEventsCard">
         <div class="card-title">Upcoming Events</div>
@@ -283,6 +283,6 @@
   </div>
 </nav>
 
-<script src="app.js?v=30"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>

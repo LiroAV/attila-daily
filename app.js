@@ -817,31 +817,34 @@ function saveTmdbKey() {
 
 // ── CLUB EVENTS ───────────────────────────────
 const CLUBS = [
-  { id: 'icuzh',  name: 'IC UZH',  color: '#0A84FF', url: 'https://www.icuzh.ch/events',   api: 'https://www.icuzh.ch/api/events?page=1&limit=50' },
-  { id: 'fvoec',  name: 'FVOEC',   color: '#30d158', url: 'https://fvoec.ch/events',        api: null },
-  { id: 'uzhack', name: 'UZHack',  color: '#bf5af2', url: 'https://uzhack.com/schedule',    api: null },
+  { id: 'icuzh',  name: 'IC UZH',  color: '#0A84FF', url: 'https://www.icuzh.ch/events' },
+  { id: 'fvoec',  name: 'FVOEC',   color: '#30d158', url: 'https://fvoec.ch/events' },
+  { id: 'uzhack', name: 'UZHack',  color: '#bf5af2', url: 'https://uzhack.com/schedule' },
 ];
 const EVENTS_LS = 'atd_club_events_v1';
 const EVENTS_TTL = 4 * 60 * 60 * 1000;
 
 async function loadClubEvents() {
   const el = document.getElementById('clubEventsContent');
+  let staleEvents = null;
   try {
     const cached = JSON.parse(localStorage.getItem(EVENTS_LS) || '{}');
     if (cached.ts && Date.now() - cached.ts < EVENTS_TTL && cached.events) {
       renderClubEvents(el, cached.events); return;
     }
+    if (cached.events) staleEvents = cached.events;
   } catch {}
-  const events = {};
+  let events = {};
   try {
-    const d = await fetch('https://www.icuzh.ch/api/events?page=1&limit=50', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
-    const now = new Date();
-    const upcoming = (d.docs || [])
-      .filter(e => e._status === 'published' && new Date(e.start) >= now)
-      .sort((a, b) => new Date(a.start) - new Date(b.start));
-    if (upcoming[0]) events.icuzh = { title: upcoming[0].name, start: upcoming[0].start, location: upcoming[0].location || '' };
-  } catch {}
-  localStorage.setItem(EVENTS_LS, JSON.stringify({ ts: Date.now(), events }));
+    const d = await fetch('/api/events', { signal: AbortSignal.timeout(10000) }).then(r => {
+      if (!r.ok) throw new Error('Events request failed');
+      return r.json();
+    });
+    events = d.events || {};
+    localStorage.setItem(EVENTS_LS, JSON.stringify({ ts: Date.now(), events }));
+  } catch {
+    events = staleEvents || {};
+  }
   renderClubEvents(el, events);
 }
 
@@ -857,12 +860,14 @@ function renderClubEvents(el, events) {
       const d = new Date(e.start);
       const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const location = typeof e.location === 'string' ? e.location : (e.location?.address || e.location?.onlineUrl || '');
+      const url = e.url || club.url;
       return `<div class="club-event-item">
         <div class="club-event-dot" style="background:${club.color}"></div>
         <div class="club-event-body">
           <div class="club-event-club" style="color:${club.color}">${club.name}</div>
-          <div class="club-event-date">${dateStr} · ${timeStr}${e.location ? ' · ' + esc(e.location) : ''}</div>
-          <a class="club-event-title" href="${esc(club.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>
+          <div class="club-event-date">${dateStr} · ${timeStr}${location ? ' · ' + esc(location) : ''}</div>
+          <a class="club-event-title" href="${esc(url)}" target="_blank" rel="noopener">${esc(e.title)}</a>
         </div>
       </div>`;
     }
@@ -1122,13 +1127,13 @@ function loadHomeCard(cardId, force) {
 
 async function loadHome() {
   applyHomeVisibility();
-  ['morningBriefCard','weatherCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
+  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
     if (isHomeCardVisible(cardId)) loadHomeCard(cardId);
   });
 }
 
 function loadVisibleHomeCards() {
-  ['morningBriefCard','weatherCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
+  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
     if (isHomeCardVisible(cardId)) loadHomeCard(cardId);
   });
 }
