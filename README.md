@@ -48,11 +48,19 @@ The service worker registers on `localhost` separately from the live site, so lo
 
 The app should be hosted on **Vercel** so `/api/ai` and `/api/finnhub` can call paid/keyed APIs without exposing secrets in browser code.
 
-1. Import this repo in Vercel.
+### One-time Vercel setup
+
+1. Import the GitHub repo `LiroAV/attila-daily` in Vercel.
 2. Add Environment Variable `GEMINI_API_KEY` with your Google AI Studio key.
 3. Add Environment Variable `FINNHUB_API_KEY` with your Finnhub key.
 4. Optionally add `GEMINI_MODEL=gemini-2.5-flash`.
-5. Deploy.
+5. Check the Vercel production branch. This project currently deploys **Production** from `main`.
+
+### Branch setup
+
+Local work happens on `master`, while Vercel Production currently watches `main`.
+
+That means a normal push to `master` creates a Vercel **Preview** deployment, not Production. To ship to Production, fast-forward `main` from `master` after committing.
 
 Commit the app files before deploying:
 
@@ -61,6 +69,34 @@ git add .gitignore .env.example index.html app.css app.js api/ai.js api/finnhub.
 git commit -m "Your message"
 git push origin master
 ```
+
+Ship the same commit to Vercel Production:
+
+```bash
+git push origin master:main
+```
+
+In Vercel → **Deployments**, the production deployment should show:
+
+```text
+Production
+Current
+Ready
+main
+<latest commit>
+```
+
+If Vercel's production branch is changed to `master` later, remove the `git push origin master:main` step and use only `git push origin master`.
+
+### Required Vercel env vars
+
+| Name | Used by | Notes |
+|---|---|---|
+| `GEMINI_API_KEY` | `/api/ai` | Gemini key from Google AI Studio |
+| `FINNHUB_API_KEY` | `/api/finnhub` | Finnhub API token for stock/index quotes |
+| `GEMINI_MODEL` | `/api/ai` | Optional. Defaults to `gemini-2.5-flash` |
+
+After adding or changing env vars, redeploy the latest production deployment.
 
 ### Forcing a PWA update on mobile
 
@@ -122,7 +158,7 @@ Uses **PKCE OAuth** (no backend, no client secret needed).
 **Setup:**
 1. Go to [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 2. Create an app
-3. Add your app's URL as a Redirect URI (e.g. `https://liroav.github.io/attila-daily/`)
+3. Add your Vercel app URL as a Redirect URI (e.g. `https://your-app.vercel.app/`)
 4. Copy the Client ID
 5. Paste into the Spotify card in the app and tap Connect
 
@@ -180,7 +216,7 @@ All feeds go through [rss2json](https://api.rss2json.com/) as a CORS proxy.
 ## PWA / Service Worker
 
 - **Cache name:** `attila-daily-v30` — bump this in `sw.js` on every deploy
-- **Strategy:** Network-first for app shell (HTML), always network for external APIs
+- **Strategy:** Network-first for app shell (HTML), always network for `/api/*` and external APIs
 - **On activate:** Deletes old caches, forces all open clients to reload (`client.navigate`)
 - **`skipWaiting`:** New service worker takes over immediately on install
 
