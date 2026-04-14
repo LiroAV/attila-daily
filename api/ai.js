@@ -1,35 +1,42 @@
 const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
 const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+const MAX_TOKENS_CAP = 2000;
+
+async function callModel(model, key, prompt, maxTokens) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.7,
+        topP: 0.9
+      }
+    })
+  });
+  const data = await res.json();
+  return { res, data };
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
+  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+  if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
 
   const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    res.status(500).json({ error: 'Gemini API key is not configured' });
-    return;
-  }
+  if (!key) { res.status(500).json({ error: 'Gemini API key is not configured' }); return; }
 
   const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt.trim() : '';
-  if (!prompt) {
-    res.status(400).json({ error: 'Missing prompt' });
-    return;
-  }
+  if (!prompt) { res.status(400).json({ error: 'Missing prompt' }); return; }
 
-  const maxTokens = Number.isFinite(Number(req.body?.maxTokens))
-    ? Math.min(Math.max(Number(req.body.maxTokens), 1), 1200)
-    : 300;
+  const requestedTokens = Number.isFinite(Number(req.body?.maxTokens))
+    ? Math.min(Math.max(Number(req.body.maxTokens), 1), MAX_TOKENS_CAP)
+    : 400;
+
   const primaryModel = process.env.GEMINI_MODEL || DEFAULT_MODEL;
   const models = [...new Set([primaryModel, ...FALLBACK_MODELS])];
 
@@ -37,27 +44,31 @@ export default async function handler(req, res) {
     let lastError = 'Gemini request failed';
 
     for (const model of models) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-      const geminiRes = await fetch(url, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: maxTokens }
-        })
-      });
+      let maxTokens = requestedTokens;
 
-      const data = await geminiRes.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const { res: geminiRes, data } = await callModel(model, key, prompt, maxTokens);
+        const candidate = data.candidates?.[0];
+        const text = candidate?.content?.parts?.[0]?.text;
+        const finishReason = candidate?.finishReason;
 
-      if (geminiRes.ok && text) {
-        res.status(200).json({ text, model });
-        return;
+        if (geminiRes.ok && text) {
+          // If the model was cut off, retry with 50% more tokens (once)
+          if (finishReason === 'MAX_TOKENS' && attempt === 0) {
+            maxTokens = Math.min(Math.round(maxTokens * 1.5), MAX_TOKENS_CAP);
+            continue;
+          }
+          res.status(200).json({ text, model, finishReason });
+          return;
+        }
+
+        lastError = data.error?.message || `Gemini request failed for ${model}`;
+        const transient = geminiRes.status === 429 || geminiRes.status === 503 || /high demand|overloaded|try again/i.test(lastError);
+        if (!transient) break;
+        break; // don't retry non-truncation errors
       }
 
-      lastError = data.error?.message || `Gemini request failed for ${model}`;
-      const transient = geminiRes.status === 429 || geminiRes.status === 503 || /high demand|overloaded|try again/i.test(lastError);
-      if (!transient) break;
+      if (!/high demand|overloaded|try again/i.test(lastError) && !lastError.includes('429') && !lastError.includes('503')) break;
     }
 
     res.status(502).json({ error: lastError });

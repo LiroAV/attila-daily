@@ -47,6 +47,10 @@ const TARGET_MAX = 15;
 let data = {};
 let activeFilter = 'all';
 
+// Resolves once loadAll() has finished fetching news — lets the morning brief wait for headlines
+let _newsLoadedResolve;
+const _newsReady = new Promise(resolve => { _newsLoadedResolve = resolve; });
+
 // ── SPLASH ───────────────────────────────────
 const SPLASH_STEPS = [
   { id: 'spN0', label: 'fetching weather…' },
@@ -62,23 +66,22 @@ function runSplash(onDone) {
       status.style.opacity = '0';
       setTimeout(() => {
         document.getElementById('splash').classList.add('hide');
-        setTimeout(onDone, 560);
-      }, 220);
+        setTimeout(onDone, 400);
+      }, 150);
       return;
     }
     const s = SPLASH_STEPS[i];
     document.getElementById(s.id).classList.add('lit');
     status.textContent = s.label;
     i++;
-    setTimeout(step, 320);
+    setTimeout(step, 200);
   }
-  setTimeout(step, 350); // brief pause before first step
+  setTimeout(step, 150); // brief pause before first step
 }
 
 // ── BOOT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   runSplash(async () => {
-    await handleSpotifyCallback();
     setHeader();
     loadAll();
     renderTasks();
@@ -195,6 +198,7 @@ async function loadAll() {
   updateSummaryBar();
   renderBrief();
   generateNewsSummary();
+  _newsLoadedResolve(); // unblocks morning brief generation
 }
 
 function updateSummaryBar() {
@@ -320,7 +324,7 @@ async function renderHolidays() {
   const el = document.getElementById('holidayCard');
 
   const td = getTodayData();
-  if (td.holidays) { renderHolidayHTML(el, td.holidays); return; }
+  if (td.holidays) { renderHolidayList(el, td.holidays); return; }
 
   let official = [];
   try {
@@ -353,10 +357,10 @@ async function renderHolidays() {
 
   const all = [...official, ...fun].slice(0, 5);
   setTodayData({ holidays: all });
-  renderHolidayHTML(el, all);
+  renderHolidayList(el, all);
 }
 
-function renderHolidayHTML(el, all) {
+function renderHolidayList(el, all) {
   if (!all.length) {
     el.innerHTML = `<div class="card-title">Today's Days</div><div class="no-holidays">No special days today — make your own.</div>`;
     return;
@@ -367,6 +371,7 @@ function renderHolidayHTML(el, all) {
       <div><div class="holiday-name">${esc(h.name)}</div><div class="holiday-type">${h.type}</div></div>
     </div>`).join('');
 }
+
 
 const DEU_WORDS_MINI = [
   {w:'Torschlusspanik',    d:'Gate-closing panic; the fear that life\'s opportunities are passing you by.',      e:'"At 35, she felt a creeping Torschlusspanik about changing careers."'},
@@ -620,10 +625,6 @@ async function callGemini(prompt, maxTokens) {
   return d.text;
 }
 
-function initMorningBrief() {
-  generateMorningBrief();
-}
-
 function renderBriefText(text) {
   const container = document.getElementById('morningBriefContent');
   if (!container) return;
@@ -641,12 +642,19 @@ async function generateMorningBrief(force) {
   }
 
   if (container) container.innerHTML = `<div style="font-size:13px;color:var(--text3)">Generating your brief…</div>`;
+
+  // Wait for news headlines to be available before building context
+  await _newsReady;
+
   const context = buildBriefContext();
+  const prompt = `You are Attila's personal morning assistant. Based on the data below, write a summary of what matters today in 4-5 sentences max. Cover these if relevant:
+- Any of his football clubs playing today or very soon (mention opponent and time)
+- Any major global news (breaking events, crises, important stories)
+- Any dramatic stock market or crypto moves
+Be direct and specific. No greeting, no sign-off, no bullet points.\n\n${context}`;
+
   try {
-    const text = await callGemini(
-      `Write a concise 3-sentence morning brief for Attila. Mention what matters today based on this context. Be warm and direct.\n\n${context}`,
-      600
-    );
+    const text = await callGemini(prompt, 500);
     setTodayData({ morningBrief: text });
     renderBriefText(text);
   } catch (e) {
@@ -660,17 +668,47 @@ function buildBriefContext() {
   const parts = [];
   const now = new Date();
   parts.push(`Date: ${now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}`);
+
+  // Tasks
   const tasks = getTasks().filter(t => !t.done);
-  if (tasks.length) parts.push(`Open tasks: ${tasks.slice(0,5).map(t => t.text).join('; ')}`);
-  else parts.push('No open tasks.');
+  if (tasks.length) parts.push(`Open tasks: ${tasks.slice(0,3).map(t => t.text).join('; ')}`);
+
+  // Football — upcoming matches from cache
+  try {
+    const fc = JSON.parse(localStorage.getItem(FOOTBALL_CACHE_KEY) || 'null');
+    if (fc && fc.data) {
+      const matches = fc.data
+        .filter(d => d.next)
+        .map(d => `${d.team.name} vs ${d.next.oppName} on ${d.next.dateStr}${d.next.timeStr ? ' at ' + d.next.timeStr : ''} (${d.next.competition || 'Football'})`);
+      if (matches.length) parts.push(`Upcoming football: ${matches.join('; ')}`);
+    }
+  } catch {}
+
+  // Finance — market overview + dramatic movers (>3%)
   const finCache = getFinCache();
   if (finCache && finCache.quotes) {
-    const sp = finCache.quotes['^GSPC'], btc = finCache.quotes['BTC-USD'];
-    const mkt = [];
-    if (sp) mkt.push(`S&P 500 ${sp.price.toFixed(0)} (${sp.changePct>=0?'+':''}${sp.changePct.toFixed(2)}%)`);
-    if (btc) mkt.push(`BTC $${btc.price.toFixed(0)} (${btc.changePct>=0?'+':''}${btc.changePct.toFixed(2)}%)`);
-    if (mkt.length) parts.push(`Markets: ${mkt.join(', ')}`);
+    const { quotes } = finCache;
+    const overview = [['^GSPC','S&P 500'],['^IXIC','Nasdaq'],['BTC-USD','Bitcoin'],['ETH-USD','Ethereum']]
+      .filter(([sym]) => quotes[sym])
+      .map(([sym, label]) => `${label} ${quotes[sym].changePct>=0?'+':''}${quotes[sym].changePct.toFixed(2)}%`);
+    if (overview.length) parts.push(`Markets: ${overview.join(', ')}`);
+
+    const dramatic = TRACKED_STOCKS
+      .filter(s => quotes[s.ticker] && Math.abs(quotes[s.ticker].changePct) >= 3)
+      .map(s => `${s.ticker} ${quotes[s.ticker].changePct>=0?'+':''}${quotes[s.ticker].changePct.toFixed(1)}%`);
+    if (dramatic.length) parts.push(`Big stock moves: ${dramatic.join(', ')}`);
   }
+
+  // Top news headlines — importance score ≥7 (breaking/major only)
+  const allArticles = Object.values(data).flat();
+  if (allArticles.length) {
+    const topHeadlines = allArticles
+      .filter(a => getScore(a.title, a.description || '') >= 7)
+      .slice(0, 6)
+      .map(a => strip(a.title));
+    if (topHeadlines.length) parts.push(`Major headlines: ${topHeadlines.join(' | ')}`);
+  }
+
   return parts.join('\n');
 }
 
@@ -690,10 +728,10 @@ async function generateNewsSummary() {
   el.innerHTML = '<div class="news-summary-loading">Summarising with AI…</div>';
 
   const headlines = allArticles.slice(0, 12).map(a => `- ${strip(a.title)}`).join('\n');
-  const prompt = `Here are today's top news headlines:\n${headlines}\n\nWrite exactly 3 bullet points summarising the most important themes across these stories. Each bullet should be one sentence, direct and informative. No intro, no outro — just the 3 bullets starting with "•".`;
+  const prompt = `Today's top headlines:\n${headlines}\n\nSummarise in exactly 3 bullets. Each bullet: one sentence, max 20 words. Start each with "•". No intro, no outro, nothing else.`;
 
   try {
-    const text = await callGemini(prompt, 600);
+    const text = await callGemini(prompt, 300);
     if (text) {
       setTodayData({ newsSummary: text });
       renderNewsSummary(text);
@@ -907,149 +945,40 @@ function renderJoke(el, joke) {
 }
 
 // ── SPOTIFY ───────────────────────────────────
-const SP_LS = {
-  clientId:    'spotify_client_id',
-  accessToken: 'spotify_access_token',
-  refreshToken:'spotify_refresh_token',
-  expiresAt:   'spotify_expires_at',
-  verifier:    'spotify_pkce_verifier',
-};
+// Server-side proxy: no client-side auth needed.
+// Requires SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN in Vercel.
+// Run /api/spotify-setup once to obtain the refresh token.
 
-function spGet(k) { return localStorage.getItem(SP_LS[k]) || ''; }
-function spSet(k, v) { localStorage.setItem(SP_LS[k], v); }
-
-let spotifyConfigPromise = null;
-async function getSpotifyClientId() {
-  const stored = spGet('clientId');
-  if (stored) return stored;
-  if (!spotifyConfigPromise) {
-    spotifyConfigPromise = fetch('/api/config', { signal: AbortSignal.timeout(4000) })
-      .then(r => r.ok ? r.json() : {})
-      .then(d => typeof d.spotifyClientId === 'string' ? d.spotifyClientId.trim() : '')
-      .catch(() => '');
-  }
-  return spotifyConfigPromise;
-}
-
-function generateSpVerifier() {
-  const arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-async function generateSpChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-async function connectSpotify() {
-  let clientId = await getSpotifyClientId();
-  const manualInput = document.getElementById('spClientIdInp');
-  if (!clientId && manualInput) clientId = manualInput.value.trim();
-  if (!clientId) return;
-  spSet('clientId', clientId);
-  const verifier = generateSpVerifier();
-  spSet('verifier', verifier);
-  const challenge = await generateSpChallenge(verifier);
-  const redirectUri = window.location.href.split('?')[0].split('#')[0];
-  const params = new URLSearchParams({
-    client_id: clientId,
-    response_type: 'code',
-    redirect_uri: redirectUri,
-    scope: 'user-read-currently-playing user-read-recently-played user-modify-playback-state',
-    code_challenge_method: 'S256',
-    code_challenge: challenge,
+async function spFetch(path, method) {
+  const m = method || 'GET';
+  const r = await fetch('/api/spotify?path=' + encodeURIComponent(path), {
+    method: m, signal: AbortSignal.timeout(8000)
   });
-  window.location.href = 'https://accounts.spotify.com/authorize?' + params;
-}
-
-async function handleSpotifyCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  const clientId = spGet('clientId') || await getSpotifyClientId();
-  if (!code || !clientId) return;
-  spSet('clientId', clientId);
-  window.history.replaceState({}, document.title, window.location.pathname);
-  const verifier = spGet('verifier');
-  const redirectUri = window.location.href.split('?')[0].split('#')[0];
-  try {
-    const r = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ client_id: clientId, grant_type: 'authorization_code', code, redirect_uri: redirectUri, code_verifier: verifier }),
-    });
-    const d = await r.json();
-    if (d.access_token) {
-      spSet('accessToken', d.access_token);
-      spSet('refreshToken', d.refresh_token || '');
-      spSet('expiresAt', String(Date.now() + d.expires_in * 1000));
-    }
-  } catch {}
-}
-
-async function getSpToken() {
-  const expiresAt = parseInt(spGet('expiresAt') || '0');
-  if (spGet('accessToken') && Date.now() < expiresAt - 60000) return spGet('accessToken');
-  const clientId = spGet('clientId') || await getSpotifyClientId();
-  const refreshToken = spGet('refreshToken');
-  if (!clientId || !refreshToken) return null;
-  try {
-    const r = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken, client_id: clientId }),
-    });
-    const d = await r.json();
-    if (d.access_token) {
-      spSet('accessToken', d.access_token);
-      spSet('expiresAt', String(Date.now() + d.expires_in * 1000));
-      if (d.refresh_token) spSet('refreshToken', d.refresh_token);
-      return d.access_token;
-    }
-  } catch {}
-  return null;
-}
-
-function disconnectSpotify() {
-  ['clientId','accessToken','refreshToken','expiresAt','verifier'].forEach(k => localStorage.removeItem(SP_LS[k]));
-  loadSpotify();
+  return r;
 }
 
 async function loadSpotify() {
   const el = document.getElementById('spotifyContent');
-  const hasSpotifyAuth = !!(spGet('accessToken') || spGet('refreshToken'));
-  if (!hasSpotifyAuth) {
-    const clientId = await getSpotifyClientId();
-    renderSpConnect(el, !!clientId);
-    return;
-  }
   el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Loading…</div>`;
-  const token = await getSpToken();
-  if (!token) {
-    const clientId = await getSpotifyClientId();
-    renderSpConnect(el, !!clientId);
-    return;
-  }
   try {
-    // Try currently playing first
-    const r1 = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(6000)
-    });
+    const r1 = await spFetch('me/player/currently-playing');
+    if (r1.status === 503) {
+      el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Spotify not configured.<br>
+        Visit <a href="/api/spotify-setup" target="_blank" style="color:var(--accent)">/api/spotify-setup</a> to connect.</div>`;
+      return;
+    }
     if (r1.status === 200) {
       const d = await r1.json();
       if (d && d.item) { renderSpTrack(el, d.item, d.is_playing, d.progress_ms, d.item.duration_ms); return; }
     }
     // Fall back to recently played
-    const r2 = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
-      headers: { Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(6000)
-    });
+    const r2 = await spFetch('me/player/recently-played?limit=1');
     if (r2.ok) {
       const d = await r2.json();
       if (d.items && d.items[0]) { renderSpTrack(el, d.items[0].track, false, 0, 0); return; }
     }
   } catch {}
-  el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Nothing playing right now.</div><button class="sp-disconnect" onclick="disconnectSpotify()">Disconnect Spotify</button>`;
+  el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Nothing playing right now.</div>`;
 }
 
 function renderSpTrack(el, track, isPlaying, progress, duration) {
@@ -1074,35 +1003,15 @@ function renderSpTrack(el, track, isPlaying, progress, duration) {
     <button class="sp-ctrl-btn" onclick="spControl('previous')" title="Previous">${prevIcon}</button>
     <button class="sp-ctrl-btn play" onclick="spControl('pause')" title="Pause">${playPauseIcon}</button>
     <button class="sp-ctrl-btn" onclick="spControl('next')" title="Next">${nextIcon}</button>
-  </div>` : ''}
-  <button class="sp-disconnect" onclick="disconnectSpotify()">Disconnect</button>`;
+  </div>` : ''}`;
 }
 
 async function spControl(action) {
-  const token = await getSpToken();
-  if (!token) return;
   try {
-    if (action === 'play' || action === 'pause') {
-      await fetch(`https://api.spotify.com/v1/me/player/${action}`, {
-        method: 'PUT', headers: { Authorization: 'Bearer ' + token }
-      });
-    } else if (action === 'next' || action === 'previous') {
-      await fetch(`https://api.spotify.com/v1/me/player/${action}`, {
-        method: 'POST', headers: { Authorization: 'Bearer ' + token }
-      });
-    }
-    // Refresh after short delay to show updated state
+    const method = (action === 'play' || action === 'pause') ? 'PUT' : 'POST';
+    await spFetch('me/player/' + action, method);
     setTimeout(loadSpotify, 800);
   } catch {}
-}
-
-function renderSpConnect(el, hasConfiguredClientId) {
-  el.innerHTML = `<div class="sp-connect">
-    <p style="font-size:13px;color:var(--text2);margin-bottom:10px">Connect Spotify to see what you're playing.</p>
-    ${hasConfiguredClientId ? '' : `<input class="sp-inp" id="spClientIdInp" type="text" placeholder="Paste your Spotify Client ID…">`}
-    <button class="sp-btn" onclick="connectSpotify()">Connect Spotify</button>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px">${hasConfiguredClientId ? 'Each user signs in with their own Spotify account.' : 'Add SPOTIFY_CLIENT_ID in Vercel to remove this setup step.'}</div>
-  </div>`;
 }
 
 // ── HOME ──────────────────────────────────────
@@ -1140,7 +1049,7 @@ function loadHomeCard(cardId, force) {
   homeLoadedCards.add(cardId);
   if (cardId === 'clubEventsCard') loadClubEvents();
   if (cardId === 'spotifyCard') loadSpotify();
-  if (cardId === 'morningBriefCard') initMorningBrief();
+  if (cardId === 'morningBriefCard') generateMorningBrief();
   if (cardId === 'footballCard') loadFootball();
   if (cardId === 'weatherCard') {
     navigator.geolocation.getCurrentPosition(
@@ -1150,11 +1059,9 @@ function loadHomeCard(cardId, force) {
   }
 }
 
-async function loadHome() {
+function loadHome() {
   applyHomeVisibility();
-  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
-    if (isHomeCardVisible(cardId)) loadHomeCard(cardId);
-  });
+  loadVisibleHomeCards();
 }
 
 function loadVisibleHomeCards() {
@@ -1196,25 +1103,22 @@ async function fetchWeather(lat, lon) {
 }
 
 
+function renderQuote(quote) {
+  document.getElementById('quoteCard').innerHTML = `
+    <div class="card-title">Quote of the day</div>
+    <div class="quote-text">"${esc(quote.text)}"</div>
+    <div class="quote-author">— ${esc(quote.author)}</div>`;
+}
+
 async function fetchQuote() {
   const td = getTodayData();
-  if (td.quote) {
-    document.getElementById('quoteCard').innerHTML = `
-      <div class="card-title">Quote of the day</div>
-      <div class="quote-text">"${esc(td.quote.text)}"</div>
-      <div class="quote-author">— ${esc(td.quote.author)}</div>`;
-    return;
-  }
+  if (td.quote) { renderQuote(td.quote); return; }
   try {
     const d = await fetch('https://zenquotes.io/api/today', { signal: AbortSignal.timeout(8000) }).then(r => r.json());
     if (d && d[0] && d[0].q) {
       const quote = { text: d[0].q, author: d[0].a };
       setTodayData({ quote });
-      document.getElementById('quoteCard').innerHTML = `
-        <div class="card-title">Quote of the day</div>
-        <div class="quote-text">"${esc(quote.text)}"</div>
-        <div class="quote-author">— ${esc(quote.author)}</div>`;
-      return;
+      renderQuote(quote); return;
     }
   } catch {}
   try {
@@ -1222,17 +1126,10 @@ async function fetchQuote() {
     if (d && d.quote) {
       const quote = { text: d.quote, author: d.author };
       setTodayData({ quote });
-      document.getElementById('quoteCard').innerHTML = `
-        <div class="card-title">Quote of the day</div>
-        <div class="quote-text">"${esc(quote.text)}"</div>
-        <div class="quote-author">— ${esc(quote.author)}</div>`;
-      return;
+      renderQuote(quote); return;
     }
   } catch {}
-  document.getElementById('quoteCard').innerHTML = `
-    <div class="card-title">Quote of the day</div>
-    <div class="quote-text">"The secret of getting ahead is getting started."</div>
-    <div class="quote-author">— Mark Twain</div>`;
+  renderQuote({ text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' });
 }
 
 
@@ -1820,7 +1717,7 @@ function openPhotoDb() {
 
 async function migrateLegacyPhotos(db) {
   const raw = localStorage.getItem(PHOTO_LS);
-  if (!raw) return;
+  if (!raw || localStorage.getItem('atd_photos_migrated')) return;
   try {
     const legacy = JSON.parse(raw);
     await new Promise((resolve, reject) => {
@@ -1831,6 +1728,7 @@ async function migrateLegacyPhotos(db) {
       tx.onerror = () => reject(tx.error);
     });
     localStorage.removeItem(PHOTO_LS);
+    localStorage.setItem('atd_photos_migrated', '1');
   } catch {}
 }
 
@@ -1851,14 +1749,17 @@ async function getPhotos() {
 
 async function getPhotoCount() {
   try {
-    const photos = await getPhotos();
-    return Object.keys(photos).length;
+    const db = await openPhotoDb();
+    return await new Promise((resolve, reject) => {
+      const req = db.transaction(PHOTO_STORE, 'readonly').objectStore(PHOTO_STORE).count();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
   } catch { return 0; }
 }
 
 async function savePhoto(date, photo) {
   const db = await openPhotoDb();
-  await migrateLegacyPhotos(db);
   return new Promise((resolve, reject) => {
     const tx = db.transaction(PHOTO_STORE, 'readwrite');
     tx.objectStore(PHOTO_STORE).put({ date, ...photo });
@@ -1884,11 +1785,6 @@ function deletePhotoDb() {
   });
 }
 
-function todayPhotoKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
 async function compressPhoto(file) {
   return new Promise(resolve => {
     const img = new Image();
@@ -1912,7 +1808,7 @@ async function handlePhotoUpload(e) {
   if (!file) return;
   const base64 = await compressPhoto(file);
   try {
-    await savePhoto(todayPhotoKey(), { data: base64, prompt: getPhotoPrompt() });
+    await savePhoto(todayKey(), { data: base64, prompt: getPhotoPrompt() });
   } catch {
     alert('Storage full — older photos may need to be cleared.');
     return;
@@ -1922,8 +1818,8 @@ async function handlePhotoUpload(e) {
 
 async function renderPhotoTab() {
   const photos = await getPhotos();
-  const todayKey = todayPhotoKey();
-  const todayPhoto = photos[todayKey];
+  const todayDate = todayKey();
+  const todayPhoto = photos[todayDate];
 
   document.getElementById('photoPrompt').textContent = getPhotoPrompt();
 
@@ -1943,7 +1839,7 @@ async function renderPhotoTab() {
   }
 
   // Gallery — all past photos sorted newest first, excluding today
-  const pastKeys = Object.keys(photos).filter(k => k !== todayKey).sort().reverse();
+  const pastKeys = Object.keys(photos).filter(k => k !== todayDate).sort().reverse();
   const gallery = document.getElementById('photoGallery');
   if (!pastKeys.length) {
     gallery.innerHTML = `<div class="photo-empty">No past photos yet — start today!</div>`;
@@ -2465,10 +2361,10 @@ async function generateMarketPulse() {
     return `${s.ticker} (${s.name}): ${dir} ${Math.abs(s.q.changePct).toFixed(2)}% today, price $${s.q.price.toFixed(2)}, open $${s.q.open?.toFixed(2) ?? '?'}`;
   }).join('\n');
 
-  const prompt = `I hold these stocks in my personal portfolio and they are today's biggest movers:\n\n${moverLines}\n\nGive me a very short, plain-English explanation (2-3 sentences per stock) of why each is likely moving today. Be direct and specific — mention macro factors, sector news, or company events if relevant. No disclaimers, no financial advice boilerplate.`;
+  const prompt = `Today's biggest movers in my portfolio:\n\n${moverLines}\n\nFor each stock write exactly 2 sentences explaining why it's likely moving today. Be specific — mention macro factors, sector news, or company events. No disclaimers, no headers, no extra text.`;
 
   try {
-    const text = await callGemini(prompt, 800);
+    const text = await callGemini(prompt, 500);
     setTodayData({ marketPulse: { key: window._pulseKey, text } });
     expEl.innerHTML = '<div class="pulse-explanation">' + text.split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('') + '</div>';
     btn.textContent = '↻ Refresh explanation';
@@ -2648,8 +2544,6 @@ let learnQuizState = null; // null | 'correct' | 'wrong'
 let learnChapComplete = false;
 let _learnSelOpt = null;
 
-function loadLearn() { renderLearn(); }
-
 function renderLearn() {
   const root = document.getElementById('learnRoot');
   if (!root) return;
@@ -2820,7 +2714,7 @@ function goTab(name, el) {
   if (name === 'finance') loadFinance();
   if (name === 'home') loadVisibleHomeCards();
   if (name === 'daily' && !dailyLoaded) { dailyLoaded = true; loadDaily(); }
-  if (name === 'learn' && !learnLoaded) { learnLoaded = true; loadLearn(); }
+  if (name === 'learn' && !learnLoaded) { learnLoaded = true; renderLearn(); }
   if (name === 'photos') renderPhotoTab();
   if (name === 'settings') renderSettings();
 
@@ -2910,7 +2804,6 @@ async function renderSettings() {
   const el = document.getElementById('settingsContent');
   if (!el) return;
 
-  const spConnected = !!(spGet('accessToken') || spGet('refreshToken'));
   const tmdbKey = !!getTmdbKey();
   const hidden = getHiddenCards();
   const theme = localStorage.getItem(THEME_LS) || '';
@@ -2993,9 +2886,9 @@ async function renderSettings() {
       <div class="settings-row">
         <div class="settings-row-left">
           <span class="settings-row-label">Spotify</span>
-          <span class="settings-row-sub">${spConnected?'Connected':'Not connected'}</span>
+          <span class="settings-row-sub">Served via Vercel — no user login needed</span>
         </div>
-        ${spConnected?btn('Disconnect','disconnectSpotify();renderSettings()',true):meta('Not connected')}
+        ${meta('Auto')}
       </div>
       <div class="settings-row">
         <div class="settings-row-left">
