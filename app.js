@@ -3212,8 +3212,185 @@ const THEMES = [
   { id: 'sakura',   label: 'Sakura',   bg: '#f8dde8', card: 'rgba(255,244,248,0.9)', accent: '#b83a62' },
 ];
 
+// ── THEME BACKGROUND CANVAS ───────────────────
+let _bgAnimId = null;
+
+function _stopBg() {
+  if (_bgAnimId) { cancelAnimationFrame(_bgAnimId); _bgAnimId = null; }
+  const c = document.getElementById('themeBg');
+  if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+function _startBg(theme) {
+  _stopBg();
+  if (theme === 'sakura') return; // sakura uses the PNG div
+  const c = document.getElementById('themeBg');
+  if (!c) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = window.innerWidth, H = window.innerHeight;
+  c.width = W * dpr; c.height = H * dpr;
+  c.style.width = W + 'px'; c.style.height = H + 'px';
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  if (theme === '')         _bgRain(ctx, W, H);
+  else if (theme === 'midnight') _bgGalaxy(ctx, W, H);
+  else if (theme === 'forest')   _bgForest(ctx, W, H);
+}
+
+function _bgRain(ctx, W, H) {
+  const drops = Array.from({ length: 170 }, () => ({
+    x: Math.random() * (W + 120), y: Math.random() * H,
+    len: 10 + Math.random() * 22, speed: 7 + Math.random() * 10,
+    op: 0.03 + Math.random() * 0.08,
+  }));
+  let flash = 0, flashTick = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Stormy sky
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, 'rgba(2,7,18,0.9)');
+    sky.addColorStop(1, 'rgba(5,12,24,0.78)');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    // Lightning
+    flashTick++;
+    if (flashTick > 260 + (Math.random() * 400 | 0)) { flash = 0.14; flashTick = 0; }
+    if (flash > 0.005) {
+      ctx.fillStyle = `rgba(150,185,255,${flash})`; ctx.fillRect(0, 0, W, H);
+      flash *= 0.6;
+    }
+    // Rain
+    drops.forEach(d => {
+      ctx.globalAlpha = d.op;
+      ctx.strokeStyle = 'rgba(160,205,255,1)'; ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - d.len * 0.17, d.y + d.len);
+      ctx.stroke();
+      d.y += d.speed; d.x -= d.speed * 0.17;
+      if (d.y > H + d.len) { d.y = -d.len; d.x = Math.random() * (W + 120); }
+    });
+    ctx.globalAlpha = 1;
+    _bgAnimId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function _bgGalaxy(ctx, W, H) {
+  const stars = Array.from({ length: 360 }, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: Math.random() < 0.8 ? 0.4 + Math.random() * 0.8 : 1.3 + Math.random() * 1.4,
+    base: 0.2 + Math.random() * 0.8,
+    freq: 0.003 + Math.random() * 0.007,
+    phase: Math.random() * Math.PI * 2,
+  }));
+  let shoot = null, shootTick = 0, t = 0;
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+    // Deep space
+    const bg = ctx.createRadialGradient(W * 0.35, H * 0.2, 0, W * 0.5, H * 0.5, W);
+    bg.addColorStop(0, 'rgba(18,8,46,0.75)');
+    bg.addColorStop(0.5, 'rgba(6,4,20,0.82)');
+    bg.addColorStop(1, 'rgba(2,2,8,0.9)');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    // Nebula clouds
+    [[W*.18,H*.28,W*.5,110,50,220],[W*.8,H*.6,W*.4,70,20,160],[W*.55,H*.08,W*.32,40,70,200]].forEach(([nx,ny,nr,r,g,b]) => {
+      const n = ctx.createRadialGradient(nx,ny,0,nx,ny,nr);
+      n.addColorStop(0,`rgba(${r},${g},${b},0.07)`); n.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle = n; ctx.fillRect(0,0,W,H);
+    });
+    // Stars
+    stars.forEach(s => {
+      const a = s.base * (0.5 + 0.5 * Math.sin(t * s.freq + s.phase));
+      ctx.globalAlpha = a;
+      ctx.fillStyle = s.r > 1.2 ? '#ddd0ff' : '#ffffff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      if (s.r > 1.4 && a > 0.55) {
+        ctx.globalAlpha = a * 0.28; ctx.strokeStyle = '#c0b0ff'; ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(s.x-s.r*3,s.y); ctx.lineTo(s.x+s.r*3,s.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s.x,s.y-s.r*3); ctx.lineTo(s.x,s.y+s.r*3); ctx.stroke();
+      }
+    });
+    ctx.globalAlpha = 1;
+    // Shooting star
+    shootTick++;
+    if (!shoot && shootTick > 220 + (Math.random() * 480 | 0)) {
+      const a = 0.32 + Math.random() * 0.22;
+      shoot = { x: Math.random()*W*0.7, y: Math.random()*H*0.45, vx: Math.cos(a)*(4+Math.random()*3), vy: Math.sin(a)*(4+Math.random()*3), life: 1 };
+      shootTick = 0;
+    }
+    if (shoot) {
+      const tl = 16;
+      const g = ctx.createLinearGradient(shoot.x-shoot.vx*tl, shoot.y-shoot.vy*tl, shoot.x, shoot.y);
+      g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,`rgba(255,255,255,${shoot.life*0.85})`);
+      ctx.strokeStyle = g; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(shoot.x-shoot.vx*tl, shoot.y-shoot.vy*tl); ctx.lineTo(shoot.x, shoot.y); ctx.stroke();
+      shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life -= 0.032;
+      if (shoot.life <= 0 || shoot.x > W || shoot.y > H) shoot = null;
+    }
+    _bgAnimId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function _bgForest(ctx, W, H) {
+  const flies = Array.from({ length: 34 }, () => ({
+    x: Math.random() * W, y: H * 0.32 + Math.random() * H * 0.58,
+    vx: (Math.random()-.5)*.42, vy: (Math.random()-.5)*.3,
+    phase: Math.random() * Math.PI * 2,
+    freq: 0.016 + Math.random() * 0.028,
+    r: 1.2 + Math.random() * 1.5,
+    hue: Math.random() < 0.65 ? '140,240,140' : '200,240,100',
+  }));
+  let t = 0;
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+    // Forest atmosphere
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, 'rgba(3,8,3,0.9)');
+    bg.addColorStop(0.55, 'rgba(5,14,5,0.8)');
+    bg.addColorStop(1, 'rgba(8,20,6,0.72)');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    // Ground mist
+    const mist = ctx.createLinearGradient(0, H*.7, 0, H);
+    mist.addColorStop(0, 'rgba(60,110,55,0)');
+    mist.addColorStop(1, 'rgba(60,110,55,0.07)');
+    ctx.fillStyle = mist; ctx.fillRect(0, 0, W, H);
+    // Fireflies
+    flies.forEach(f => {
+      const glow = Math.max(0, Math.sin(t * f.freq + f.phase));
+      if (glow > 0.1) {
+        const a = glow * 0.88;
+        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 8);
+        g.addColorStop(0, `rgba(${f.hue},${(a * 0.38).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(f.x, f.y, f.r*8, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgb(${f.hue})`;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      f.vx += (Math.random()-.5)*.04; f.vy += (Math.random()-.5)*.03;
+      f.vx = Math.max(-.65,Math.min(.65,f.vx)); f.vy = Math.max(-.5,Math.min(.5,f.vy));
+      f.x += f.vx; f.y += f.vy;
+      if (f.x < -10) f.x = W+10; if (f.x > W+10) f.x = -10;
+      if (f.y < H*.2) f.vy += .03; if (f.y > H*.96) f.vy -= .03;
+    });
+    _bgAnimId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// Rebuild canvas on orientation/resize
+window.addEventListener('resize', () => {
+  const theme = localStorage.getItem(THEME_LS) || '';
+  if (theme !== 'sakura') _startBg(theme);
+});
+
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme || '');
+  _startBg(theme || '');
 }
 
 function setTheme(id) {

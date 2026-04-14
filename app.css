@@ -116,6 +116,55 @@
     [data-theme="forest"] .fin-mcard.down-card { border-color: rgba(252,165,165,0.3); background: rgba(252,165,165,0.05); }
     [data-theme="forest"] .quiz-next-btn { background: linear-gradient(135deg, #4ade80, #6ee7b7); color: #0a160a; }
     [data-theme="forest"] .daily-bar { background: linear-gradient(135deg, rgba(110,231,183,0.08), rgba(74,222,128,0.06)); border-color: rgba(110,231,183,0.2); }
+
+    /* ══════════════════════════════════════════════════════
+       ANIMATED BACKGROUNDS — canvas sits at z-index 0,
+       layout elements lifted to z-index 1, cards frosted
+    ══════════════════════════════════════════════════════ */
+    #themeBg {
+      display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ── DARK / STORM ── */
+    [data-theme=""] #themeBg { display: block; }
+    [data-theme=""] body { background: #020912; }
+    [data-theme=""] #splash { background: #020912; }
+    [data-theme=""] { --card: rgba(6,12,24,0.76); --bg2: rgba(4,9,18,0.72); --bg3: rgba(12,20,36,0.68); }
+    [data-theme=""] .safe-top  { background: rgba(2,6,14,0.6); position: relative; z-index: 1; }
+    [data-theme=""] .header    { position: relative; z-index: 1; }
+    [data-theme=""] .content   { position: relative; z-index: 1; }
+    [data-theme=""] .tab-bar   { position: relative; z-index: 1; background: rgba(2,6,14,0.82); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top-color: rgba(70,110,200,0.22); }
+    [data-theme=""] .card      { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: rgba(70,115,210,0.18); border-radius: 18px; }
+    [data-theme=""] .weather-card { background: linear-gradient(145deg,rgba(12,26,48,0.84),rgba(5,14,28,0.88)); border-color: rgba(80,140,230,0.26); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    [data-theme=""] .article-card { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    [data-theme=""] .date-line { letter-spacing: -0.4px; }
+
+    /* ── AURORA / GALAXY ── */
+    [data-theme="midnight"] #themeBg { display: block; }
+    [data-theme="midnight"] body { background: #020210; }
+    [data-theme="midnight"] #splash { background: #020210; }
+    [data-theme="midnight"] { --card: rgba(7,5,24,0.76); --bg2: rgba(4,3,16,0.72); --bg3: rgba(12,10,34,0.66); }
+    [data-theme="midnight"] .safe-top  { background: rgba(2,2,10,0.55); position: relative; z-index: 1; }
+    [data-theme="midnight"] .header    { position: relative; z-index: 1; }
+    [data-theme="midnight"] .content   { position: relative; z-index: 1; }
+    [data-theme="midnight"] .tab-bar   { position: relative; z-index: 1; background: rgba(2,2,10,0.84); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    [data-theme="midnight"] .card      { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 4px 28px rgba(0,0,0,0.55), inset 0 0.5px 0 rgba(167,139,250,0.12); border-color: rgba(130,100,255,0.18); border-radius: 18px; }
+    [data-theme="midnight"] .weather-card { background: linear-gradient(145deg,rgba(16,8,48,0.84),rgba(6,3,22,0.88)); border-color: rgba(167,139,250,0.32); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    [data-theme="midnight"] .article-card { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+    /* ── GROVE / FOREST ── */
+    [data-theme="forest"] #themeBg { display: block; }
+    [data-theme="forest"] body { background: #030c03; }
+    [data-theme="forest"] #splash { background: #030c03; }
+    [data-theme="forest"] { --card: rgba(6,18,6,0.78); --bg2: rgba(4,14,4,0.74); --bg3: rgba(12,28,12,0.68); }
+    [data-theme="forest"] .safe-top  { background: rgba(3,8,3,0.55); position: relative; z-index: 1; }
+    [data-theme="forest"] .header    { position: relative; z-index: 1; }
+    [data-theme="forest"] .content   { position: relative; z-index: 1; }
+    [data-theme="forest"] .tab-bar   { position: relative; z-index: 1; background: rgba(3,8,3,0.84); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    [data-theme="forest"] .card      { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: rgba(90,200,140,0.2); border-radius: 20px; }
+    [data-theme="forest"] .weather-card { background: linear-gradient(145deg,rgba(10,26,10,0.84),rgba(4,14,4,0.88)); border-color: rgba(110,231,183,0.28); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    [data-theme="forest"] .article-card { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
     .safe-top { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
 
