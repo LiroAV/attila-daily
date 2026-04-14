@@ -647,11 +647,7 @@ async function generateMorningBrief(force) {
   await _newsReady;
 
   const context = buildBriefContext();
-  const prompt = `You are Attila's personal morning assistant. Based on the data below, write a summary of what matters today in 4-5 sentences max. Cover these if relevant:
-- Any of his football clubs playing today or very soon (mention opponent and time)
-- Any major global news (breaking events, crises, important stories)
-- Any dramatic stock market or crypto moves
-Be direct and specific. No greeting, no sign-off, no bullet points.\n\n${context}`;
+  const prompt = `Write Attila a quick morning rundown — 3 to 4 casual sentences, like a smart friend who checked everything before he woke up. If one of his clubs is playing soon, mention it. If something big happened in the news or the markets moved sharply, call it out. Keep it natural and skip the formal opener.\n\nHere's what's going on today:\n${context}`;
 
   try {
     const text = await callGemini(prompt, 500);
@@ -728,7 +724,7 @@ async function generateNewsSummary() {
   el.innerHTML = '<div class="news-summary-loading">Summarising with AI…</div>';
 
   const headlines = allArticles.slice(0, 12).map(a => `- ${strip(a.title)}`).join('\n');
-  const prompt = `Today's top headlines:\n${headlines}\n\nSummarise in exactly 3 bullets. Each bullet: one sentence, max 20 words. Start each with "•". No intro, no outro, nothing else.`;
+  const prompt = `Here are today's top headlines:\n${headlines}\n\nGive Attila exactly 3 punchy bullets on what actually matters across these stories — the kind of thing you'd text a friend. Start each with "•", keep each under 20 words, no intro or outro.`;
 
   try {
     const text = await callGemini(prompt, 300);
@@ -2361,7 +2357,7 @@ async function generateMarketPulse() {
     return `${s.ticker} (${s.name}): ${dir} ${Math.abs(s.q.changePct).toFixed(2)}% today, price $${s.q.price.toFixed(2)}, open $${s.q.open?.toFixed(2) ?? '?'}`;
   }).join('\n');
 
-  const prompt = `Today's biggest movers in my portfolio:\n\n${moverLines}\n\nFor each stock write exactly 2 sentences explaining why it's likely moving today. Be specific — mention macro factors, sector news, or company events. No disclaimers, no headers, no extra text.`;
+  const prompt = `These are the biggest movers in Attila's portfolio today:\n\n${moverLines}\n\nFor each one, write 2 casual sentences explaining what's driving the move — macro, earnings, news, whatever's relevant. Be specific and a bit opinionated if it's warranted. No headers, no disclaimers.`;
 
   try {
     const text = await callGemini(prompt, 500);

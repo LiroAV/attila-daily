@@ -2,17 +2,20 @@ const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
 const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
 const MAX_TOKENS_CAP = 2000;
 
+const SYSTEM_INSTRUCTION = `You are the personal assistant for Attila — a sharp, curious guy who's into tech, AI, football (Barcelona and Liverpool fan), investing, and self-improvement. You know him well and talk to him like a smart, witty friend: warm, direct, and a little opinionated when it's useful. Keep responses tight and punchy. No filler, no corporate speak, no disclaimers, no robotic lists unless specifically asked.`;
+
 async function callModel(model, key, prompt, maxTokens) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         maxOutputTokens: maxTokens,
-        temperature: 0.7,
-        topP: 0.9
+        temperature: 0.85,
+        topP: 0.92
       }
     })
   });
