@@ -3258,36 +3258,32 @@ function _startBg(theme) {
 }
 
 function _bgRain(ctx, W, H) {
-  const drops = Array.from({ length: 170 }, () => ({
-    x: Math.random() * (W + 120), y: Math.random() * H,
-    len: 10 + Math.random() * 22, speed: 7 + Math.random() * 10,
-    op: 0.03 + Math.random() * 0.08,
+  // Heavier rain over the night.png image — image provides the dark background
+  const drops = Array.from({ length: 200 }, () => ({
+    x: Math.random() * (W + 140), y: Math.random() * H,
+    len: 12 + Math.random() * 28, speed: 8 + Math.random() * 12,
+    op: 0.06 + Math.random() * 0.18,  // more visible over photo
   }));
   let flash = 0, flashTick = 0;
   function draw() {
-    ctx.clearRect(0, 0, W, H);
-    // Stormy sky
-    const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, 'rgba(2,7,18,0.9)');
-    sky.addColorStop(1, 'rgba(5,12,24,0.78)');
-    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-    // Lightning
+    ctx.clearRect(0, 0, W, H); // transparent — night.png shows through
+    // Lightning flash
     flashTick++;
-    if (flashTick > 260 + (Math.random() * 400 | 0)) { flash = 0.14; flashTick = 0; }
+    if (flashTick > 280 + (Math.random() * 420 | 0)) { flash = 0.18; flashTick = 0; }
     if (flash > 0.005) {
-      ctx.fillStyle = `rgba(150,185,255,${flash})`; ctx.fillRect(0, 0, W, H);
-      flash *= 0.6;
+      ctx.fillStyle = `rgba(180,210,255,${flash})`; ctx.fillRect(0, 0, W, H);
+      flash *= 0.58;
     }
-    // Rain
+    // Rain streaks
     drops.forEach(d => {
       ctx.globalAlpha = d.op;
-      ctx.strokeStyle = 'rgba(160,205,255,1)'; ctx.lineWidth = 0.7;
+      ctx.strokeStyle = 'rgba(180,215,255,1)'; ctx.lineWidth = 0.8;
       ctx.beginPath();
       ctx.moveTo(d.x, d.y);
-      ctx.lineTo(d.x - d.len * 0.17, d.y + d.len);
+      ctx.lineTo(d.x - d.len * 0.18, d.y + d.len);
       ctx.stroke();
-      d.y += d.speed; d.x -= d.speed * 0.17;
-      if (d.y > H + d.len) { d.y = -d.len; d.x = Math.random() * (W + 120); }
+      d.y += d.speed; d.x -= d.speed * 0.18;
+      if (d.y > H + d.len) { d.y = -d.len; d.x = Math.random() * (W + 140); }
     });
     ctx.globalAlpha = 1;
     _bgAnimId = requestAnimationFrame(draw);
@@ -3296,56 +3292,46 @@ function _bgRain(ctx, W, H) {
 }
 
 function _bgGalaxy(ctx, W, H) {
-  const stars = Array.from({ length: 360 }, () => ({
+  // galaxy.png provides the stars — canvas adds: subtle nebula shimmer + shooting stars
+  let shoot = null, shootTick = 0, t = 0;
+  // A handful of extra bright stars that twinkle over the photo
+  const sparks = Array.from({ length: 60 }, () => ({
     x: Math.random() * W, y: Math.random() * H,
-    r: Math.random() < 0.8 ? 0.4 + Math.random() * 0.8 : 1.3 + Math.random() * 1.4,
-    base: 0.2 + Math.random() * 0.8,
-    freq: 0.003 + Math.random() * 0.007,
+    r: 0.8 + Math.random() * 1.6,
+    base: 0.3 + Math.random() * 0.7,
+    freq: 0.004 + Math.random() * 0.009,
     phase: Math.random() * Math.PI * 2,
   }));
-  let shoot = null, shootTick = 0, t = 0;
   function draw() {
     t++;
-    ctx.clearRect(0, 0, W, H);
-    // Deep space
-    const bg = ctx.createRadialGradient(W * 0.35, H * 0.2, 0, W * 0.5, H * 0.5, W);
-    bg.addColorStop(0, 'rgba(18,8,46,0.75)');
-    bg.addColorStop(0.5, 'rgba(6,4,20,0.82)');
-    bg.addColorStop(1, 'rgba(2,2,8,0.9)');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    // Nebula clouds
-    [[W*.18,H*.28,W*.5,110,50,220],[W*.8,H*.6,W*.4,70,20,160],[W*.55,H*.08,W*.32,40,70,200]].forEach(([nx,ny,nr,r,g,b]) => {
-      const n = ctx.createRadialGradient(nx,ny,0,nx,ny,nr);
-      n.addColorStop(0,`rgba(${r},${g},${b},0.07)`); n.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle = n; ctx.fillRect(0,0,W,H);
-    });
-    // Stars
-    stars.forEach(s => {
-      const a = s.base * (0.5 + 0.5 * Math.sin(t * s.freq + s.phase));
-      ctx.globalAlpha = a;
-      ctx.fillStyle = s.r > 1.2 ? '#ddd0ff' : '#ffffff';
+    ctx.clearRect(0, 0, W, H); // transparent — galaxy.png shows through
+    // Subtle animated nebula color wash
+    const neb = ctx.createRadialGradient(W*.3, H*.25, 0, W*.5, H*.5, W*.7);
+    neb.addColorStop(0, `rgba(80,40,160,${0.03 + 0.02 * Math.sin(t * 0.002)})`);
+    neb.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb; ctx.fillRect(0, 0, W, H);
+    // Twinkling overlay stars (brighter than the photo's stars)
+    sparks.forEach(s => {
+      const a = s.base * (0.4 + 0.6 * Math.sin(t * s.freq + s.phase));
+      ctx.globalAlpha = a * 0.7;
+      ctx.fillStyle = '#e8e0ff';
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-      if (s.r > 1.4 && a > 0.55) {
-        ctx.globalAlpha = a * 0.28; ctx.strokeStyle = '#c0b0ff'; ctx.lineWidth = 0.5;
-        ctx.beginPath(); ctx.moveTo(s.x-s.r*3,s.y); ctx.lineTo(s.x+s.r*3,s.y); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(s.x,s.y-s.r*3); ctx.lineTo(s.x,s.y+s.r*3); ctx.stroke();
-      }
     });
     ctx.globalAlpha = 1;
     // Shooting star
     shootTick++;
     if (!shoot && shootTick > 220 + (Math.random() * 480 | 0)) {
       const a = 0.32 + Math.random() * 0.22;
-      shoot = { x: Math.random()*W*0.7, y: Math.random()*H*0.45, vx: Math.cos(a)*(4+Math.random()*3), vy: Math.sin(a)*(4+Math.random()*3), life: 1 };
+      shoot = { x: Math.random()*W*0.7, y: Math.random()*H*0.4, vx: Math.cos(a)*(5+Math.random()*4), vy: Math.sin(a)*(5+Math.random()*4), life: 1 };
       shootTick = 0;
     }
     if (shoot) {
-      const tl = 16;
+      const tl = 20;
       const g = ctx.createLinearGradient(shoot.x-shoot.vx*tl, shoot.y-shoot.vy*tl, shoot.x, shoot.y);
-      g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,`rgba(255,255,255,${shoot.life*0.85})`);
-      ctx.strokeStyle = g; ctx.lineWidth = 1.2;
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, `rgba(255,255,255,${shoot.life})`);
+      ctx.strokeStyle = g; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(shoot.x-shoot.vx*tl, shoot.y-shoot.vy*tl); ctx.lineTo(shoot.x, shoot.y); ctx.stroke();
-      shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life -= 0.032;
+      shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life -= 0.028;
       if (shoot.life <= 0 || shoot.x > W || shoot.y > H) shoot = null;
     }
     _bgAnimId = requestAnimationFrame(draw);
@@ -3354,28 +3340,23 @@ function _bgGalaxy(ctx, W, H) {
 }
 
 function _bgForest(ctx, W, H) {
-  const flies = Array.from({ length: 34 }, () => ({
-    x: Math.random() * W, y: H * 0.32 + Math.random() * H * 0.58,
+  // forest.jpeg provides the scene — canvas adds fireflies floating over it
+  const flies = Array.from({ length: 38 }, () => ({
+    x: Math.random() * W, y: H * 0.3 + Math.random() * H * 0.62,
     vx: (Math.random()-.5)*.42, vy: (Math.random()-.5)*.3,
     phase: Math.random() * Math.PI * 2,
     freq: 0.016 + Math.random() * 0.028,
-    r: 1.2 + Math.random() * 1.5,
-    hue: Math.random() < 0.65 ? '140,240,140' : '200,240,100',
+    r: 1.4 + Math.random() * 1.8,  // slightly larger to show over photo
+    hue: Math.random() < 0.65 ? '150,255,150' : '210,255,110',
   }));
   let t = 0;
   function draw() {
     t++;
-    ctx.clearRect(0, 0, W, H);
-    // Forest atmosphere
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, 'rgba(3,8,3,0.9)');
-    bg.addColorStop(0.55, 'rgba(5,14,5,0.8)');
-    bg.addColorStop(1, 'rgba(8,20,6,0.72)');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    // Ground mist
-    const mist = ctx.createLinearGradient(0, H*.7, 0, H);
-    mist.addColorStop(0, 'rgba(60,110,55,0)');
-    mist.addColorStop(1, 'rgba(60,110,55,0.07)');
+    ctx.clearRect(0, 0, W, H); // transparent — forest.jpeg shows through
+    // Subtle ground mist over the photo
+    const mist = ctx.createLinearGradient(0, H*.65, 0, H);
+    mist.addColorStop(0, 'rgba(80,140,70,0)');
+    mist.addColorStop(1, 'rgba(80,140,70,0.1)');
     ctx.fillStyle = mist; ctx.fillRect(0, 0, W, H);
     // Fireflies
     flies.forEach(f => {
