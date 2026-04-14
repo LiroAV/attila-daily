@@ -1595,7 +1595,6 @@ function podcastPlay(idx) {
   if (el && cached) renderPodcastEpisodes(el, cached.url, cached.feedTitle, cached.items);
 
   _podcastAudio = new Audio(ep.url);
-  _podcastAudio.crossOrigin = 'anonymous';
 
   // Restore saved position
   const positions = JSON.parse(localStorage.getItem(PODCAST_POS_LS) || '{}');
@@ -3076,8 +3075,8 @@ async function renderSettings() {
     { id:'weatherCard', label:'Weather' },
     { id:'morningBriefCard', label:'Morning Brief' },
     { id:'clubEventsCard', label:'Upcoming Events' },
-    { id:'spotifyCard', label:'Spotify' },
     { id:'podcastCard', label:'Podcast' },
+    { id:'spotifyCard', label:'Spotify' },
     { id:'footballCard', label:'Football' },
   ];
 
