@@ -8,32 +8,54 @@ export default async function handler(req, res) {
 
   try {
     const r = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PodcastReader/1.0)' },
-      signal: AbortSignal.timeout(10000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(12000),
     });
     if (!r.ok) { res.status(502).json({ error: `Feed returned ${r.status}` }); return; }
 
     const xml = await r.text();
 
-    // Feed title
-    const feedTitle = (xml.match(/<channel[^>]*>[\s\S]*?<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/)?.[1] || '').trim();
+    // Feed title — first <title> inside <channel>
+    const chanMatch = xml.match(/<channel[\s>]([\s\S]*)/i);
+    const chanBlock = chanMatch ? chanMatch[1] : xml;
+    const feedTitle = (chanBlock.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1] || '').trim();
 
     // Parse items
     const items = [];
-    const itemRx = /<item[^>]*>([\s\S]*?)<\/item>/g;
+    const itemRx = /<item[\s>]([\s\S]*?)<\/item>/gi;
     let m;
     while ((m = itemRx.exec(xml)) !== null && items.length < 8) {
       const block = m[1];
+
+      // Text content of a tag, strips CDATA
       const get = (tag) => {
-        const r = block.match(new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i'));
-        return r ? r[1].trim() : '';
+        const rx = new RegExp(`<${tag}(?:\\s[^>]*)?>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i');
+        return (block.match(rx)?.[1] || '').trim();
       };
-      const enclosureUrl = (block.match(/<enclosure[^>]+url="([^"]+)"/i) || block.match(/<enclosure[^>]+url='([^']+)'/i))?.[1] || '';
+
+      // Audio URL: try <enclosure url="...">, then <media:content url="...">, then <link>
+      const enclosureUrl =
+        block.match(/<enclosure[^>]+url="([^"]+)"/i)?.[1] ||
+        block.match(/<enclosure[^>]+url='([^']+)'/i)?.[1] ||
+        block.match(/<media:content[^>]+url="([^"]+)"/i)?.[1] ||
+        block.match(/<media:content[^>]+url='([^']+)'/i)?.[1] ||
+        '';
+
       const duration = (block.match(/<itunes:duration[^>]*>([^<]+)<\/itunes:duration>/i))?.[1]?.trim() || '';
-      const pubDate = get('pubDate');
       const title = get('title');
+      const pubDate = get('pubDate');
+
       if (!title || !enclosureUrl) continue;
       items.push({ title, url: enclosureUrl, date: pubDate, duration });
+    }
+
+    if (!items.length) {
+      res.status(502).json({ error: 'Feed parsed but no audio episodes found — check the RSS URL is a podcast feed' });
+      return;
     }
 
     res.setHeader('Cache-Control', 's-maxage=7200');

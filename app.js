@@ -1445,7 +1445,7 @@ const PODCAST_POS_LS = 'atd_podcast_pos';
 const PODCAST_CACHE_TTL = 3 * 60 * 60 * 1000; // 3h
 
 const PODCAST_SUGGESTIONS = [
-  { name: 'The AI Daily Brief', desc: 'Daily AI news in ~15 min', url: 'https://feeds.megaphone.fm/the-ai-daily-brief' },
+  { name: 'The AI Daily Brief', desc: 'Daily AI news in ~15 min', url: 'https://feeds.megaphone.fm/GLT1412515089' },
   { name: 'Hard Fork (NYT)', desc: 'Tech & AI from the NY Times', url: 'https://feeds.simplecast.com/l2i9YnTd' },
   { name: 'Lex Fridman Podcast', desc: 'Deep dives on AI & science', url: 'https://lexfridman.com/feed/podcast/' },
 ];
@@ -1586,29 +1586,49 @@ function podcastPlay(idx) {
   const ep = _podcastEpisodes[idx];
   if (!ep?.url) return;
 
-  if (_podcastAudio) { _podcastAudio.pause(); _podcastAudio.src = ''; }
+  if (_podcastAudio) { _podcastAudio.pause(); _podcastAudio.src = ''; _podcastAudio = null; }
   _podcastPlayingIdx = idx;
 
-  // Re-render so now-playing section appears / updates
+  // ⚠️ iOS Safari: .play() MUST be called synchronously within the user gesture.
+  // Create Audio and call play() NOW — before any DOM manipulation.
+  _podcastAudio = new Audio(ep.url);
+  _podcastAudio.preload = 'auto';
+
+  const playPromise = _podcastAudio.play();
+
+  // Restore saved position once metadata is available
+  const positions = JSON.parse(localStorage.getItem(PODCAST_POS_LS) || '{}');
+  if (positions[ep.url] > 5) {
+    _podcastAudio.addEventListener('loadedmetadata', () => {
+      if (_podcastAudio) _podcastAudio.currentTime = positions[ep.url];
+    }, { once: true });
+  }
+
+  _podcastAudio.addEventListener('ended', () => {
+    if (_podcastPlayingIdx < _podcastEpisodes.length - 1) podcastPlay(_podcastPlayingIdx + 1);
+  }, { once: true });
+
+  // NOW update the DOM (after play() is already in flight)
   const el = document.getElementById('podcastContent');
   const cached = JSON.parse(localStorage.getItem(PODCAST_CACHE_LS) || 'null');
   if (el && cached) renderPodcastEpisodes(el, cached.url, cached.feedTitle, cached.items);
 
-  _podcastAudio = new Audio(ep.url);
-
-  // Restore saved position
-  const positions = JSON.parse(localStorage.getItem(PODCAST_POS_LS) || '{}');
-  if (positions[ep.url] > 5) _podcastAudio.currentTime = positions[ep.url];
-
-  _podcastAudio.play().then(() => {
-    const btn = document.getElementById('podcastPlayBtn');
-    if (btn) btn.textContent = '⏸';
-    podcastStartTick();
-  }).catch(() => {});
-
-  _podcastAudio.addEventListener('ended', () => {
-    if (_podcastPlayingIdx < _podcastEpisodes.length - 1) podcastPlay(_podcastPlayingIdx + 1);
-  });
+  if (playPromise) {
+    playPromise.then(() => {
+      const btn = document.getElementById('podcastPlayBtn');
+      if (btn) btn.textContent = '⏸';
+      podcastStartTick();
+    }).catch(() => {
+      // Show a tap-to-play prompt if autoplay was blocked
+      const npEl = document.getElementById('podcastNowPlaying');
+      if (npEl) {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'font-size:11px;color:var(--orange);margin-top:6px';
+        hint.textContent = 'Tap ▶ to start playback';
+        npEl.appendChild(hint);
+      }
+    });
+  }
 }
 
 function podcastToggle() {
