@@ -5,11 +5,15 @@
       --accent: #0A84FF; --green: #30d158; --red: #ff453a; --orange: #ff9f0a; --purple: #bf5af2;
       --border: rgba(84,84,88,0.55); --card: #1c1c1e;
     }
+    /* ══════════════════════════════════════════
+       SAKURA — Japanese minimalist, soft & warm
+       Font: Noto Serif JP / Zen Kaku Gothic New
+    ══════════════════════════════════════════ */
     [data-theme="sakura"] {
-      --bg: transparent; --bg2: rgba(255,245,248,0.82); --bg3: rgba(255,235,242,0.75);
-      --text: #2d1a22; --text2: rgba(80,40,55,0.75); --text3: rgba(100,55,70,0.5);
-      --accent: #c0446e; --green: #5a9e6f; --red: #c94040; --orange: #c87832; --purple: #8b5ca8;
-      --border: rgba(200,130,155,0.3); --card: rgba(255,245,248,0.82);
+      --bg: transparent; --bg2: rgba(255,244,248,0.88); --bg3: rgba(255,232,241,0.78);
+      --text: #2a1520; --text2: rgba(75,35,52,0.72); --text3: rgba(110,60,80,0.45);
+      --accent: #b83a62; --green: #4d9467; --red: #c23a3a; --orange: #bf7020; --purple: #7c4fa0;
+      --border: rgba(190,115,145,0.28); --card: rgba(255,244,248,0.88);
     }
 
     /* ── SAKURA BACKGROUND ── */
@@ -20,63 +24,98 @@
       pointer-events: none;
     }
     [data-theme="sakura"] #sakuraBg { display: block; }
-
-    /* Sakura overrides for hardcoded bg elements */
-    [data-theme="sakura"] body { background: #fce8f0; }
+    [data-theme="sakura"] body { background: #f8dde8; font-family: 'Zen Kaku Gothic New', -apple-system, sans-serif; }
     [data-theme="sakura"] .safe-top { background: transparent; position: relative; z-index: 1; }
     [data-theme="sakura"] .header { background: transparent; position: relative; z-index: 1; }
-    [data-theme="sakura"] .tab-bar { position: relative; z-index: 1; }
-    [data-theme="sakura"] .tab-bar { background: rgba(252,235,243,0.92); border-top-color: rgba(200,130,155,0.35); }
     [data-theme="sakura"] .content { background: transparent; position: relative; z-index: 1; }
-    [data-theme="sakura"] .weather-card { background: linear-gradient(145deg, rgba(220,100,140,0.18), rgba(180,220,150,0.15)); border-color: rgba(200,120,150,0.3); }
-    [data-theme="sakura"] .weather-temp { color: #2d1a22; }
-    [data-theme="sakura"] .weather-loc { color: rgba(60,30,45,0.8); }
-    [data-theme="sakura"] .weather-meta span { color: rgba(60,30,45,0.65); }
-    [data-theme="sakura"] .fin-mcard.up-card { border-color: rgba(90,158,111,0.4); background: rgba(90,158,111,0.08); }
-    [data-theme="sakura"] .fin-mcard.down-card { border-color: rgba(201,64,64,0.3); background: rgba(201,64,64,0.05); }
-    [data-theme="sakura"] .quiz-next-btn { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
-    [data-theme="sakura"] .icon-btn { background: rgba(255,235,242,0.85); border: 0.5px solid rgba(200,130,155,0.4); }
-    [data-theme="sakura"] .avatar { background: linear-gradient(135deg, #c0446e, #8b5ca8); }
-    [data-theme="sakura"] .tab-item.active .tab-icon { color: #c0446e; }
-    [data-theme="sakura"] .tab-item.active .tab-label { color: #c0446e; }
-    [data-theme="sakura"] .tab-icon { color: rgba(100,55,70,0.45); }
-    [data-theme="sakura"] .tab-label { color: rgba(100,55,70,0.45); }
-    [data-theme="sakura"] #splash { background: #fce8f0; }
-    [data-theme="sakura"] body { font-family: 'Zen Kaku Gothic New', -apple-system, sans-serif; }
-    [data-theme="sakura"] .date-line { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 0.5px; }
-    [data-theme="sakura"] .greeting { font-family: 'Noto Serif JP', serif; font-weight: 300; }
-    [data-theme="sakura"] .card-title { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 1.5px; }
-    [data-theme="sakura"] .weather-temp { font-family: 'Noto Serif JP', serif; font-weight: 300; }
+    [data-theme="sakura"] #splash { background: #f8dde8; }
+
+    [data-theme="sakura"] .tab-bar { position: relative; z-index: 1; background: rgba(250,232,241,0.94); border-top-color: rgba(190,115,145,0.3); }
+    [data-theme="sakura"] .tab-item.active .tab-icon { color: #b83a62; }
+    [data-theme="sakura"] .tab-item.active .tab-label { color: #b83a62; }
+    [data-theme="sakura"] .tab-icon { color: rgba(110,60,80,0.4); }
+    [data-theme="sakura"] .tab-label { font-family: 'Zen Kaku Gothic New', sans-serif; color: rgba(110,60,80,0.4); }
+    [data-theme="sakura"] .more-item.active-section svg, [data-theme="sakura"] .more-item.active-section span { color: #b83a62; }
+
+    [data-theme="sakura"] .greeting { font-family: 'Noto Serif JP', serif; font-weight: 300; letter-spacing: 0.3px; }
+    [data-theme="sakura"] .date-line { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 0.3px; }
+    [data-theme="sakura"] .card-title { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 2px; font-size: 10px; }
+    [data-theme="sakura"] .article-title { font-family: 'Noto Serif JP', serif; font-weight: 700; letter-spacing: -0.2px; }
+    [data-theme="sakura"] .weather-temp { font-family: 'Noto Serif JP', serif; font-weight: 300; color: #2a1520; }
     [data-theme="sakura"] .fin-title { font-family: 'Noto Serif JP', serif; }
-    [data-theme="sakura"] .tab-label { font-family: 'Zen Kaku Gothic New', sans-serif; }
 
-    /* ── MIDNIGHT THEME ── */
+    [data-theme="sakura"] .weather-card { background: linear-gradient(145deg, rgba(210,90,130,0.14), rgba(175,210,145,0.12)); border-color: rgba(190,115,145,0.28); }
+    [data-theme="sakura"] .card { border-radius: 18px; }
+    [data-theme="sakura"] .icon-btn { background: rgba(255,232,241,0.9); border: 0.5px solid rgba(190,115,145,0.35); }
+    [data-theme="sakura"] .avatar { background: linear-gradient(135deg, #b83a62, #7c4fa0); }
+    [data-theme="sakura"] .fin-mcard.up-card { border-color: rgba(77,148,103,0.4); background: rgba(77,148,103,0.08); }
+    [data-theme="sakura"] .fin-mcard.down-card { border-color: rgba(194,58,58,0.3); background: rgba(194,58,58,0.05); }
+    [data-theme="sakura"] .quiz-next-btn { background: linear-gradient(135deg, #b83a62, #7c4fa0); }
+
+    /* ══════════════════════════════════════════
+       MIDNIGHT — Deep space, aurora glow
+       Font: DM Sans — geometric, modern
+    ══════════════════════════════════════════ */
     [data-theme="midnight"] {
-      --bg: #0d0f1a; --bg2: #141726; --bg3: #1d2035;
-      --text: #e4e8ff; --text2: rgba(200,210,255,0.62); --text3: rgba(180,190,240,0.35);
-      --accent: #818cf8; --green: #34d399; --red: #f87171; --orange: #fb923c; --purple: #a78bfa;
-      --border: rgba(100,110,200,0.28); --card: #141726;
+      --bg: #06060f; --bg2: #0c0c1e; --bg3: #121228;
+      --text: #eeeaff; --text2: rgba(218,212,255,0.62); --text3: rgba(190,182,255,0.32);
+      --accent: #a78bfa; --green: #34d399; --red: #f87171; --orange: #fbbf24; --purple: #e879f9;
+      --border: rgba(167,139,250,0.18); --card: #0c0c1e;
     }
-    [data-theme="midnight"] #splash { background: #0d0f1a; }
-    [data-theme="midnight"] .tab-bar { background: rgba(13,15,26,0.97); border-top-color: rgba(100,110,200,0.25); }
-    [data-theme="midnight"] .weather-card { background: linear-gradient(145deg, #1a1d3a, #0f1228); border-color: rgba(129,140,248,0.2); }
-    [data-theme="midnight"] .tab-item.active .tab-icon { color: #818cf8; }
-    [data-theme="midnight"] .tab-item.active .tab-label { color: #818cf8; }
-    [data-theme="midnight"] .more-item.active-section svg, [data-theme="midnight"] .more-item.active-section span { color: #818cf8; }
+    [data-theme="midnight"] body { font-family: 'DM Sans', -apple-system, sans-serif; }
+    [data-theme="midnight"] #splash { background: #06060f; }
 
-    /* ── FOREST THEME ── */
+    [data-theme="midnight"] .tab-bar { background: rgba(6,6,15,0.98); border-top-color: rgba(167,139,250,0.2); }
+    [data-theme="midnight"] .tab-item.active .tab-icon { color: #a78bfa; }
+    [data-theme="midnight"] .tab-item.active .tab-label { color: #a78bfa; }
+    [data-theme="midnight"] .more-item.active-section svg, [data-theme="midnight"] .more-item.active-section span { color: #a78bfa; }
+
+    [data-theme="midnight"] .greeting { font-weight: 300; letter-spacing: 0.2px; }
+    [data-theme="midnight"] .date-line { font-weight: 500; letter-spacing: -0.3px; }
+    [data-theme="midnight"] .card-title { letter-spacing: 1.8px; font-weight: 700; }
+    [data-theme="midnight"] .article-title { font-weight: 700; letter-spacing: -0.2px; }
+
+    [data-theme="midnight"] .weather-card { background: linear-gradient(145deg, #120f30, #07061a); border-color: rgba(167,139,250,0.3); }
+    [data-theme="midnight"] .card { box-shadow: 0 4px 28px rgba(0,0,0,0.5), inset 0 0.5px 0 rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.16); border-radius: 18px; }
+    [data-theme="midnight"] .avatar { background: linear-gradient(135deg, #a78bfa, #e879f9); }
+    [data-theme="midnight"] .fin-mcard.up-card { border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.06); }
+    [data-theme="midnight"] .fin-mcard.down-card { border-color: rgba(248,113,113,0.28); background: rgba(248,113,113,0.05); }
+    [data-theme="midnight"] .quiz-next-btn { background: linear-gradient(135deg, #a78bfa, #e879f9); }
+    [data-theme="midnight"] .daily-bar { background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(232,121,249,0.08)); border-color: rgba(167,139,250,0.22); }
+
+    /* ══════════════════════════════════════════
+       FOREST — Nature journal, organic & calm
+       Font: Lora — literary serif
+    ══════════════════════════════════════════ */
     [data-theme="forest"] {
-      --bg: #0d1a0e; --bg2: #132018; --bg3: #1b2e1f;
-      --text: #e8f5ea; --text2: rgba(190,230,195,0.62); --text3: rgba(160,210,165,0.38);
-      --accent: #4ade80; --green: #4ade80; --red: #f87171; --orange: #fb923c; --purple: #c084fc;
-      --border: rgba(74,200,100,0.22); --card: #132018;
+      --bg: #0a160a; --bg2: #112211; --bg3: #183318;
+      --text: #e4f2e6; --text2: rgba(180,228,185,0.68); --text3: rgba(148,208,155,0.42);
+      --accent: #6ee7b7; --green: #6ee7b7; --red: #fca5a5; --orange: #fdba74; --purple: #c4b5fd;
+      --border: rgba(110,231,183,0.2); --card: #112211;
     }
-    [data-theme="forest"] #splash { background: #0d1a0e; }
-    [data-theme="forest"] .tab-bar { background: rgba(13,26,14,0.97); border-top-color: rgba(74,200,100,0.2); }
-    [data-theme="forest"] .weather-card { background: linear-gradient(145deg, #152a18, #0e1f10); border-color: rgba(74,222,128,0.2); }
-    [data-theme="forest"] .tab-item.active .tab-icon { color: #4ade80; }
-    [data-theme="forest"] .tab-item.active .tab-label { color: #4ade80; }
-    [data-theme="forest"] .more-item.active-section svg, [data-theme="forest"] .more-item.active-section span { color: #4ade80; }
+    [data-theme="forest"] body { font-family: 'Lora', Georgia, serif; }
+    [data-theme="forest"] #splash { background: #0a160a; }
+
+    [data-theme="forest"] .tab-bar { background: rgba(10,22,10,0.98); border-top-color: rgba(110,231,183,0.18); }
+    [data-theme="forest"] .tab-item.active .tab-icon { color: #6ee7b7; }
+    [data-theme="forest"] .tab-item.active .tab-label { color: #6ee7b7; }
+    [data-theme="forest"] .more-item.active-section svg, [data-theme="forest"] .more-item.active-section span { color: #6ee7b7; }
+
+    [data-theme="forest"] .greeting { font-style: italic; font-weight: 400; letter-spacing: 0.2px; }
+    [data-theme="forest"] .date-line { font-weight: 700; letter-spacing: -0.2px; }
+    [data-theme="forest"] .card-title { font-family: 'Lora', serif; font-style: italic; font-weight: 600; text-transform: none; font-size: 12px; letter-spacing: 0.3px; }
+    [data-theme="forest"] .article-title { font-weight: 700; line-height: 1.3; letter-spacing: -0.2px; }
+    [data-theme="forest"] .quote-text { font-size: 16px; line-height: 1.7; }
+    [data-theme="forest"] .task-inp, [data-theme="forest"] .gratitude-area { font-family: 'Lora', serif; }
+    [data-theme="forest"] .tab-label { font-family: -apple-system, sans-serif; font-size: 9px; letter-spacing: 0.3px; }
+
+    [data-theme="forest"] .weather-card { background: linear-gradient(145deg, #172f18, #0d1e0d); border-color: rgba(110,231,183,0.25); }
+    [data-theme="forest"] .card { border-radius: 20px; border-color: rgba(110,231,183,0.18); }
+    [data-theme="forest"] .avatar { background: linear-gradient(135deg, #6ee7b7, #4ade80); color: #0a160a; }
+    [data-theme="forest"] .fin-mcard.up-card { border-color: rgba(110,231,183,0.38); background: rgba(110,231,183,0.07); }
+    [data-theme="forest"] .fin-mcard.down-card { border-color: rgba(252,165,165,0.3); background: rgba(252,165,165,0.05); }
+    [data-theme="forest"] .quiz-next-btn { background: linear-gradient(135deg, #4ade80, #6ee7b7); color: #0a160a; }
+    [data-theme="forest"] .daily-bar { background: linear-gradient(135deg, rgba(110,231,183,0.08), rgba(74,222,128,0.06)); border-color: rgba(110,231,183,0.2); }
     body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
     .safe-top { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
 

@@ -3206,10 +3206,10 @@ async function renderSettings() {
 const THEME_LS = 'atd_theme';
 
 const THEMES = [
-  { id: '',         label: 'Dark',     bg: '#000000', card: '#1c1c1e',              accent: '#0A84FF' },
-  { id: 'midnight', label: 'Midnight', bg: '#0d0f1a', card: '#141726',              accent: '#818cf8' },
-  { id: 'forest',   label: 'Forest',   bg: '#0d1a0e', card: '#132018',              accent: '#4ade80' },
-  { id: 'sakura',   label: 'Sakura',   bg: '#fce8f0', card: 'rgba(255,245,248,0.9)', accent: '#c0446e' },
+  { id: '',         label: 'Dark',     bg: '#000000', card: '#1c1c1e', accent: '#0A84FF' },
+  { id: 'midnight', label: 'Aurora',   bg: '#06060f', card: '#0c0c1e', accent: '#a78bfa' },
+  { id: 'forest',   label: 'Grove',    bg: '#0a160a', card: '#112211', accent: '#6ee7b7' },
+  { id: 'sakura',   label: 'Sakura',   bg: '#f8dde8', card: 'rgba(255,244,248,0.9)', accent: '#b83a62' },
 ];
 
 function applyTheme(theme) {
