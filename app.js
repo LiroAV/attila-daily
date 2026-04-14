@@ -3193,7 +3193,13 @@ async function renderSettings() {
     <div style="margin-top:12px">
       <button style="width:100%;padding:14px;background:rgba(255,69,58,0.07);border:0.5px solid rgba(255,69,58,0.3);border-radius:12px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit" onclick="settingsClearAll()">Clear all app data</button>
     </div>
-    <div style="text-align:center;margin-top:28px;font-size:12px;color:var(--text3)">Attila's Daily · All data stays on this device</div>
+    <div style="text-align:center;margin-top:28px;padding-bottom:4px">
+      <a href="https://www.linkedin.com/in/attila-vizhanyo-162072279/" target="_blank" rel="noopener" style="font-size:12px;color:var(--text3);text-decoration:none;display:inline-flex;align-items:center;gap:5px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.43v6.31zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.28V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        Built by Attila Vizhanyo
+      </a>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px">All data stays on this device</div>
+    </div>
   `;
 }
 
