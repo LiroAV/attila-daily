@@ -2849,14 +2849,15 @@ async function renderSettings() {
 
   el.innerHTML = `
     <div class="settings-section-title">Appearance</div>
-    <div class="settings-card">
-      <div class="settings-row">
-        <div class="settings-row-left">
-          <span class="settings-row-label">Theme</span>
-          <span class="settings-row-sub">${theme==='sakura'?'Sakura 🌸':'Dark 🌑'}</span>
-        </div>
-        ${btn('Switch','toggleTheme();renderSettings()')}
-      </div>
+    <div class="theme-picker">
+      ${THEMES.map(t => `
+        <div class="theme-tile${theme === t.id ? ' active' : ''}" onclick="setTheme('${t.id}')">
+          <div class="theme-tile-swatch" style="background:${t.bg}">
+            <div style="height:6px;background:${t.card};border-radius:3px"></div>
+            <div style="height:4px;width:55%;background:${t.accent};border-radius:2px"></div>
+          </div>
+          <span>${t.label}</span>
+        </div>`).join('')}
     </div>
 
     <div class="settings-section-title">Home Cards</div>
@@ -2956,23 +2957,21 @@ async function renderSettings() {
 // ── THEME ─────────────────────────────────────
 const THEME_LS = 'atd_theme';
 
+const THEMES = [
+  { id: '',         label: 'Dark',     bg: '#000000', card: '#1c1c1e',              accent: '#0A84FF' },
+  { id: 'midnight', label: 'Midnight', bg: '#0d0f1a', card: '#141726',              accent: '#818cf8' },
+  { id: 'forest',   label: 'Forest',   bg: '#0d1a0e', card: '#132018',              accent: '#4ade80' },
+  { id: 'sakura',   label: 'Sakura',   bg: '#fce8f0', card: 'rgba(255,245,248,0.9)', accent: '#c0446e' },
+];
+
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme || '');
-  const btn = document.getElementById('themeBtn');
-  if (theme === 'sakura') {
-    btn.textContent = '🌑';
-    btn.title = 'Switch to dark theme';
-  } else {
-    btn.textContent = '🌸';
-    btn.title = 'Switch to Sakura theme';
-  }
 }
 
-function toggleTheme() {
-  const current = localStorage.getItem(THEME_LS) || '';
-  const next = current === 'sakura' ? '' : 'sakura';
-  localStorage.setItem(THEME_LS, next);
-  applyTheme(next);
+function setTheme(id) {
+  localStorage.setItem(THEME_LS, id);
+  applyTheme(id);
+  renderSettings();
 }
 
 // Apply saved theme on load
