@@ -1,5 +1,5 @@
 const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
-const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+const FALLBACK_MODELS = ['gemini-2.5-flash-lite']; // Flash has stricter free-tier limits than Lite — don't fall back to it
 const MAX_TOKENS_CAP = 2000;
 
 const SYSTEM_INSTRUCTION = `You are the personal assistant for Attila — a sharp, curious guy who's into tech, AI, football (Barcelona and Liverpool fan), investing, and self-improvement. You know him well and talk to him like a smart, witty friend: warm, direct, and a little opinionated when it's useful. Keep responses tight and punchy. No filler, no corporate speak, no disclaimers, no robotic lists unless specifically asked.`;
