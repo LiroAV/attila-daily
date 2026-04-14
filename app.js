@@ -1472,21 +1472,21 @@ async function loadPodcast() {
 
   el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Fetching episodes…</div>`;
   try {
-    const r = await fetch(R2J + encodeURIComponent(url) + '&count=8');
+    const r = await fetch('/api/podcast?url=' + encodeURIComponent(url));
     const d = await r.json();
-    if (d.status !== 'ok') throw new Error('RSS error');
-    const items = (d.items || []).slice(0, 8).map(i => ({
+    if (!r.ok) throw new Error(d.error || 'Feed error');
+    const items = (d.items || []).map(i => ({
       title: i.title,
-      url: i.enclosure?.link || i.link,
-      date: i.pubDate ? new Date(i.pubDate).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '',
-      duration: i.itunes_duration || '',
+      url: i.url,
+      date: i.date ? new Date(i.date).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '',
+      duration: i.duration || '',
     }));
-    const feedTitle = d.feed?.title || '';
+    const feedTitle = d.feedTitle || '';
     localStorage.setItem(PODCAST_CACHE_LS, JSON.stringify({ url, ts: Date.now(), feedTitle, items }));
     _podcastEpisodes = items;
     renderPodcastEpisodes(el, url, feedTitle, items);
-  } catch {
-    el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Couldn't load feed. <button class="podcast-change-btn" style="color:var(--accent);font-size:13px" onclick="podcastClear()">Change feed</button></div>`;
+  } catch (e) {
+    el.innerHTML = `<div style="font-size:13px;color:var(--text3)">${esc(e.message || 'Couldn\'t load feed')}. <button class="podcast-change-btn" style="color:var(--accent);font-size:13px" onclick="podcastClear()">Change feed</button></div>`;
   }
 }
 
