@@ -1045,6 +1045,7 @@ function loadHomeCard(cardId, force) {
   homeLoadedCards.add(cardId);
   if (cardId === 'clubEventsCard') loadClubEvents();
   if (cardId === 'spotifyCard') loadSpotify();
+  if (cardId === 'podcastCard') loadPodcast();
   if (cardId === 'morningBriefCard') generateMorningBrief();
   if (cardId === 'footballCard') loadFootball();
   if (cardId === 'weatherCard') {
@@ -1061,7 +1062,7 @@ function loadHome() {
 }
 
 function loadVisibleHomeCards() {
-  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(cardId => {
+  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','podcastCard','footballCard'].forEach(cardId => {
     if (isHomeCardVisible(cardId)) loadHomeCard(cardId);
   });
 }
@@ -1435,6 +1436,251 @@ function renderHabits() {
       <span class="habit-label">${h.label}</span>
     </div>`;
   }).join('');
+}
+
+// ── PODCAST ───────────────────────────────────
+const PODCAST_URL_LS = 'atd_podcast_url';
+const PODCAST_CACHE_LS = 'atd_podcast_cache';
+const PODCAST_POS_LS = 'atd_podcast_pos';
+const PODCAST_CACHE_TTL = 3 * 60 * 60 * 1000; // 3h
+
+const PODCAST_SUGGESTIONS = [
+  { name: 'The AI Daily Brief', desc: 'Daily AI news in ~15 min', url: 'https://feeds.megaphone.fm/the-ai-daily-brief' },
+  { name: 'Hard Fork (NYT)', desc: 'Tech & AI from the NY Times', url: 'https://feeds.simplecast.com/l2i9YnTd' },
+  { name: 'Lex Fridman Podcast', desc: 'Deep dives on AI & science', url: 'https://lexfridman.com/feed/podcast/' },
+];
+
+let _podcastAudio = null;
+let _podcastEpisodes = [];
+let _podcastPlayingIdx = -1;
+
+async function loadPodcast() {
+  const el = document.getElementById('podcastContent');
+  if (!el) return;
+  const url = localStorage.getItem(PODCAST_URL_LS);
+  if (!url) { renderPodcastSetup(el); return; }
+
+  // Check cache
+  try {
+    const cached = JSON.parse(localStorage.getItem(PODCAST_CACHE_LS) || 'null');
+    if (cached && cached.url === url && Date.now() - cached.ts < PODCAST_CACHE_TTL) {
+      _podcastEpisodes = cached.items;
+      renderPodcastEpisodes(el, url, cached.feedTitle, cached.items);
+      return;
+    }
+  } catch {}
+
+  el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Fetching episodes…</div>`;
+  try {
+    const r = await fetch(R2J + encodeURIComponent(url) + '&count=8');
+    const d = await r.json();
+    if (d.status !== 'ok') throw new Error('RSS error');
+    const items = (d.items || []).slice(0, 8).map(i => ({
+      title: i.title,
+      url: i.enclosure?.link || i.link,
+      date: i.pubDate ? new Date(i.pubDate).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '',
+      duration: i.itunes_duration || '',
+    }));
+    const feedTitle = d.feed?.title || '';
+    localStorage.setItem(PODCAST_CACHE_LS, JSON.stringify({ url, ts: Date.now(), feedTitle, items }));
+    _podcastEpisodes = items;
+    renderPodcastEpisodes(el, url, feedTitle, items);
+  } catch {
+    el.innerHTML = `<div style="font-size:13px;color:var(--text3)">Couldn't load feed. <button class="podcast-change-btn" style="color:var(--accent);font-size:13px" onclick="podcastClear()">Change feed</button></div>`;
+  }
+}
+
+function renderPodcastSetup(el) {
+  el.innerHTML = `
+    <div class="podcast-setup">
+      <p>Pick a podcast feed to listen to daily episodes.</p>
+      ${PODCAST_SUGGESTIONS.map(s => `
+        <div class="podcast-suggestion" onclick="podcastSetUrl('${s.url}')">
+          <div class="podcast-suggestion-info">
+            <div class="podcast-suggestion-name">${esc(s.name)}</div>
+            <div class="podcast-suggestion-desc">${esc(s.desc)}</div>
+          </div>
+          <span class="podcast-suggestion-arrow">›</span>
+        </div>`).join('')}
+      <div class="podcast-custom-row">
+        <input class="podcast-custom-inp" id="podcastUrlInp" type="url" placeholder="Or paste RSS feed URL…">
+        <button class="podcast-custom-btn" onclick="podcastSetCustom()">Add</button>
+      </div>
+    </div>`;
+}
+
+function renderPodcastEpisodes(el, _url, feedTitle, items) {
+  if (!items.length) {
+    el.innerHTML = `<div style="font-size:13px;color:var(--text3)">No episodes found. <button class="podcast-change-btn" style="color:var(--accent);font-size:13px" onclick="podcastClear()">Change feed</button></div>`;
+    return;
+  }
+  const nowPlayingIdx = _podcastPlayingIdx;
+  const ep = nowPlayingIdx >= 0 ? items[nowPlayingIdx] : null;
+
+  el.innerHTML = `
+    <div class="podcast-player">
+      <div class="podcast-feed-info">
+        <span class="podcast-feed-name">${esc(feedTitle || 'Podcast')}</span>
+        <button class="podcast-change-btn" onclick="podcastClear()">Change feed</button>
+      </div>
+      ${ep ? `
+      <div class="podcast-now-playing" id="podcastNowPlaying">
+        <div class="podcast-np-title">${esc(ep.title)}</div>
+        <div class="podcast-np-date">${esc(ep.date)}</div>
+        <div class="podcast-progress-wrap">
+          <span class="podcast-time" id="podcastTimeCur">0:00</span>
+          <div class="podcast-progress" onclick="podcastSeek(event, this)">
+            <div class="podcast-progress-fill" id="podcastProgressFill" style="width:0%"></div>
+          </div>
+          <span class="podcast-time" id="podcastTimeDur">–:––</span>
+        </div>
+        <div class="podcast-controls">
+          <button class="pod-ctrl" onclick="podcastSkip(-15)" title="−15s">↺</button>
+          <button class="pod-ctrl play" id="podcastPlayBtn" onclick="podcastToggle()">▶</button>
+          <button class="pod-ctrl" onclick="podcastSkip(30)" title="+30s">↻</button>
+        </div>
+      </div>` : ''}
+      <div class="podcast-ep-list">
+        ${items.map((ep, i) => `
+          <div class="podcast-ep${i === nowPlayingIdx ? ' active-ep' : ''}" onclick="podcastPlay(${i})">
+            <button class="podcast-ep-play${i === nowPlayingIdx ? ' playing' : ''}">${i === nowPlayingIdx ? '▶' : '▷'}</button>
+            <div class="podcast-ep-info">
+              <div class="podcast-ep-title">${esc(ep.title)}</div>
+              <div class="podcast-ep-meta">${esc(ep.date)}${ep.duration ? ' · ' + podcastFmtDuration(ep.duration) : ''}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  // Restore audio state if playing
+  if (_podcastAudio && !_podcastAudio.paused) {
+    document.getElementById('podcastPlayBtn')?.textContent !== undefined &&
+      (document.getElementById('podcastPlayBtn').textContent = '⏸');
+    podcastStartTick();
+  }
+}
+
+function podcastSetUrl(url) {
+  localStorage.setItem(PODCAST_URL_LS, url);
+  _podcastEpisodes = [];
+  _podcastPlayingIdx = -1;
+  loadPodcast();
+}
+
+function podcastSetCustom() {
+  const val = document.getElementById('podcastUrlInp')?.value?.trim();
+  if (!val) return;
+  podcastSetUrl(val);
+}
+
+function podcastClear() {
+  if (_podcastAudio) { _podcastAudio.pause(); _podcastAudio = null; }
+  _podcastPlayingIdx = -1;
+  localStorage.removeItem(PODCAST_URL_LS);
+  localStorage.removeItem(PODCAST_CACHE_LS);
+  const el = document.getElementById('podcastContent');
+  if (el) renderPodcastSetup(el);
+}
+
+function podcastPlay(idx) {
+  const ep = _podcastEpisodes[idx];
+  if (!ep?.url) return;
+
+  if (_podcastAudio) { _podcastAudio.pause(); _podcastAudio.src = ''; }
+  _podcastPlayingIdx = idx;
+
+  // Re-render so now-playing section appears / updates
+  const el = document.getElementById('podcastContent');
+  const cached = JSON.parse(localStorage.getItem(PODCAST_CACHE_LS) || 'null');
+  if (el && cached) renderPodcastEpisodes(el, cached.url, cached.feedTitle, cached.items);
+
+  _podcastAudio = new Audio(ep.url);
+  _podcastAudio.crossOrigin = 'anonymous';
+
+  // Restore saved position
+  const positions = JSON.parse(localStorage.getItem(PODCAST_POS_LS) || '{}');
+  if (positions[ep.url] > 5) _podcastAudio.currentTime = positions[ep.url];
+
+  _podcastAudio.play().then(() => {
+    const btn = document.getElementById('podcastPlayBtn');
+    if (btn) btn.textContent = '⏸';
+    podcastStartTick();
+  }).catch(() => {});
+
+  _podcastAudio.addEventListener('ended', () => {
+    if (_podcastPlayingIdx < _podcastEpisodes.length - 1) podcastPlay(_podcastPlayingIdx + 1);
+  });
+}
+
+function podcastToggle() {
+  if (!_podcastAudio) {
+    if (_podcastEpisodes.length) podcastPlay(0);
+    return;
+  }
+  const btn = document.getElementById('podcastPlayBtn');
+  if (_podcastAudio.paused) {
+    _podcastAudio.play().then(() => { if (btn) btn.textContent = '⏸'; podcastStartTick(); });
+  } else {
+    _podcastAudio.pause();
+    if (btn) btn.textContent = '▶';
+    podcastSavePos();
+  }
+}
+
+function podcastSkip(secs) {
+  if (!_podcastAudio) return;
+  _podcastAudio.currentTime = Math.max(0, _podcastAudio.currentTime + secs);
+}
+
+function podcastSeek(e, bar) {
+  if (!_podcastAudio || !_podcastAudio.duration) return;
+  const rect = bar.getBoundingClientRect();
+  const pct = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+  _podcastAudio.currentTime = pct * _podcastAudio.duration;
+}
+
+let _podcastTick = null;
+function podcastStartTick() {
+  if (_podcastTick) return;
+  _podcastTick = setInterval(() => {
+    if (!_podcastAudio) { clearInterval(_podcastTick); _podcastTick = null; return; }
+    if (_podcastAudio.paused) { clearInterval(_podcastTick); _podcastTick = null; return; }
+    const cur = _podcastAudio.currentTime, dur = _podcastAudio.duration;
+    const fill = document.getElementById('podcastProgressFill');
+    const timeCur = document.getElementById('podcastTimeCur');
+    const timeDur = document.getElementById('podcastTimeDur');
+    if (fill && dur) fill.style.width = (cur / dur * 100).toFixed(1) + '%';
+    if (timeCur) timeCur.textContent = podcastFmtSecs(cur);
+    if (timeDur) timeDur.textContent = dur ? podcastFmtSecs(dur) : '–:––';
+    // Save position every 10s
+    if (Math.round(cur) % 10 === 0) podcastSavePos();
+  }, 1000);
+}
+
+function podcastSavePos() {
+  if (!_podcastAudio || !_podcastEpisodes[_podcastPlayingIdx]) return;
+  const url = _podcastEpisodes[_podcastPlayingIdx].url;
+  const positions = JSON.parse(localStorage.getItem(PODCAST_POS_LS) || '{}');
+  positions[url] = _podcastAudio.currentTime;
+  localStorage.setItem(PODCAST_POS_LS, JSON.stringify(positions));
+}
+
+function podcastFmtSecs(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+function podcastFmtDuration(d) {
+  if (!d) return '';
+  if (typeof d === 'number') return podcastFmtSecs(d);
+  const parts = String(d).split(':').map(Number);
+  if (parts.length === 3) {
+    const [h, m] = parts;
+    return h ? `${h}h ${m}m` : `${m}m`;
+  }
+  if (parts.length === 2) return `${parts[0]}m`;
+  return podcastFmtSecs(Number(d));
 }
 
 // ── FOOTBALL ──────────────────────────────────
@@ -2741,7 +2987,7 @@ function getHiddenCards() {
 }
 function applyHomeVisibility() {
   const hidden = getHiddenCards();
-  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','footballCard'].forEach(id => {
+  ['weatherCard','morningBriefCard','clubEventsCard','spotifyCard','podcastCard','footballCard'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = hidden.includes(id) ? 'none' : '';
   });
@@ -2831,6 +3077,7 @@ async function renderSettings() {
     { id:'morningBriefCard', label:'Morning Brief' },
     { id:'clubEventsCard', label:'Upcoming Events' },
     { id:'spotifyCard', label:'Spotify' },
+    { id:'podcastCard', label:'Podcast' },
     { id:'footballCard', label:'Football' },
   ];
 
